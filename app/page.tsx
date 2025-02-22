@@ -19,47 +19,57 @@ export const maxDuration = 60;
 
 const getPhotosCached = cache(async () => {
   const hiveAuth = new HiveAuth();
+  console.log('Searching for posts for:', HIVE_USERNAME);
+
   const posts = await hiveAuth.getUserPosts(
     HIVE_USERNAME,
     INFINITE_SCROLL_FEED_INITIAL,
   );
 
   const photos: Photo[] = [];
-  posts.forEach((post: any) => {
-    const json = JSON.parse(post.json_metadata);
-    if (json.image) {
-      json.image.forEach((url: string) => {
+  posts.forEach((post) => {
+    try {
+      const json = JSON.parse(post.json_metadata);
+      const images = [
+        ...(json.image || []),
+        ...(json.images || [])
+      ];
+
+      images.forEach((url: string) => {
+        const isIpfs = url.includes('ipfs/');
+        const ipfsHash = isIpfs ? url.split('ipfs/')
+        [1].split('?')[0].split('/')[0] : null;
+
         const now = new Date();
-        // Melhorar a extração do ID IPFS
-        const ipfsPath = url.includes('ipfs/')
-          ? url.split('ipfs/')[1].split('/')[0].split('?')[0]
-          : url;
-
-        console.log('Gerando ID para:', {
-          originalUrl: url,
-          ipfsPath: ipfsPath,
-          generatedId: `ipfs/${ipfsPath}`
-        });
-
         photos.push({
-          id: ipfsPath,
-          url: `${url}`,
-          title: post.title,
-          createdAt: new Date(post.created),
-          updatedAt: new Date(post.last_update),
+          id: `${post.id}-${url.split('/').pop()}`,
+          url: url,
+          ipfsHash: isIpfs ? ipfsHash : null,
+          title: post.title || '',
+          createdAt: new Date(post.created || now),
+          updatedAt: new Date(post.last_update || now),
           blurData: '',
-          tags: json.tags || [],
+          tags: Array.isArray(JSON.parse(post.json_metadata).tags)
+            ? JSON.parse(post.json_metadata).tags
+            : [],
           takenAt: now,
           takenAtNaive: now.toISOString(),
           takenAtNaiveFormatted: now.toLocaleDateString(),
           extension: url.split('.').pop() || '',
           aspectRatio: 1,
-          camera: null
+          camera: null,
+          simulation: null,
         });
+      });
+    } catch (error) {
+      console.error('Error processing post:', {
+        postId: post.id,
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   });
 
+  console.log('Total photos processed:', photos.length);
   return photos;
 });
 
