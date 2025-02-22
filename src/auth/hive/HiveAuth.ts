@@ -1,4 +1,4 @@
-import { Client } from '@hiveio/dhive';
+import { Client, PrivateKey } from '@hiveio/dhive';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 interface HiveUser {
@@ -29,6 +29,19 @@ export class HiveAuth {
         return null;
       }
 
+      try {
+        const publicKey = PrivateKey.from(postingKey).createPublic();
+        const postingPubKey = account.posting.key_auths[0][0];
+
+        if (publicKey.toString() !== postingPubKey) {
+          console.warn('Invalid posting key for user:', username);
+          return null;
+        }
+      } catch (e) {
+        console.warn('Invalid posting key format:', e);
+        return null;
+      }
+
       let profile = {};
       try {
         const metadata = JSON.parse(account.posting_json_metadata);
@@ -53,17 +66,17 @@ export class HiveAuth {
   async getUserPosts(username: string, limit = 100): Promise<any[]> {
     try {
       console.log(`Fetching posts for user: ${username}`);
-      
-      const startPermlink = ''; 
-      const beforeDate = new Date().toISOString().split('.')[0]; 
-      
+
+      const startPermlink = '';
+      const beforeDate = new Date().toISOString().split('.')[0];
+
       const posts = await this.client.database.call(
         'get_discussions_by_author_before_date',
         [username, startPermlink, beforeDate, limit]
       );
-      
+
       console.log(`Posts found: ${posts.length}`);
-      
+
       const validPosts = posts.filter((post: any) => {
         try {
           const metadata = JSON.parse(post.json_metadata);
@@ -76,7 +89,7 @@ export class HiveAuth {
 
       console.log(`Valid posts with images: ${validPosts.length}`);
       return validPosts;
-      
+
     } catch (error) {
       console.error('Detailed error when fetching posts:', error);
       return [];
