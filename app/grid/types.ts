@@ -16,6 +16,7 @@ export interface Photo {
   takenAtNaiveFormatted: string;
   extension: string;
   aspectRatio: number;
+  ipfsHash?: string | null ;
 }
 
 export interface Tag {
