@@ -1,51 +1,53 @@
-import { Photo, PhotoSetCategory } from '@/photo';
-import { BASE_URL, GRID_HOMEPAGE_ENABLED } from './config';
 import { Camera } from '@/camera';
+import { Photo, PhotoSetCategory } from '@/photo';
 import { FilmSimulation } from '@/simulation';
-import { parameterize } from '@/utility/string';
 import { TAG_HIDDEN } from '@/tag';
+import { parameterize } from '@/utility/string';
+import { BASE_URL, GRID_HOMEPAGE_ENABLED } from './config';
 
 // Core paths
-export const PATH_ROOT                = '/';
-export const PATH_GRID                = '/grid';
-export const PATH_FEED                = '/feed';
-export const PATH_ADMIN               = '/admin';
-export const PATH_API                 = '/api';
-export const PATH_SIGN_IN             = '/sign-in';
-export const PATH_OG                  = '/og';
+export const PATH_ROOT = '/';
+export const PATH_GRID = '/grid';
+export const PATH_FEED = '/feed';
+export const PATH_ADMIN = '/admin';
+export const PATH_API = '/api';
+export const PATH_SIGN_IN = '/sign-in';
+export const PATH_OG = '/og';
 // eslint-disable-next-line max-len
-export const PATH_GRID_INFERRED       = GRID_HOMEPAGE_ENABLED ? PATH_ROOT : PATH_GRID;
+export const PATH_GRID_INFERRED = GRID_HOMEPAGE_ENABLED ? PATH_ROOT : PATH_GRID;
 // eslint-disable-next-line max-len
-export const PATH_FEED_INFERRED       = GRID_HOMEPAGE_ENABLED ? PATH_FEED : PATH_ROOT;
+export const PATH_FEED_INFERRED = GRID_HOMEPAGE_ENABLED ? PATH_FEED : PATH_ROOT;
 
 // Path prefixes
-export const PREFIX_PHOTO             = '/p';
-export const PREFIX_TAG               = '/tag';
-export const PREFIX_CAMERA            = '/shot-on';
-export const PREFIX_FILM_SIMULATION   = '/film';
-export const PREFIX_FOCAL_LENGTH      = '/focal';
+export const PREFIX_PHOTO = '/p';
+export const PREFIX_TAG = '/tag';
+export const PREFIX_CAMERA = '/shot-on';
+export const PREFIX_FILM_SIMULATION = '/film';
+export const PREFIX_FOCAL_LENGTH = '/focal';
+export const HIVE_IMAGE_PREFIX = 'ipfs.skatehive.app';
+export const HIVE_IPFS_URL = 'https://ipfs.skatehive.app/ipfs/';
 
 // Dynamic paths
-const PATH_PHOTO_DYNAMIC              = `${PREFIX_PHOTO}/[photoId]`;
-const PATH_TAG_DYNAMIC                = `${PREFIX_TAG}/[tag]`;
-const PATH_CAMERA_DYNAMIC             = `${PREFIX_CAMERA}/[make]/[model]`;
+const PATH_PHOTO_DYNAMIC = `${PREFIX_PHOTO}/[photoId]`;
+const PATH_TAG_DYNAMIC = `${PREFIX_TAG}/[tag]`;
+const PATH_CAMERA_DYNAMIC = `${PREFIX_CAMERA}/[make]/[model]`;
 // eslint-disable-next-line max-len
-const PATH_FILM_SIMULATION_DYNAMIC    = `${PREFIX_FILM_SIMULATION}/[simulation]`;
-const PATH_FOCAL_LENGTH_DYNAMIC       = `${PREFIX_FOCAL_LENGTH}/[focal]`;
+const PATH_FILM_SIMULATION_DYNAMIC = `${PREFIX_FILM_SIMULATION}/[simulation]`;
+const PATH_FOCAL_LENGTH_DYNAMIC = `${PREFIX_FOCAL_LENGTH}/[focal]`;
 
 // Admin paths
-export const PATH_ADMIN_PHOTOS        = `${PATH_ADMIN}/photos`;
-export const PATH_ADMIN_OUTDATED      = `${PATH_ADMIN}/outdated`;
-export const PATH_ADMIN_UPLOADS       = `${PATH_ADMIN}/uploads`;
-export const PATH_ADMIN_TAGS          = `${PATH_ADMIN}/tags`;
+export const PATH_ADMIN_PHOTOS = `${PATH_ADMIN}/photos`;
+export const PATH_ADMIN_OUTDATED = `${PATH_ADMIN}/outdated`;
+export const PATH_ADMIN_UPLOADS = `${PATH_ADMIN}/uploads`;
+export const PATH_ADMIN_TAGS = `${PATH_ADMIN}/tags`;
 export const PATH_ADMIN_CONFIGURATION = `${PATH_ADMIN}/configuration`;
-export const PATH_ADMIN_INSIGHTS      = `${PATH_ADMIN}/insights`;
-export const PATH_ADMIN_BASELINE      = `${PATH_ADMIN}/baseline`;
-export const PATH_ADMIN_COMPONENTS    = `${PATH_ADMIN}/components`;
+export const PATH_ADMIN_INSIGHTS = `${PATH_ADMIN}/insights`;
+export const PATH_ADMIN_BASELINE = `${PATH_ADMIN}/baseline`;
+export const PATH_ADMIN_COMPONENTS = `${PATH_ADMIN}/components`;
 
 // Debug paths
-export const PATH_OG_ALL              = `${PATH_OG}/all`;
-export const PATH_OG_SAMPLE           = `${PATH_OG}/sample`;
+export const PATH_OG_ALL = `${PATH_OG}/all`;
+export const PATH_OG_SAMPLE = `${PATH_OG}/sample`;
 
 // API paths
 export const PATH_API_STORAGE = `${PATH_API}/storage`;
@@ -53,7 +55,7 @@ export const PATH_API_VERCEL_BLOB_UPLOAD = `${PATH_API_STORAGE}/vercel-blob`;
 export const PATH_API_PRESIGNED_URL = `${PATH_API_STORAGE}/presigned-url`;
 
 // Modifiers
-const EDIT  = 'edit';
+const EDIT = 'edit';
 
 export const PATHS_ADMIN = [
   PATH_ADMIN,
@@ -78,7 +80,7 @@ export const PATHS_TO_CACHE = [
   ...PATHS_ADMIN,
 ];
 
-type PhotoPathParams  = { photo: PhotoOrPhotoId } & PhotoSetCategory;
+type PhotoPathParams = { photo: PhotoOrPhotoId } & PhotoSetCategory;
 
 // Absolute paths
 export const ABSOLUTE_PATH_FOR_HOME_IMAGE = `${BASE_URL}/home-image`;
@@ -97,14 +99,23 @@ type PhotoOrPhotoId = Photo | string;
 const getPhotoId = (photoOrPhotoId: PhotoOrPhotoId) =>
   typeof photoOrPhotoId === 'string' ? photoOrPhotoId : photoOrPhotoId.id;
 
+
+
 export const pathForPhoto = ({
   photo,
   tag,
   camera,
   simulation,
   focal,
-}: PhotoPathParams) =>
-  typeof photo !== 'string' && photo.hidden
+}: PhotoPathParams) => {
+  if (typeof photo !== 'string' && photo.url.includes(HIVE_IMAGE_PREFIX)) {
+    const hash = photo.url.split('ipfs/').pop();
+    // Retorna apenas o hash do IPFS
+    return `${PREFIX_PHOTO}/${hash}`;
+  }
+
+  // Mantém o comportamento original para outras fotos
+  return typeof photo !== 'string' && photo.hidden
     ? `${pathForTag(TAG_HIDDEN)}/${getPhotoId(photo)}`
     : tag
       ? `${pathForTag(tag)}/${getPhotoId(photo)}`
@@ -115,6 +126,7 @@ export const pathForPhoto = ({
           : focal
             ? `${pathForFocalLength(focal)}/${getPhotoId(photo)}`
             : `${PREFIX_PHOTO}/${getPhotoId(photo)}`;
+};
 
 export const pathForTag = (tag: string) =>
   `${PREFIX_TAG}/${tag}`;
@@ -134,7 +146,7 @@ export const absolutePathForPhoto = (params: PhotoPathParams) =>
 export const absolutePathForTag = (tag: string) =>
   `${BASE_URL}${pathForTag(tag)}`;
 
-export const absolutePathForCamera= (camera: Camera) =>
+export const absolutePathForCamera = (camera: Camera) =>
   `${BASE_URL}${pathForCamera(camera)}`;
 
 export const absolutePathForFilmSimulation = (simulation: FilmSimulation) =>
@@ -149,7 +161,7 @@ export const absolutePathForPhotoImage = (photo: PhotoOrPhotoId) =>
 export const absolutePathForTagImage = (tag: string) =>
   `${absolutePathForTag(tag)}/image`;
 
-export const absolutePathForCameraImage= (camera: Camera) =>
+export const absolutePathForCameraImage = (camera: Camera) =>
   `${absolutePathForCamera(camera)}/image`;
 
 export const absolutePathForFilmSimulationImage =
@@ -160,9 +172,18 @@ export const absolutePathForFocalLengthImage =
   (focal: number) =>
     `${absolutePathForFocalLength(focal)}/image`;
 
+export const isHiveUrl = (url = '') =>
+  url.includes(HIVE_IMAGE_PREFIX) || url.includes('ipfs/');
+
+
 // p/[photoId]
-export const isPathPhoto = (pathname = '') =>
-  new RegExp(`^${PREFIX_PHOTO}/[^/]+/?$`).test(pathname);
+export const isPathPhoto = (pathname = '') => {
+  // Verifica se é uma URL do IPFS
+  if (pathname.includes('/ipfs/')) {
+    return true;
+  }
+  return pathname.startsWith(PREFIX_PHOTO);
+};
 
 // tag/[tag]
 export const isPathTag = (pathname = '') =>
@@ -225,9 +246,32 @@ export const isPathProtected = (pathname?: string) =>
   checkPathPrefix(pathname, pathForTag(TAG_HIDDEN)) ||
   checkPathPrefix(pathname, PATH_OG);
 
-export const getPathComponents = (pathname = ''): {
+interface HivePhoto {
+  tags?: string[];
+  camera?: Camera;
+  simulation?: FilmSimulation;
+  focal?: number;
+}
+const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
+
+export const getPathComponents = (
+  pathname = HIVE_USERNAME,
+  hivePhoto?: HivePhoto,
+): {
   photoId?: string
 } & PhotoSetCategory => {
+
+  if (pathname.includes('/ipfs/')) {
+    const hash = pathname.split('/ipfs/').pop();
+    return {
+      photoId: `${HIVE_IPFS_URL}${hash}`, 
+      tag: hivePhoto?.tags?.[0],
+      camera: hivePhoto?.camera,
+      simulation: hivePhoto?.simulation,
+      focal: hivePhoto?.focal,
+    };
+  }
+
   const photoIdFromPhoto = pathname.match(
     new RegExp(`^${PREFIX_PHOTO}/([^/]+)`))?.[1];
   const photoIdFromTag = pathname.match(
