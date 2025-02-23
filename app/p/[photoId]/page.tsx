@@ -37,15 +37,15 @@ interface Props {
 }
 
 interface PhotoProps {
-  params: {
+  params: Promise<{
     photoId: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
   params,
 }: PhotoProps): Promise<Metadata> {
-  const { photoId } = params;
+  const { photoId } = await params;
   const { photo } = await getPhotosNearIdCachedCached(photoId);
 
   if (!photo) { return {}; }
@@ -82,8 +82,14 @@ interface TargetPhoto {
 }
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
-export default async function PhotoPage({ params }: Props) {
-  const { photoId } = params;
+export default async function PhotoPage({
+  params
+}: {
+  params: Promise<{
+    photoId: string;
+  }>;
+}) {
+  const { photoId } = await params;
   try {
     const hiveAuth = new HiveAuth();
     console.log('Debug - PhotoID recebido:', photoId);
