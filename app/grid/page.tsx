@@ -10,7 +10,8 @@ import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { Cameras, FilmSimulations, Photo, Tag, Tags } from './types';
 
-export const dynamic = 'force-static';
+// export const dynamic = 'force-static';
+export const revalidate = 3600;
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
 const getPhotosCached = cache(async () => {
