@@ -37,13 +37,15 @@ interface Props {
 }
 
 interface PhotoProps {
-  params: Promise<{ photoId: string }>
+  params: {
+    photoId: string;
+  };
 }
 
 export async function generateMetadata({
   params,
 }: PhotoProps): Promise<Metadata> {
-  const { photoId } = await params;
+  const { photoId } = params;
   const { photo } = await getPhotosNearIdCachedCached(photoId);
 
   if (!photo) { return {}; }
@@ -81,12 +83,11 @@ interface TargetPhoto {
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
 export default async function PhotoPage({ params }: Props) {
-  const { photoId } = await params;
+  const { photoId } = params;
   try {
     const hiveAuth = new HiveAuth();
     console.log('Debug - PhotoID recebido:', photoId);
 
-    // Changing the limit to 20 as per API restriction
     const posts = await hiveAuth.getUserPosts(HIVE_USERNAME, 20);
 
     if (!posts?.length) {
@@ -96,7 +97,6 @@ export default async function PhotoPage({ params }: Props) {
 
     console.log('Debug - Number of posts found:', posts.length);
 
-    // Simplifying the search logic
     const post = posts.find(post => {
       try {
         const metadata = JSON.parse(post.json_metadata);
@@ -105,11 +105,9 @@ export default async function PhotoPage({ params }: Props) {
           ...(metadata.images || [])
         ];
 
-        // Removing special characters from photoId
         const cleanPhotoId = photoId.replace(/[^a-zA-Z0-9]/g, '');
 
         return allImages.some(image => {
-          // Removing special characters from the image
           const cleanImage = image.toString().replace(/[^a-zA-Z0-9]/g, '');
           return cleanImage.includes(cleanPhotoId);
         });
