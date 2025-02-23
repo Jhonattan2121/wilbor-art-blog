@@ -1,57 +1,48 @@
 'use client';
 
+import { GRID_HOMEPAGE_ENABLED } from '@/app/config';
+import { HiveAuth } from '@/auth/hive/HiveAuth';
+import { getKeywordsForPhoto, titleForPhoto } from '@/photo';
+import PhotoDate from '@/photo/PhotoDate';
+import PhotoSmall from '@/photo/PhotoSmall';
+import { useAppState } from '@/state/AppState';
+import { Tags, addHiddenToTags, formatTag } from '@/tag';
+import { formatCount, formatCountDescriptive } from '@/utility/string';
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
+import { clsx } from 'clsx/lite';
 import { Command } from 'cmdk';
+import { useTheme } from 'next-themes';
+import { usePathname, useRouter } from 'next/navigation';
 import {
+  Dispatch,
   ReactNode,
   SetStateAction,
-  Dispatch,
   useEffect,
   useMemo,
   useRef,
   useState,
   useTransition,
 } from 'react';
+import { BiDesktop, BiMoon, BiSun } from 'react-icons/bi';
+import { FaTag } from 'react-icons/fa';
+import { FaCheck } from 'react-icons/fa6';
+import { HiDocumentText } from 'react-icons/hi';
+import { IoInvertModeSharp } from 'react-icons/io5';
+import { RiToolsFill } from 'react-icons/ri';
+import { TbPhoto } from 'react-icons/tb';
+import { useDebounce } from 'use-debounce';
+import { Photo } from '../../../app/grid/types';
 import {
-  PATH_ADMIN_BASELINE,
-  PATH_ADMIN_COMPONENTS,
-  PATH_ADMIN_CONFIGURATION,
-  PATH_ADMIN_INSIGHTS,
-  PATH_ADMIN_PHOTOS,
-  PATH_ADMIN_TAGS,
-  PATH_ADMIN_UPLOADS,
   PATH_FEED_INFERRED,
   PATH_GRID_INFERRED,
   PATH_ROOT,
-  PATH_SIGN_IN,
   pathForPhoto,
-  pathForTag,
+  pathForTag
 } from '../../app/paths';
 import Modal from '../Modal';
-import { clsx } from 'clsx/lite';
-import { useDebounce } from 'use-debounce';
 import Spinner from '../Spinner';
-import { usePathname, useRouter } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import { BiDesktop, BiMoon, BiSun } from 'react-icons/bi';
-import { IoInvertModeSharp } from 'react-icons/io5';
-import { useAppState } from '@/state/AppState';
-import { searchPhotosAction } from '@/photo/actions';
-import { RiToolsFill } from 'react-icons/ri';
-import { BiLockAlt, BiSolidUser } from 'react-icons/bi';
-import { HiDocumentText } from 'react-icons/hi';
-import { signOutAndRedirectAction } from '@/auth/actions';
-import { TbPhoto } from 'react-icons/tb';
-import { getKeywordsForPhoto, titleForPhoto } from '@/photo';
-import PhotoDate from '@/photo/PhotoDate';
-import PhotoSmall from '@/photo/PhotoSmall';
-import { FaCheck, FaCircle } from 'react-icons/fa6';
-import { Tags, addHiddenToTags, formatTag } from '@/tag';
-import { FaTag } from 'react-icons/fa';
-import { formatCount, formatCountDescriptive } from '@/utility/string';
 import CommandKItem from './CommandKItem';
-import { GRID_HOMEPAGE_ENABLED } from '@/app/config';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
-import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 
 const DIALOG_TITLE = 'Global Command-K Menu';
 const DIALOG_DESCRIPTION = 'For searching photos, views, and settings';
@@ -121,9 +112,10 @@ export default function CommandKClient({
     setShouldDebugImageFallbacks,
     setShouldDebugInsights,
   } = useAppState();
+  const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
   const isOpenRef = useRef(isOpen);
-  
+
   const [isPending, startTransition] = useTransition();
   const [keyPending, setKeyPending] = useState<string>();
   const shouldCloseAfterPending = useRef(false);
@@ -172,38 +164,118 @@ export default function CommandKClient({
     return () => document.removeEventListener(LISTENER_KEYDOWN, down);
   }, [setIsOpen]);
 
+  // Adicione um estado para as tags do Hive
+  const [hiveTags, setHiveTags] = useState<{ tag: string, count: number }[]>([]);
+
+  // Adicione um useEffect para carregar as tags do Hive
+  useEffect(() => {
+    const loadHiveTags = async () => {
+      try {
+        const hiveAuth = new HiveAuth();
+        const posts = await hiveAuth.getUserPosts(HIVE_USERNAME,
+           100);
+
+        const tagsCount = new Map<string, number>();
+
+        posts.forEach((post: any) => {
+          const json = JSON.parse(post.json_metadata);
+          if (json.tags) {
+            json.tags.forEach((tag: string) => {
+              tagsCount.set(tag, (tagsCount.get(tag) || 0) + 1);
+            });
+          }
+        });
+
+        const formattedTags = Array.from(tagsCount.entries())
+          .map(([tag, count]) => ({ tag, count }))
+          .sort((a, b) => b.count - a.count);
+
+        setHiveTags(formattedTags);
+      } catch (error) {
+        console.error('Erro ao carregar tags do Hive:', error);
+      }
+    };
+
+    loadHiveTags();
+  }, []);
+
   useEffect(() => {
     if (queryDebounced.length >= MINIMUM_QUERY_LENGTH && !isPending) {
       setIsLoading(true);
-      searchPhotosAction(queryDebounced)
-        .then(photos => {
-          if (isOpenRef.current) {
-            setQueriedSections(photos.length > 0
-              ? [{
-                heading: 'Photos',
-                accessory: <TbPhoto size={14} />,
-                items: photos.map(photo => ({
-                  label: titleForPhoto(photo),
-                  keywords: getKeywordsForPhoto(photo),
-                  annotation: <PhotoDate {...{ photo, timezone: undefined }} />,
-                  accessory: <PhotoSmall photo={photo} />,
-                  path: pathForPhoto({ photo }),
-                })),
-              }]
-              : []);
-          } else {
-            // Ignore stale requests that come in after dialog is closed
+
+      // Busca no Hive
+      const searchHive = async () => {
+        try {
+          const hiveAuth = new HiveAuth();
+          const posts = await hiveAuth.getUserPosts(HIVE_USERNAME, 100 );
+
+          if (!isOpenRef.current) {
             setQueriedSections([]);
+            return;
           }
+
+          const photos: Photo[] = [];
+          posts.forEach((post: any) => {
+            const json = JSON.parse(post.json_metadata);
+            if (json.image) {
+              const matchesQuery = post.title.toLowerCase().
+                includes(queryDebounced) ||
+                (json.tags && json.tags.some((tag: string) => tag.
+                  toLowerCase().includes(queryDebounced)));
+
+              if (matchesQuery) {
+                json.image.forEach((url: string) => {
+                  const now = new Date();
+                  photos.push({
+                    id: `${post.id}-${url}`,
+                    url: url,
+                    title: post.title,
+                    createdAt: new Date(post.created),
+                    updatedAt: new Date(post.last_update),
+                    blurData: '',
+                    tags: json.tags || [],
+                    takenAt: now,
+                    takenAtNaive: now.toISOString(),
+                    takenAtNaiveFormatted: now.toLocaleDateString(),
+                    extension: url.split('.').pop() || '',
+                    aspectRatio: 1,
+                    camera: null // Adicionando a propriedade obrigatória
+                  });
+                });
+              }
+            }
+          });
+
+          // Adiciona a seção de fotos do Hive nos resultados
+          setQueriedSections(prev => {
+            const hiveSections = photos.length > 0 ? [{
+              heading: 'Fotos do Hive',
+              accessory: <TbPhoto size={14} />,
+              items: photos.map(photo => ({
+                label: titleForPhoto(photo),
+                keywords: getKeywordsForPhoto(photo),
+                annotation: <PhotoDate {...{ photo, timezone: undefined }} />,
+                accessory: <PhotoSmall photo={photo} />,
+                path: pathForPhoto({ photo }),
+              })),
+            }] : [];
+
+            return [...hiveSections, ...prev];
+          });
+        } catch (error) {
+          console.error('Erro ao buscar no Hive:', error);
+        } finally {
           setIsLoading(false);
-        })
-        .catch(e => {
-          console.error(e);
-          setQueriedSections([]);
-          setIsLoading(false);
-        });
+        }
+      };
+
+      // Executa a busca
+      searchHive();
+    } else if (queryLive === '') {
+      setQueriedSections([]);
+      setIsLoading(false);
     }
-  }, [queryDebounced, isPending]);
+  }, [queryDebounced, isPending, queryLive]);
 
   useEffect(() => {
     if (queryLive === '') {
@@ -227,7 +299,7 @@ export default function CommandKClient({
 
   const tagsIncludingHidden = useMemo(() =>
     addHiddenToTags(tags, hiddenPhotosCount)
-  , [tags, hiddenPhotosCount]);
+    , [tags, hiddenPhotosCount]);
 
   const SECTION_TAGS: CommandKSection = {
     heading: 'Tags',
@@ -326,72 +398,13 @@ export default function CommandKClient({
     items: pagesItems,
   };
 
-  const adminSection: CommandKSection = {
-    heading: 'Admin',
-    accessory: <BiSolidUser size={15} className="translate-x-[-1px]" />,
-    items: isUserSignedIn
-      ? ([{
-        label: 'Manage Photos',
-        annotation: <BiLockAlt />,
-        path: PATH_ADMIN_PHOTOS,
-      }, {
-        label: 'Manage Uploads',
-        annotation: <BiLockAlt />,
-        path: PATH_ADMIN_UPLOADS,
-      }, {
-        label: 'Manage Tags',
-        annotation: <BiLockAlt />,
-        path: PATH_ADMIN_TAGS,
-      }, {
-        label: 'App Config',
-        annotation: <BiLockAlt />,
-        path: PATH_ADMIN_CONFIGURATION,
-      }, {
-        label: <span className="flex items-center gap-3">
-          App Insights
-          {insightIndicatorStatus && <FaCircle
-            size={8}
-            className={clsx(
-              insightIndicatorStatus === 'blue'
-                ? 'text-blue-500'
-                : 'text-amber-500',
-            )}
-          />}
-        </span>,
-        keywords: ['app insights'],
-        annotation: <BiLockAlt />,
-        path: PATH_ADMIN_INSIGHTS,
-      }, {
-        label: selectedPhotoIds === undefined
-          ? 'Select Multiple Photos'
-          : 'Exit Select Multiple Photos',
-        annotation: <BiLockAlt />,
-        path: selectedPhotoIds === undefined
-          ? PATH_GRID_INFERRED
-          : undefined,
-        action: selectedPhotoIds === undefined
-          ? () => setSelectedPhotoIds?.([])
-          : () => setSelectedPhotoIds?.(undefined),
-      }] as CommandKItem[])
-        .concat(showDebugTools
-          ? [{
-            label: 'Baseline Overview',
-            path: PATH_ADMIN_BASELINE,
-          }, {
-            label: 'Components Overview',
-            path: PATH_ADMIN_COMPONENTS,
-          }]
-          : [])
-        .concat({
-          label: 'Sign Out',
-          action: () => {
-            signOutAndRedirectAction().then(() => setUserEmail?.(undefined));
-          },
-        })
-      : [{
-        label: 'Sign In',
-        path: PATH_SIGN_IN,
-      }],
+  const hiveSection: CommandKSection = {
+    heading: 'Hive Content',
+    accessory: <TbPhoto size={14} />,
+    items: [{
+      label: `Photos from @${HIVE_USERNAME}`,
+      path: PATH_GRID_INFERRED,
+    }],
   };
 
   return (
@@ -403,7 +416,7 @@ export default function CommandKClient({
         return (
           value.toLocaleLowerCase().includes(searchFormatted) ||
           keywords?.some(keyword => keyword.includes(searchFormatted))
-        ) ? 1 : 0 ;
+        ) ? 1 : 0;
       }}
       loop
     >
@@ -453,7 +466,7 @@ export default function CommandKClient({
               .concat(SECTION_TAGS)
               .concat(serverSections)
               .concat(sectionPages)
-              .concat(adminSection)
+              .concat(hiveSection)
               .concat(clientSections)
               .filter(({ items }) => items.length > 0)
               .map(({ heading, accessory, items }) =>
