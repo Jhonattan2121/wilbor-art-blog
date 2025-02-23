@@ -1,6 +1,7 @@
 'use client';
 
 import { PATH_FEED_INFERRED } from '@/app/paths';
+import { Photo } from '../../app/grid/types';
 import InfinitePhotoScroll from './InfinitePhotoScroll';
 import PhotosLarge from './PhotosLarge';
 
@@ -20,9 +21,9 @@ export default function PhotosLargeInfinite({
     >
       {({ photos, onLastPhotoVisible, revalidatePhoto }) =>
         <PhotosLarge
-          photos={photos}
           onLastPhotoVisible={onLastPhotoVisible}
           revalidatePhoto={revalidatePhoto}
+          photos={photos as Photo[]}
         />}
     </InfinitePhotoScroll>
   );
