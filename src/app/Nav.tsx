@@ -1,9 +1,6 @@
 'use client';
 
-import { clsx } from 'clsx/lite';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import SiteGrid from '../components/SiteGrid';
+import AdminAppMenu from '@/admin/AdminAppMenu';
 import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
@@ -13,14 +10,17 @@ import {
   isPathProtected,
   isPathSignIn,
 } from '@/app/paths';
-import AnimateItems from '../components/AnimateItems';
 import { useAppState } from '@/state/AppState';
+import { clsx } from 'clsx/lite';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import AnimateItems from '../components/AnimateItems';
+import SiteGrid from '../components/SiteGrid';
 import {
   GRID_HOMEPAGE_ENABLED,
   HAS_DEFINED_SITE_DESCRIPTION,
   SITE_DESCRIPTION,
 } from './config';
-import AdminAppMenu from '@/admin/AdminAppMenu';
 
 const NAV_HEIGHT_CLASS = HAS_DEFINED_SITE_DESCRIPTION
   ? 'min-h-[4rem] sm:min-h-[5rem]'
@@ -29,7 +29,7 @@ const NAV_HEIGHT_CLASS = HAS_DEFINED_SITE_DESCRIPTION
 export default function Nav({
   siteDomainOrTitle,
 }: {
-  siteDomainOrTitle: string;
+  siteDomainOrTitle: React.ReactNode;
 }) {
   const pathname = usePathname();
 
@@ -38,12 +38,12 @@ export default function Nav({
   const showNav = !isPathSignIn(pathname);
 
   const renderLink = (
-    text: string,
+    content: React.ReactNode,
     linkOrAction: string | (() => void),
   ) =>
     typeof linkOrAction === 'string'
-      ? <Link href={linkOrAction}>{text}</Link>
-      : <button onClick={linkOrAction}>{text}</button>;
+      ? <Link href={linkOrAction} className="inline-block">{content}</Link>
+      : <button onClick={linkOrAction}>{content}</button>;
 
   const switcherSelectionForPath = (): SwitcherSelection | undefined => {
     if (pathname === PATH_ROOT) {
