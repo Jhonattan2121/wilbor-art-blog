@@ -167,12 +167,12 @@ export default async function PhotoPage({ params }: Props) {
 
 
           <div className="px-6 pb-6">
-            {/* <div className="prose prose-lg dark:prose-invert max-w-none mb-6">
+            <div className="prose prose-lg dark:prose-invert max-w-none mb-6">
               {targetPhoto.content}
-            </div> */}
+            </div>
 
 
-            {targetPhoto.tags.length > 0 && (
+            {/* {targetPhoto.tags.length > 0 && (
               <div>
                 <div className="flex flex-wrap gap-2">
                   {targetPhoto.tags.map(tag => (
@@ -190,7 +190,7 @@ export default async function PhotoPage({ params }: Props) {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </article>
