@@ -1,15 +1,16 @@
 'use client';
 
-import { Tags } from '@/tag';
-import { Photo } from '.';
+import { PATH_GRID_INFERRED } from '@/app/paths';
 import { Cameras } from '@/camera';
 import { FilmSimulations } from '@/simulation';
-import { PATH_GRID_INFERRED } from '@/app/paths';
-import PhotoGridSidebar from './PhotoGridSidebar';
-import PhotoGridContainer from './PhotoGridContainer';
-import { useEffect } from 'react';
 import { useAppState } from '@/state/AppState';
+import { Tags } from '@/tag';
 import clsx from 'clsx/lite';
+import { useEffect } from 'react';
+import { Photo } from '../../app/grid/types';
+import { IpfsImage } from '../../components/IpfsImage';
+import PhotoGridContainer from './PhotoGridContainer';
+import PhotoGridSidebar from './PhotoGridSidebar';
 
 export default function PhotoGridPage({
   photos,
@@ -45,7 +46,25 @@ export default function PhotoGridPage({
   return (
     <PhotoGridContainer
       cacheKey={`page-${PATH_GRID_INFERRED}`}
-      photos={photos}
+      photos={photos.map(photo => ({
+        ...photo,
+        component: photo.ipfsHash ? (
+          <IpfsImage
+            ipfsHash={photo.ipfsHash}
+            alt={photo.title}
+            className="photo-image"
+            pinataToken={photo.url.includes('pinataGatewayToken=') 
+              ? photo.url.split('pinataGatewayToken=')[1] 
+              : undefined}
+          />
+        ) : (
+          <img
+            src={photo.url}
+            alt={photo.title}
+            className="photo-image"
+          />
+        ),
+      }))}
       count={photosCount}
       sidebar={
         <div
@@ -59,12 +78,11 @@ export default function PhotoGridPage({
             'max-h-full overflow-y-auto [scrollbar-width:none]',
             'py-4',
           )}>
-            <PhotoGridSidebar {...{
-              tags,
-              cameras,
-              simulations,
-              photosCount,
-            }}
+            <PhotoGridSidebar
+              tags={tags}
+              cameras={cameras}
+              simulations={simulations}
+              photosCount={photosCount}
             />
           </div>
           {renderGuard('bottom')}
