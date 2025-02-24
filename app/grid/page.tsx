@@ -10,16 +10,19 @@ import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { Cameras, FilmSimulations, Photo, Tag, Tags } from './types';
 
-// export const dynamic = 'force-static';
-export const revalidate = 3600;
+export const revalidate = 0; 
+export const dynamic = 'force-dynamic'; 
+
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
 const getPhotosCached = cache(async () => {
+  console.log('HIVE_USERNAME:', HIVE_USERNAME); // Verificar se está vazio
   const hiveAuth = new HiveAuth();
   const posts = await hiveAuth.getUserPosts(
     HIVE_USERNAME,
     INFINITE_SCROLL_GRID_INITIAL,
   );
+  console.log('Posts recebidos:', posts?.length); 
   const photos: Photo[] = [];
 
   posts?.forEach((post: any) => {
