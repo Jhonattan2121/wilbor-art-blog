@@ -63,7 +63,7 @@ export class HiveAuth {
     }
   }
 
-  async getUserPosts(username: string, limit = 100): Promise<any[]> {
+  async getUserPosts(username: string, limit = 20): Promise<any[]> {
     try {
       console.log(`Fetching posts for user: ${username}`);
 
