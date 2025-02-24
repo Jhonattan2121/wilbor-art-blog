@@ -4,14 +4,13 @@ import {
   generateOgImageMetaForPhotos,
 } from '@/photo';
 import PhotoGridPage from '@/photo/PhotoGridPage';
-import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { FujifilmSimulation } from '@/platforms/fujifilm';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { Cameras, FilmSimulations, Photo, Tag, Tags } from './types';
 
-export const revalidate = 0; 
-export const dynamic = 'force-dynamic'; 
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
@@ -22,7 +21,7 @@ const getPhotosCached = cache(async () => {
     HIVE_USERNAME,
     INFINITE_SCROLL_GRID_INITIAL,
   );
-  console.log('Posts recebidos:', posts?.length); 
+  console.log('Posts recebidos:', posts?.length);
   const photos: Photo[] = [];
 
   posts?.forEach((post: any) => {
@@ -127,10 +126,9 @@ export default async function GridPage() {
     }, []);
 
   return (
-    photos.length > 0
-      ? <PhotoGridPage
-        {...{ photos, photosCount, tags, cameras, simulations }}
-      />
-      : <PhotosEmptyState />
+    <PhotoGridPage
+      {...{ photos, photosCount, tags, cameras, simulations }}
+    />
+
   );
 }
