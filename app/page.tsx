@@ -14,8 +14,8 @@ import { Photo } from './grid/types';
 
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
-export const dynamic = 'force-static';
-export const maxDuration = 60;
+export const revalidate = 0; 
+export const dynamic = 'force-dynamic'; 
 
 const getPhotosCached = cache(async () => {
   const hiveAuth = new HiveAuth();
