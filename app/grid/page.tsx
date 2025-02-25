@@ -1,7 +1,6 @@
 import { HiveAuth } from '@/auth/hive/HiveAuth';
 import {
-  INFINITE_SCROLL_GRID_INITIAL,
-  generateOgImageMetaForPhotos,
+  generateOgImageMetaForPhotos
 } from '@/photo';
 import PhotoGridPage from '@/photo/PhotoGridPage';
 import { FujifilmSimulation } from '@/platforms/fujifilm';
@@ -15,47 +14,68 @@ export const dynamic = 'force-dynamic';
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
 const getPhotosCached = cache(async () => {
-  console.log('HIVE_USERNAME:', HIVE_USERNAME); 
+  if (!HIVE_USERNAME) {
+    console.error('HIVE_USERNAME não configurado');
+    return [];
+  }
+
+  console.log('Buscando posts para:', HIVE_USERNAME);
   const hiveAuth = new HiveAuth();
-  const posts = await hiveAuth.getUserPosts(
-    HIVE_USERNAME,
-    INFINITE_SCROLL_GRID_INITIAL,
-  );
-  console.log('Posts recebidos:', posts?.length);
-  const photos: Photo[] = [];
+  const allPosts = [];
 
-  posts.forEach((post: any) => {
-    try {
-      const json = JSON.parse(post.json_metadata || '{}');
-      const images = json.image || [];
+  try {
+    const firstBatch = await hiveAuth.getUserPosts(HIVE_USERNAME, 20);
+    console.log('Primeira busca:', firstBatch?.length || 0, 'posts');
+    allPosts.push(...(firstBatch || []));
 
-      images.forEach((url: string) => {
-        if (!url) return;
-
-        photos.push({
-          id: `${post.id}-${url}`,
-          url: url,
-          title: post.title || '',
-          createdAt: new Date(post.created),
-          updatedAt: new Date(post.last_update),
-          blurData: '',
-          tags: json.tags || [],
-          takenAt: new Date(),
-          takenAtNaive: new Date().toISOString(),
-          takenAtNaiveFormatted: new Date().toLocaleDateString(),
-          extension: url.split('.').pop() || '',
-          aspectRatio: 1,
-          camera: null,
-          simulation: null
-        });
-      });
-
-    } catch (error) {
-      console.error('Error processing post:', error);
+    if (firstBatch?.length === 20) {
+      const lastPermlink = firstBatch[firstBatch.length - 1].permlink;
+      const secondBatch = await hiveAuth.getUserPosts(lastPermlink, 20);
+      console.log('Segunda busca:', secondBatch?.length || 0, 'posts');
+      allPosts.push(...(secondBatch || []));
+      console.log('Segunda busca:', secondBatch?.length || 0, 'posts');
+      allPosts.push(...(secondBatch || []));
     }
-  });
 
-  return photos;
+    console.log('Total de posts encontrados:', allPosts.length);
+    const photos: Photo[] = [];
+
+    allPosts.forEach((post: any) => {
+      try {
+        const json = JSON.parse(post.json_metadata || '{}');
+        const images = json.image || [];
+
+        images.forEach((url: string) => {
+          if (!url) return;
+
+          photos.push({
+            id: `${post.id}-${url}`,
+            url: url,
+            title: post.title || '',
+            createdAt: new Date(post.created),
+            updatedAt: new Date(post.last_update),
+            blurData: '',
+            tags: json.tags || [],
+            takenAt: new Date(),
+            takenAtNaive: new Date().toISOString(),
+            takenAtNaiveFormatted: new Date().toLocaleDateString(),
+            extension: url.split('.').pop() || '',
+            aspectRatio: 1,
+            camera: null,
+            simulation: null
+          });
+        });
+
+      } catch (error) {
+        console.error('Error processing post:', error);
+      }
+    });
+
+    return photos;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
 });
 
 export async function generateMetadata(): Promise<Metadata> {
