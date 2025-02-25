@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
 
 const getPhotosCached = cache(async () => {
-  console.log('HIVE_USERNAME:', HIVE_USERNAME); // Verificar se está vazio
+  console.log('HIVE_USERNAME:', HIVE_USERNAME); 
   const hiveAuth = new HiveAuth();
   const posts = await hiveAuth.getUserPosts(
     HIVE_USERNAME,
@@ -24,34 +24,32 @@ const getPhotosCached = cache(async () => {
   console.log('Posts recebidos:', posts?.length);
   const photos: Photo[] = [];
 
-  posts?.forEach((post: any) => {
-    if (!post) return;
-
+  posts.forEach((post: any) => {
     try {
       const json = JSON.parse(post.json_metadata || '{}');
-      if (json.image && Array.isArray(json.image)) {
-        json.image.forEach((url: string) => {
-          if (!url) return;
+      const images = json.image || [];
 
-          const now = new Date();
-          photos.push({
-            id: `${post.id}-${url}`,
-            url: json.url || url,
-            title: post.title || '',
-            createdAt: new Date(post.created || now),
-            updatedAt: new Date(post.last_update || now),
-            blurData: '',
-            tags: Array.isArray(json.tags) ? json.tags : [],
-            takenAt: now,
-            takenAtNaive: now.toISOString(),
-            takenAtNaiveFormatted: now.toLocaleDateString(),
-            extension: url.split('.').pop() || '',
-            aspectRatio: 1,
-            camera: null,
-            simulation: null,
-          });
+      images.forEach((url: string) => {
+        if (!url) return;
+
+        photos.push({
+          id: `${post.id}-${url}`,
+          url: url,
+          title: post.title || '',
+          createdAt: new Date(post.created),
+          updatedAt: new Date(post.last_update),
+          blurData: '',
+          tags: json.tags || [],
+          takenAt: new Date(),
+          takenAtNaive: new Date().toISOString(),
+          takenAtNaiveFormatted: new Date().toLocaleDateString(),
+          extension: url.split('.').pop() || '',
+          aspectRatio: 1,
+          camera: null,
+          simulation: null
         });
-      }
+      });
+
     } catch (error) {
       console.error('Error processing post:', error);
     }
