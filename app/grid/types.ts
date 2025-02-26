@@ -1,23 +1,36 @@
 import { Camera } from '@/camera';
 import { FujifilmSimulation } from '@/platforms/fujifilm';
 
-export interface Photo {
-  camera: Camera | null;
-  simulation?: FujifilmSimulation | null;
+export interface BaseMedia {
   id: string;
   url: string;
-  title: string;
+  title?: string;
+  camera: Camera | null;
+  simulation: FujifilmSimulation | null;
   createdAt: Date;
   updatedAt: Date;
-  blurData: string;
-  tags: string[];
   takenAt: Date;
   takenAtNaive: string;
   takenAtNaiveFormatted: string;
-  extension: string;
   aspectRatio: number;
-  ipfsHash?: string | null ;
+  blurData: string;
+  tags: string[];
+  ipfsHash?: string | null;
 }
+
+export interface VideoMedia extends BaseMedia {
+  type: 'video';
+  extension: 'mp4' | 'webm' | 'mov';
+  duration: number;
+  thumbnailUrl: string;
+}
+
+export interface ImageMedia extends BaseMedia {
+  type: 'image';
+  extension: string;
+}
+
+export type Photo = VideoMedia | ImageMedia;
 
 export interface Tag {
   tag: string;
