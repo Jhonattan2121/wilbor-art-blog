@@ -6,12 +6,19 @@ import PhotoGridPage from '@/photo/PhotoGridPage';
 import { FujifilmSimulation } from '@/platforms/fujifilm';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
+import { MarkdownRenderer } from '../../utils/MarkdownRenderer';
 import { Cameras, FilmSimulations, Photo, Tag, Tags } from './types';
-
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
 
 const HIVE_USERNAME = process.env.NEXT_PUBLIC_HIVE_USERNAME || '';
+
+const IPFS_GATEWAYS = [
+  'ipfs.skatehive.app/ipfs/',
+  'ipfs.io/ipfs/',
+  'gateway.ipfs.io/ipfs/',
+  'cloudflare-ipfs.com/ipfs/'
+];
 
 const getPhotosCached = cache(async () => {
   if (!HIVE_USERNAME) {
@@ -22,6 +29,7 @@ const getPhotosCached = cache(async () => {
   console.log('Buscando posts para:', HIVE_USERNAME);
   const hiveAuth = new HiveAuth();
   const allPosts = [];
+  const uniqueMediaMap = new Map();
 
   try {
     const firstBatch = await hiveAuth.getUserPosts(HIVE_USERNAME, 20);
@@ -33,45 +41,73 @@ const getPhotosCached = cache(async () => {
       const secondBatch = await hiveAuth.getUserPosts(lastPermlink, 20);
       console.log('Segunda busca:', secondBatch?.length || 0, 'posts');
       allPosts.push(...(secondBatch || []));
-      console.log('Segunda busca:', secondBatch?.length || 0, 'posts');
-      allPosts.push(...(secondBatch || []));
     }
 
     console.log('Total de posts encontrados:', allPosts.length);
-    const photos: Photo[] = [];
 
-    allPosts.forEach((post: any) => {
+    allPosts.forEach((post) => {
       try {
-        const json = JSON.parse(post.json_metadata || '{}');
-        const images = json.image || [];
+        const medias = MarkdownRenderer.extractImagesFromMarkdown(post.body);
 
-        images.forEach((url: string) => {
-          if (!url) return;
+        medias.forEach((media) => {
+          const key = media.url;
+          if (!uniqueMediaMap.has(key)) {
+            const isIpfs = IPFS_GATEWAYS.some(gateway =>
+              media.url.includes(gateway) ||
+              MarkdownRenderer.getIpfsHash(media.url)
+            );
 
-          photos.push({
-            id: `${post.id}-${url}`,
-            url: url,
-            title: post.title || '',
-            createdAt: new Date(post.created),
-            updatedAt: new Date(post.last_update),
-            blurData: '',
-            tags: json.tags || [],
-            takenAt: new Date(),
-            takenAtNaive: new Date().toISOString(),
-            takenAtNaiveFormatted: new Date().toLocaleDateString(),
-            extension: url.split('.').pop() || '',
-            aspectRatio: 1,
-            camera: null,
-            simulation: null
-          });
+            console.log('Verificando mídia:', {
+              url: media.url,
+              isIpfs,
+              type: media.type,
+              ipfsHash: MarkdownRenderer.getIpfsHash(media.url)
+            });
+
+            uniqueMediaMap.set(key, {
+              id: `${post.id}-${media.url.split('/').pop()?.split('?')[0]}`,
+              url: media.url,
+              type: media.url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
+                media.url.includes('type=video') ||
+                media.type === 'video' ? 'video' : 'image',
+              ipfsHash: MarkdownRenderer.getIpfsHash(media.url),
+              title: post.title || '',
+              createdAt: new Date(post.created),
+              updatedAt: new Date(post.last_update),
+              blurData: '',
+              tags: Array.isArray(JSON.parse(post.json_metadata).tags)
+                ? JSON.parse(post.json_metadata).tags
+                : [],
+              takenAt: new Date(),
+              takenAtNaive: new Date().toISOString(),
+              takenAtNaiveFormatted: new Date().toLocaleDateString(),
+              extension: media.url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
+                media.url.includes('type=video') ||
+                media.type === 'video' ? 'video' : 'image',
+              aspectRatio: media.url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
+                media.url.includes('type=video') ||
+                media.type === 'video' ? 16 / 9 : 1,
+              camera: null,
+              simulation: null,
+            });
+
+            console.log('Mídia processada:', {
+              url: media.url,
+              type: media.url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
+                media.url.includes('type=video') ||
+                media.type === 'video' ? 'video' : 'image',
+              title: post.title
+            });
+          }
         });
 
+        console.log('Mídias processadas:', Array.from(uniqueMediaMap.values()));
       } catch (error) {
-        console.error('Error processing post:', error);
+        console.error('Erro processando post:', error);
       }
     });
 
-    return photos;
+    return Array.from(uniqueMediaMap.values()) as Photo[];
   } catch (error) {
     console.error('Error fetching posts:', error);
     return [];
@@ -85,11 +121,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GridPage() {
-  const photos = await getPhotosCached();
+  const photos = await getPhotosCached() || [];
   const photosCount = photos.length;
 
   const tags: Tags = photos.reduce<Tag[]>((acc, photo) => {
-    photo.tags.forEach(tag => {
+    photo.tags?.forEach((tag: string) => {
       const existingTag = acc.find(t => t.tag === tag);
       if (existingTag) {
         existingTag.count++;
@@ -116,37 +152,41 @@ export default async function GridPage() {
     return acc;
   }, []);
 
-  const simulations: FilmSimulations =
-    photos.reduce<FilmSimulations>((acc, photo) => {
-      if (photo?.simulation) {
-        try {
-          const existingSimulation = acc.find(
-            s => s.simulation === photo.simulation
-          );
+  const simulations: FilmSimulations = photos.reduce<FilmSimulations>((acc, photo) => {
+    if (photo?.simulation) {
+      try {
+        const existingSimulation = acc.find(
+          s => s.simulation === photo.simulation,
+        );
 
-          if (existingSimulation) {
-            existingSimulation.count++;
-          } else {
-            const simulation = photo.simulation as FujifilmSimulation;
-            if (simulation) {
-              acc.push({
-                simulation,
-                simulationKey: simulation.toString(),
-                count: 1,
-              });
-            }
+        if (existingSimulation) {
+          existingSimulation.count++;
+        } else {
+          const simulation = photo.simulation as FujifilmSimulation;
+          if (simulation) {
+            acc.push({
+              simulation,
+              simulationKey: simulation.toString(),
+              count: 1,
+            });
           }
-        } catch (error) {
-          console.error('Error processing simulation:', error);
         }
+      } catch (error) {
+        console.error('Error processing simulation:', error);
       }
-      return acc;
-    }, []);
+    }
+    return acc;
+  }, []);
 
   return (
     <PhotoGridPage
-      {...{ photos, photosCount, tags, cameras, simulations }}
+      {...{
+        photos,
+        photosCount,
+        tags,
+        cameras,
+        simulations,
+      }}
     />
-
   );
 }
