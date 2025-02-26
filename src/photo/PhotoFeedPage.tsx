@@ -1,34 +1,50 @@
 import {
   INFINITE_SCROLL_FEED_INITIAL,
   INFINITE_SCROLL_FEED_MULTIPLE,
-  Photo as PhotoIndex,
 } from '.';
-import { Photo as GridPhoto } from '../../app/grid/types';
+import { ImageMedia, Photo, VideoMedia } from '../../app/grid/types';
 import PhotosLarge from './PhotosLarge';
 import PhotosLargeInfinite from './PhotosLargeInfinite';
 
-const mapToGridPhoto = (photo: PhotoIndex): GridPhoto => ({
-  ...photo,
-  camera: null,
-  title: photo.title || '',
-  createdAt: photo.createdAt || new Date(),
-  updatedAt: photo.updatedAt || new Date(),
-  takenAt: photo.takenAt || new Date(),
-  takenAtNaive: photo.takenAtNaive || new Date().toISOString(),
-  takenAtNaiveFormatted: photo.takenAtNaiveFormatted ||
-    new Date().toLocaleDateString(),
-  extension: photo.extension || '',
-  aspectRatio: photo.aspectRatio || 1,
-  blurData: photo.blurData || '',
-  tags: photo.tags || [],
-  simulation: null
-});
+const mapToGridPhoto = (photo: Photo): Photo => {
+  const baseProps = {
+    ...photo,
+    camera: photo.camera || null,
+    title: photo.title || '',
+    createdAt: photo.createdAt || new Date(),
+    updatedAt: photo.updatedAt || new Date(),
+    takenAt: photo.takenAt || new Date(),
+    takenAtNaive: photo.takenAtNaive || new Date().toISOString(),
+    takenAtNaiveFormatted: photo.takenAtNaiveFormatted ||
+      new Date().toLocaleDateString(),
+    aspectRatio: photo.aspectRatio || 1,
+    blurData: photo.blurData || '',
+    tags: photo.tags || [],
+    simulation: photo.simulation || null,
+  };
+
+  if (photo.type === 'video') {
+    return {
+      ...baseProps,
+      type: 'video',
+      extension: (photo as VideoMedia).extension || 'mp4',
+      duration: (photo as VideoMedia).duration || 0,
+      thumbnailUrl: (photo as VideoMedia).thumbnailUrl || '',
+    } as VideoMedia;
+  }
+
+  return {
+    ...baseProps,
+    type: 'image',
+    extension: (photo as ImageMedia).extension || '',
+  } as ImageMedia;
+};
 
 export default function PhotoFeedPage({
   photos,
   photosCount,
 }: {
-  photos: PhotoIndex[]
+  photos: Photo[]
   photosCount: number
 }) {
   const gridPhotos = photos.map(mapToGridPhoto);
