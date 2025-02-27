@@ -10,7 +10,7 @@ const mapToGridPhoto = (photo: Photo): Photo => {
   const baseProps = {
     ...photo,
     camera: photo.camera || null,
-    title: photo.title || '',
+    title: "photo.title || ''",
     createdAt: photo.createdAt || new Date(),
     updatedAt: photo.updatedAt || new Date(),
     takenAt: photo.takenAt || new Date(),

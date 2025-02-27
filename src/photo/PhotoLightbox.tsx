@@ -1,7 +1,8 @@
 import { clsx } from 'clsx/lite';
-import { Photo, PhotoSetCategory } from '.';
-import PhotoGrid from './PhotoGrid';
 import Link from 'next/link';
+import { PhotoSetCategory } from '.';
+import { Photo } from '../../app/grid/types';
+import PhotoGrid from './PhotoGrid';
 
 export default function PhotoLightbox({
   count,
@@ -28,9 +29,9 @@ export default function PhotoLightbox({
       'border-main p-1.5 lg:p-2 rounded-md',
       'bg-gray-50 dark:bg-gray-950',
     )}>
-      <PhotoGrid
+     <PhotoGrid
         {...categories}
-        photos={photos.slice(0, photoCountToShow)}
+        photos={photos.slice(0, photoCountToShow) as Photo[]}
         animate={false}
         additionalTile={showOverageTile
           ? <Link

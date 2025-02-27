@@ -1,16 +1,38 @@
-import AnimateItems from '@/components/AnimateItems';
-import { Photo, PhotoDateRange, PhotoSetCategory } from '.';
-import PhotoLarge from './PhotoLarge';
-import SiteGrid from '@/components/SiteGrid';
-import PhotoGrid from './PhotoGrid';
-import TagHeader from '@/tag/TagHeader';
 import CameraHeader from '@/camera/CameraHeader';
+import AnimateItems from '@/components/AnimateItems';
+import SiteGrid from '@/components/SiteGrid';
+import FocalLengthHeader from '@/focal/FocalLengthHeader';
+import { FujifilmSimulation } from '@/platforms/fujifilm';
 import FilmSimulationHeader from '@/simulation/FilmSimulationHeader';
 import { TAG_HIDDEN } from '@/tag';
 import HiddenHeader from '@/tag/HiddenHeader';
-import FocalLengthHeader from '@/focal/FocalLengthHeader';
-import PhotoHeader from './PhotoHeader';
+import TagHeader from '@/tag/TagHeader';
 import { JSX } from 'react';
+import { PhotoDateRange, PhotoSetCategory } from '.';
+import { ImageMedia, Photo, VideoMedia } from '../../app/grid/types';
+import PhotoGrid from './PhotoGrid';
+import PhotoHeader from './PhotoHeader';
+import PhotoLarge from './PhotoLarge';
+
+function adaptPhoto(photo: Photo) {
+  if (photo.type === 'video') {
+    return {
+      ...photo,
+      camera: photo.camera ?? null,
+      simulation: photo.simulation as FujifilmSimulation | null ?? null,
+      blurData: photo.blurData || '',
+      type: 'video' as const,
+    } satisfies VideoMedia;
+  }
+  
+  return {
+    ...photo,
+    type: 'image' as const,
+    camera: photo.camera ?? null,
+    simulation: photo.simulation as FujifilmSimulation | null ?? null,
+    blurData: photo.blurData || '',
+  } satisfies ImageMedia;
+}
 
 export default function PhotoDetailPage({
   photo,
@@ -117,8 +139,13 @@ export default function PhotoDetailPage({
       <SiteGrid
         sideFirstOnMobile
         contentMain={<PhotoGrid
-          photos={photosGrid ?? photos}
-          selectedPhoto={photo}
+          photos={
+            photosGrid 
+              ? photosGrid.map(adaptPhoto) 
+              : photos.map(adaptPhoto)
+          }
+          selectedPhoto={photo ? adaptPhoto(photo) : undefined}
+
           tag={tag}
           camera={camera}
           simulation={simulation}
