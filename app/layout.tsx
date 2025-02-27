@@ -1,4 +1,3 @@
-import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
 import CommandK from '@/app/CommandK';
 import {
   BASE_URL,
@@ -91,7 +90,6 @@ export default function RootLayout({
                 <div className="flex flex-col items-center">
                 </div>
                 <Nav siteDomainOrTitle="Wilbor Art" />
-                <AdminBatchEditPanel />
                 <div className={clsx(
                   'min-h-[16rem] sm:min-h-[30rem]',
                   'mb-12 w-full',

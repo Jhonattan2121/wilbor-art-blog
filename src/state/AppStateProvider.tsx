@@ -1,22 +1,20 @@
 'use client';
 
-import { useState, useEffect, ReactNode, useCallback } from 'react';
-import { AppStateContext } from './AppState';
-import { AnimationConfig } from '@/components/AnimateItems';
-import usePathnames from '@/utility/usePathnames';
-import { getAuthAction } from '@/auth/actions';
-import useSWR from 'swr';
 import {
   HIGH_DENSITY_GRID,
   IS_DEVELOPMENT,
   MATTE_PHOTOS,
   SHOW_ZOOM_CONTROLS,
 } from '@/app/config';
+import { getAuthAction } from '@/auth/actions';
+import { AnimationConfig } from '@/components/AnimateItems';
 import { getPhotosHiddenMetaCachedAction } from '@/photo/actions';
 import { ShareModalProps } from '@/share';
 import { storeTimezoneCookie } from '@/utility/timezone';
-import { getShouldShowInsightsIndicatorAction } from '@/admin/insights/actions';
-import { InsightIndicatorStatus } from '@/admin/insights';
+import usePathnames from '@/utility/usePathnames';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { AppStateContext } from './AppState';
 
 export default function AppStateProvider({
   children,
@@ -50,8 +48,6 @@ export default function AppStateProvider({
     useState<string[] | undefined>();
   const [isPerformingSelectEdit, setIsPerformingSelectEdit] =
     useState(false);
-  const [insightIndicatorStatus, setInsightIndicatorStatus] =
-    useState<InsightIndicatorStatus>();
   // DEBUG
   const [isGridHighDensity, setIsGridHighDensity] =
     useState(HIGH_DENSITY_GRID);
@@ -80,8 +76,6 @@ export default function AppStateProvider({
       const timeout = setTimeout(() =>{
         getPhotosHiddenMetaCachedAction()
           .then(({ count }) => setHiddenPhotosCount(count));
-        getShouldShowInsightsIndicatorAction()
-          .then(setInsightIndicatorStatus);
       }, 100);
       return () => clearTimeout(timeout);
     } else {
@@ -128,8 +122,6 @@ export default function AppStateProvider({
         setSelectedPhotoIds,
         isPerformingSelectEdit,
         setIsPerformingSelectEdit,
-        insightIndicatorStatus,
-        setInsightIndicatorStatus,
         // DEBUG
         isGridHighDensity,
         setIsGridHighDensity,
