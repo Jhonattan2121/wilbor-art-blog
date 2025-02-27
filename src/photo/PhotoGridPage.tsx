@@ -8,7 +8,6 @@ import { Tags } from '@/tag';
 import clsx from 'clsx/lite';
 import { useEffect } from 'react';
 import { Photo } from '../../app/grid/types';
-import { IpfsImage } from '../../components/IpfsImage';
 import PhotoGridContainer from './PhotoGridContainer';
 import PhotoGridSidebar from './PhotoGridSidebar';
 
@@ -48,22 +47,7 @@ export default function PhotoGridPage({
       cacheKey={`page-${PATH_GRID_INFERRED}`}
       photos={photos.map(photo => ({
         ...photo,
-        component: photo.ipfsHash ? (
-          <IpfsImage
-            ipfsHash={photo.ipfsHash}
-            alt={photo.title}
-            className="photo-image"
-            pinataToken={photo.url.includes('pinataGatewayToken=') 
-              ? photo.url.split('pinataGatewayToken=')[1] 
-              : undefined}
-          />
-        ) : (
-          <img
-            src={photo.url}
-            alt={photo.title}
-            className="photo-image"
-          />
-        ),
+      
       }))}
       count={photosCount}
       sidebar={

@@ -71,7 +71,7 @@ const getPhotosCached = cache(async () => {
                 media.url.includes('type=video') ||
                 media.type === 'video' ? 'video' : 'image',
               ipfsHash: MarkdownRenderer.getIpfsHash(media.url),
-              title: post.title || '',
+              title: "",
               createdAt: new Date(post.created),
               updatedAt: new Date(post.last_update),
               blurData: '',

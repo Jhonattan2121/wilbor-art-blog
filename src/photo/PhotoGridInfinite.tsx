@@ -1,9 +1,10 @@
 'use client';
 
+import { ComponentProps } from 'react';
 import { INFINITE_SCROLL_GRID_MULTIPLE } from '.';
+import { Photo } from '../../app/grid/types';
 import InfinitePhotoScroll from './InfinitePhotoScroll';
 import PhotoGrid from './PhotoGrid';
-import { ComponentProps } from 'react';
 
 export default function PhotoGridInfinite({
   cacheKey,
@@ -30,7 +31,7 @@ export default function PhotoGridInfinite({
     >
       {({ photos, onLastPhotoVisible }) =>
         <PhotoGrid {...{
-          photos,
+          photos: photos as Photo[],
           canStart,
           tag,
           camera,
