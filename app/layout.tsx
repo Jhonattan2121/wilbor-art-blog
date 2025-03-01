@@ -28,7 +28,7 @@ import { Metadata } from 'next/types';
 //import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
 //import ShareModals from '@/share/ShareModals';
 import Image from 'next/image';
-import baneWilbor from "../public/baner,wilbor.png";
+import BannerWilbor from "../public/wilborPhotos/bannerWilbor.png";
 import '../tailwind.css';
 
 export const metadata: Metadata = {
@@ -83,10 +83,10 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-            <div className="w-full bg-white dark:bg-black px-3 py-3">
+              <div className="w-full bg-white dark:bg-black px-3 py-3">
                 <div className="w-full max-w-[1280px] mx-auto flex justify-center">
                   <Image
-                    src={baneWilbor}
+                    src={BannerWilbor}
                     alt="Wilbor Art Logo"
                     className="h-24 sm:h-32 w-auto object-contain"
                   />
