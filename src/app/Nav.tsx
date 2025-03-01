@@ -7,8 +7,7 @@ import {
   isPathAdmin,
   isPathFeed,
   isPathGrid,
-  isPathProtected,
-  isPathSignIn,
+  isPathSignIn
 } from '@/app/paths';
 import { useAppState } from '@/state/AppState';
 import { clsx } from 'clsx/lite';
@@ -52,8 +51,6 @@ export default function Nav({
       return 'portifolio';
     } else if (isPathFeed(pathname)) {
       return 'feed';
-    } else if (isPathProtected(pathname)) {
-      return 'contact';
     }
   };
 
