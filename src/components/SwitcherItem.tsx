@@ -1,8 +1,20 @@
-import { clsx } from 'clsx/lite';
 import { SHOULD_PREFETCH_ALL_LINKS } from '@/app/config';
-import { JSX } from 'react';
-import Spinner from './Spinner';
+import { clsx } from 'clsx/lite';
 import LinkWithLoader from './LinkWithLoader';
+import Spinner from './Spinner';
+
+interface SwitcherItemProps {
+  icon: React.ReactElement;
+  title?: string;
+  href?: string;
+  className?: string;
+  onClick?: () => void;
+  active?: boolean;
+  noPadding?: boolean;
+  prefetch?: boolean;
+  target?: string;
+  rel?: string;
+}
 
 export default function SwitcherItem({
   icon,
@@ -13,16 +25,9 @@ export default function SwitcherItem({
   active,
   noPadding,
   prefetch = SHOULD_PREFETCH_ALL_LINKS,
-}: {
-  icon: JSX.Element
-  title?: string
-  href?: string
-  className?: string
-  onClick?: () => void
-  active?: boolean
-  noPadding?: boolean
-  prefetch?: boolean
-}) {
+  target,
+  rel,
+}: SwitcherItemProps) {
   const className = clsx(
     classNameProp,
     'py-0.5 px-1.5',
@@ -43,17 +48,33 @@ export default function SwitcherItem({
       {icon}
     </div>;
 
-  return (
-    href
-      ? <LinkWithLoader {...{
-        title,
-        href,
-        className,
-        prefetch,
-        loader: <Spinner />,
-      }}>
+  // For external links, use native 'a' tag
+  if (href?.startsWith('http')) {
+    return (
+      <a
+        href={href}
+        className={className}
+        target={target}
+        rel={rel}
+      >
         {renderIcon()}
-      </LinkWithLoader>
-      : <div {...{ title, onClick, className }}>{renderIcon()}</div>
+      </a>
+    );
+  }
+
+  return href ? (
+    <LinkWithLoader {...{
+      title,
+      href,
+      className,
+      prefetch,
+      loader: <Spinner />,
+      target,
+      rel,
+    }}>
+      {renderIcon()}
+    </LinkWithLoader>
+  ) : (
+    <div {...{ title, onClick, className }}>{renderIcon()}</div>
   );
 };

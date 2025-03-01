@@ -1,24 +1,32 @@
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
-import { clsx } from 'clsx/lite';
+import CommandK from '@/app/CommandK';
+//import { Analytics } from '@vercel/analytics/react';
+//import { SpeedInsights } from '@vercel/speed-insights/react';
+//import { clsx } from 'clsx/lite';
 import {
   BASE_URL,
   DEFAULT_THEME,
   SITE_DESCRIPTION,
-  SITE_DOMAIN_OR_TITLE,
-  SITE_TITLE,
+  SITE_TITLE
 } from '@/app/config';
-import AppStateProvider from '@/state/AppStateProvider';
-import ToasterWithThemes from '@/toast/ToasterWithThemes';
-import PhotoEscapeHandler from '@/photo/PhotoEscapeHandler';
-import { Metadata } from 'next/types';
-import { ThemeProvider } from 'next-themes';
-import Nav from '@/app/Nav';
 import Footer from '@/app/Footer';
-import CommandK from '@/app/CommandK';
-import SwrConfigClient from '@/state/SwrConfigClient';
-import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
+import Nav from '@/app/Nav';
+import PhotoEscapeHandler from '@/photo/PhotoEscapeHandler';
 import ShareModals from '@/share/ShareModals';
+import AppStateProvider from '@/state/AppStateProvider';
+import SwrConfigClient from '@/state/SwrConfigClient';
+import ToasterWithThemes from '@/toast/ToasterWithThemes';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import { clsx } from 'clsx/lite';
+import { ThemeProvider } from 'next-themes';
+import { Metadata } from 'next/types';
+//import { ThemeProvider } from 'next-themes';
+//import Nav from '@/app/Nav';
+//import Footer from '@/app/Footer';
+//import CommandK from '@/app/CommandK';
+//import SwrConfigClient from '@/state/SwrConfigClient';
+//import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
+//import ShareModals from '@/share/ShareModals';
 
 import '../tailwind.css';
 
@@ -74,18 +82,25 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
+              <div className="w-full bg-white dark:bg-black px-6 py-6">
+                <div className="w-full max-w-[1280px] mx-auto flex justify-center">
+                  <img
+                    src="https://media.cargocollective.com/1/3/100581/headerimg/CABECA_SITE_WILBOR7.png"
+                    alt="Wilbor Art Logo"
+                    className="h-32 sm:h-40 w-auto object-contain"
+                  />
+                </div>
+              </div>
               <main className={clsx(
-                'mx-3 mb-3',
-                'lg:mx-6 lg:mb-6',
-                // Center on large screens
-                // 1280px width defined in components/SiteGrid.tsx
-                '3xl:mx-auto 3xl:w-[1280px]',
+                'mx-auto max-w-[1280px] px-3 mb-3',
+                'lg:px-6 lg:mb-6',
               )}>
-                <Nav siteDomainOrTitle={SITE_DOMAIN_OR_TITLE} />
-                <AdminBatchEditPanel />
+                <div className="flex flex-col items-center">
+                </div>
+                <Nav siteDomainOrTitle="Wilbor Art" />
                 <div className={clsx(
                   'min-h-[16rem] sm:min-h-[30rem]',
-                  'mb-12',
+                  'mb-12 w-full',
                 )}>
                   <ShareModals />
                   {children}
@@ -95,7 +110,7 @@ export default function RootLayout({
               <CommandK />
             </SwrConfigClient>
             <Analytics debug={false} />
-            <SpeedInsights debug={false}  />
+            <SpeedInsights debug={false} />
             <PhotoEscapeHandler />
             <ToasterWithThemes />
           </ThemeProvider>

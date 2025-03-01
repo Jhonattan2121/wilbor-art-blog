@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 
 const INTRINSIC_WIDTH = 28;
-const INTRINSIC_HEIGHT = 24;
+const INTRINSIC_HEIGHT = 28; // Ajustado para manter proporção quadrada
 
-export default function IconFeed({
+export default function IconShop({
   width = INTRINSIC_WIDTH,
   includeTitle = true,
 }: {
@@ -20,18 +20,18 @@ export default function IconFeed({
       xmlns="http://www.w3.org/2000/svg"
       className="hover:opacity-75 transition-opacity"
     >
-      {includeTitle && <title>Sobre Wilbor</title>}
-
-      <circle cx="14" cy="14" r="9" strokeWidth="1.5" />
+      {includeTitle && <title>Loja</title>}
       <path
-        d="M14 10v2"
-        strokeWidth="2"
-        strokeLinecap="round"
+        d="M11 7C11 5.89543 11.8954 5 13 5H15C16.1046 5 17 5.89543 17 7V9H11V7Z"
+        strokeWidth="1.5"
       />
-      <path
-        d="M14 14v4"
-        strokeWidth="2"
-        strokeLinecap="round"
+      <rect
+        x="7"
+        y="9"
+        width="14"
+        height="12"
+        rx="2"
+        strokeWidth="1.5"
       />
     </svg>
   );
