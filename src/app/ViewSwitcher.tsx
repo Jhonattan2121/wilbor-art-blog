@@ -13,7 +13,6 @@ import SwitcherItem from '@/components/SwitcherItem';
 import { useAppState } from '@/state/AppState';
 import { BiLockAlt } from 'react-icons/bi';
 import { GRID_HOMEPAGE_ENABLED } from './config';
-import IconContact from './IconContact';
 import IconOdysee from './iconOdysee';
 import IconSearch from './IconSearch';
 
@@ -44,20 +43,12 @@ export default function ViewSwitcher({
       noPadding
     />;
 
-  const renderItemContact = () =>
-    <SwitcherItem
-      icon={<IconContact />}
-      href="/contact"
-      active={currentSelection === 'contact'}
-      noPadding
-    />
-
   return (
     <div className="flex gap-1 sm:gap-2">
       <Switcher>
         {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
         {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
-        {renderItemContact()} { }
+
 
         <SwitcherItem
           icon={<IconInstagram />}

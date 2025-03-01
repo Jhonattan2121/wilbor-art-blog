@@ -32,14 +32,15 @@ export default function About() {
       <h1 className="text-4xl font-bold mb-8 text-center">{SITE_TITLE}</h1>
 
       <div className="mb-8">
-        <div className="relative max-w-xl mx-auto">
+        <div className="relative w-full h-[400px] max-w-xl mx-auto">
           <Image
             src={images[currentImageIndex]}
             alt={`Imagem ${currentImageIndex + 1}`}
-            width={300}
-            height={225}
-            className="rounded-lg shadow-lg w-full h-auto object-contain max-h-[400px]"
+            fill={true}
+            className="rounded-lg shadow-lg object-contain"
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{ objectFit: 'contain' }}
           />
 
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
@@ -98,6 +99,14 @@ export default function About() {
           <p className="mb-4">Criou gráficos para marcas de skate aplicados em shapes, rodas e estampas. Entre 2009 e 2013, dirigiu vídeos musicais e chamadas para os shows do Circo Voador, veiculadas na MTV.</p>
 
           <footer className="mt-8 text-center text-gray-600 text-sm">Fotos por Tio Verde, Alex Carvalho, Cauã Csik, Henrique Madeira, Bianca Moraes, Felipe Tavora.</footer>
+        </div>
+        <div className="flex justify-center mt-12 mb-8">
+          <a
+            href="/projects"
+            className="group bg-black/70 hover:bg-black/90 text-white px-8 py-3 rounded-full text-lg font-medium transition-all flex items-center gap-2"
+          >
+            Ver nossos projetos →
+          </a>
         </div>
       </section>
     </div>

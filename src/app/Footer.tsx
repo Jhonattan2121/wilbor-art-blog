@@ -4,6 +4,8 @@ import ThemeSwitcher from '@/app/ThemeSwitcher';
 import AnimateItems from '@/components/AnimateItems';
 import { clsx } from 'clsx/lite';
 import { usePathname } from 'next/navigation';
+import { FaWhatsapp } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
 import SiteGrid from '../components/SiteGrid';
 import { isPathAdmin, isPathSignIn } from './paths';
 
@@ -35,6 +37,17 @@ export default function Footer() {
               </div>
               <div className="flex gap-x-3 xs:gap-x-4 grow flex-wrap">
                 <p><strong>&nbsp;&nbsp; Copyright Wilbor Art @ 2025</strong></p>
+              </div>
+              <div className="flex gap-x-6 items-center">
+                <a className="flex items-center gap-2 hover:text-blue-600">
+                  <FaWhatsapp className="text-xl" />
+                  <span>+55 21 98635-1316</span>
+                </a>
+
+                <a className="flex items-center gap-2 hover:text-blue-600">
+                  <MdEmail className="text-xl" />
+                  <span>wilsondomingues@gmail.com</span>
+                </a>
               </div>
             </div>]
             : []}
