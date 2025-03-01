@@ -1,14 +1,12 @@
-/* eslint-disable max-len */
-
 const INTRINSIC_WIDTH = 28;
-const INTRINSIC_HEIGHT = 24;
+const INTRINSIC_HEIGHT = 28;
 
-export default function IconFeed({
+export default function IconContact({
   width = INTRINSIC_WIDTH,
   includeTitle = true,
 }: {
-  width?: number
-  includeTitle?: boolean
+  width?: number;
+  includeTitle?: boolean;
 }) {
   return (
     <svg
@@ -20,18 +18,19 @@ export default function IconFeed({
       xmlns="http://www.w3.org/2000/svg"
       className="hover:opacity-75 transition-opacity"
     >
-      {includeTitle && <title>Sobre Wilbor</title>}
+      {includeTitle && <title>Contato</title>}
 
-      <circle cx="14" cy="14" r="9" strokeWidth="1.5" />
       <path
-        d="M14 10v2"
-        strokeWidth="2"
+        d="M22 7L14 15L6 7"
+        strokeWidth="1.5"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
-        d="M14 14v4"
-        strokeWidth="2"
+        d="M4 7H24V20C24 20.5523 23.5523 21 23 21H5C4.44772 21 4 20.5523 4 20V7Z"
+        strokeWidth="1.5"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

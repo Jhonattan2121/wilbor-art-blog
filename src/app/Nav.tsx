@@ -1,9 +1,6 @@
 'use client';
 
-import { clsx } from 'clsx/lite';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import SiteGrid from '../components/SiteGrid';
+import AdminAppMenu from '@/admin/AdminAppMenu';
 import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
@@ -13,14 +10,17 @@ import {
   isPathProtected,
   isPathSignIn,
 } from '@/app/paths';
-import AnimateItems from '../components/AnimateItems';
 import { useAppState } from '@/state/AppState';
+import { clsx } from 'clsx/lite';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import AnimateItems from '../components/AnimateItems';
+import SiteGrid from '../components/SiteGrid';
 import {
   GRID_HOMEPAGE_ENABLED,
   HAS_DEFINED_SITE_DESCRIPTION,
   SITE_DESCRIPTION,
 } from './config';
-import AdminAppMenu from '@/admin/AdminAppMenu';
 
 const NAV_HEIGHT_CLASS = HAS_DEFINED_SITE_DESCRIPTION
   ? 'min-h-[4rem] sm:min-h-[5rem]'
@@ -47,13 +47,13 @@ export default function Nav({
 
   const switcherSelectionForPath = (): SwitcherSelection | undefined => {
     if (pathname === PATH_ROOT) {
-      return GRID_HOMEPAGE_ENABLED ? 'grid' : 'feed';
+      return GRID_HOMEPAGE_ENABLED ? 'portifolio' : 'feed';
     } else if (isPathGrid(pathname)) {
-      return 'grid';
+      return 'portifolio';
     } else if (isPathFeed(pathname)) {
       return 'feed';
     } else if (isPathProtected(pathname)) {
-      return 'admin';
+      return 'contact';
     }
   };
 
