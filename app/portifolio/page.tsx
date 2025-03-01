@@ -2,12 +2,12 @@ import {
   INFINITE_SCROLL_GRID_INITIAL,
   generateOgImageMetaForPhotos,
 } from '@/photo';
-import PhotosEmptyState from '@/photo/PhotosEmptyState';
-import { Metadata } from 'next/types';
 import { getPhotoSidebarData } from '@/photo/data';
 import { getPhotos, getPhotosMeta } from '@/photo/db/query';
-import { cache } from 'react';
 import PhotoGridPage from '@/photo/PhotoGridPage';
+import PhotosEmptyState from '@/photo/PhotosEmptyState';
+import { Metadata } from 'next/types';
+import { cache } from 'react';
 
 export const dynamic = 'force-static';
 

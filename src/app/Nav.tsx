@@ -47,9 +47,9 @@ export default function Nav({
 
   const switcherSelectionForPath = (): SwitcherSelection | undefined => {
     if (pathname === PATH_ROOT) {
-      return GRID_HOMEPAGE_ENABLED ? 'grid' : 'feed';
+      return GRID_HOMEPAGE_ENABLED ? 'portifolio' : 'feed';
     } else if (isPathGrid(pathname)) {
-      return 'grid';
+      return 'portifolio';
     } else if (isPathFeed(pathname)) {
       return 'feed';
     } else if (isPathProtected(pathname)) {

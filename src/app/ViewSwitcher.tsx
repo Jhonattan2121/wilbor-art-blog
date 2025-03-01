@@ -17,7 +17,7 @@ import IconContact from './IconContact';
 import IconOdysee from './iconOdysee';
 import IconSearch from './IconSearch';
 
-export type SwitcherSelection = 'feed' | 'grid' | 'contact';
+export type SwitcherSelection = 'feed' | 'portifolio' | 'contact';
 
 export default function ViewSwitcher({
   currentSelection,
@@ -40,7 +40,7 @@ export default function ViewSwitcher({
     <SwitcherItem
       icon={<IconGrid />}
       href={PATH_GRID_INFERRED}
-      active={currentSelection === 'grid'}
+      active={currentSelection === 'portifolio'}
       noPadding
     />;
 
