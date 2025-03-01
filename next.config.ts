@@ -15,18 +15,18 @@ const HOSTNAME_CLOUDFLARE_R2 =
 
 const HOSTNAME_AWS_S3 =
   process.env.NEXT_PUBLIC_AWS_S3_BUCKET &&
-  process.env.NEXT_PUBLIC_AWS_S3_REGION
+    process.env.NEXT_PUBLIC_AWS_S3_REGION
     // eslint-disable-next-line max-len
     ? `${process.env.NEXT_PUBLIC_AWS_S3_BUCKET}.s3.${process.env.NEXT_PUBLIC_AWS_S3_REGION}.amazonaws.com`
     : undefined;
 
 const generateRemotePattern = (hostname: string) =>
-  ({
-    protocol: 'https',
-    hostname: removeUrlProtocol(hostname)!,
-    port: '',
-    pathname: '/**',
-  } as const);
+({
+  protocol: 'https',
+  hostname: removeUrlProtocol(hostname)!,
+  port: '',
+  pathname: '/**',
+} as const);
 
 const remotePatterns: RemotePattern[] = [];
 
@@ -41,9 +41,23 @@ if (HOSTNAME_AWS_S3) {
 }
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '1mb',
+      allowedOrigins: ['*'],
+    },
+  },
+  dynamicParams: true,
   images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'payload.cargocollective.com',
+      },
+      ...remotePatterns
+    ],
+    unoptimized: true,
     imageSizes: [200],
-    remotePatterns,
     minimumCacheTTL: 31536000,
   },
 };
