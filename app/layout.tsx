@@ -27,7 +27,8 @@ import { Metadata } from 'next/types';
 //import SwrConfigClient from '@/state/SwrConfigClient';
 //import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
 //import ShareModals from '@/share/ShareModals';
-
+import Image from 'next/image';
+import baneWilbor from "../public/baner,wilbor.png";
 import '../tailwind.css';
 
 export const metadata: Metadata = {
@@ -82,12 +83,12 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-              <div className="w-full bg-white dark:bg-black px-6 py-6">
+            <div className="w-full bg-white dark:bg-black px-3 py-3">
                 <div className="w-full max-w-[1280px] mx-auto flex justify-center">
-                  <img
-                    src="https://media.cargocollective.com/1/3/100581/headerimg/CABECA_SITE_WILBOR7.png"
+                  <Image
+                    src={baneWilbor}
                     alt="Wilbor Art Logo"
-                    className="h-32 sm:h-40 w-auto object-contain"
+                    className="h-24 sm:h-32 w-auto object-contain"
                   />
                 </div>
               </div>
