@@ -8,7 +8,6 @@ import Switcher from '@/components/Switcher';
 import SwitcherItem from '@/components/SwitcherItem';
 import { useAppState } from '@/state/AppState';
 import { GRID_HOMEPAGE_ENABLED } from './config';
-import IconSearch from './IconSearch';
 
 export type SwitcherSelection = 'feed' | 'portifolio';
 
@@ -44,12 +43,12 @@ export default function ViewSwitcher({
         {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
 
       </Switcher>
-      <Switcher type="borderless">
+      {/* <Switcher type="borderless">
         <SwitcherItem
           icon={<IconSearch />}
           onClick={() => setIsCommandKOpen?.(true)}
         />
-      </Switcher>
+      </Switcher> */}
     </div>
   );
 }

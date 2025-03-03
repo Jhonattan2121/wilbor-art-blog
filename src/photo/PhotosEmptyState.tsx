@@ -1,11 +1,9 @@
-import AdminCTA from '@/admin/AdminCTA';
 import Container from '@/components/Container';
 import SiteGrid from '@/components/SiteGrid';
-import { IS_SITE_READY } from '@/app/config';
-import { PATH_ADMIN_CONFIGURATION } from '@/app/paths';
-import AdminAppConfiguration from '@/admin/AdminAppConfiguration';
+// import { IS_SITE_READY } from '@/app/config';
+// import { PATH_ADMIN_CONFIGURATION } from '@/app/paths';
+// import AdminAppConfiguration from '@/admin/AdminAppConfiguration';
 import { clsx } from 'clsx/lite';
-import Link from 'next/link';
 import { HiOutlinePhotograph } from 'react-icons/hi';
 
 export default function PhotosEmptyState() {
@@ -24,7 +22,7 @@ export default function PhotosEmptyState() {
             'font-bold text-2xl',
             'text-gray-700 dark:text-gray-200',
           )}>
-            {!IS_SITE_READY ? 'Finish Setup' : 'Setup Complete!'}
+            {/* {!IS_SITE_READY ? 'Finish Setup' : 'Setup Complete!'}
           </div>
           {!IS_SITE_READY
             ? <AdminAppConfiguration simplifiedView />
@@ -44,9 +42,9 @@ export default function PhotosEmptyState() {
                   className="text-main hover:underline"
                 >
                   /admin/configuration
-                </Link>
-              </div>
-            </div>}
+                </Link> */}
+          </div>
+          {/* </div>} */}
         </Container>}
     />
   );

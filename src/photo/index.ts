@@ -1,20 +1,20 @@
-import { Camera } from '@/camera';
-import { formatFocalLength } from '@/focal';
-import { Lens } from '@/lens';
-import { getNextImageUrlForRequest } from '@/platforms/next-image';
-import { FilmSimulation } from '@/simulation';
 import {
   HIGH_DENSITY_GRID,
   IS_PREVIEW,
   SHOW_EXIF_DATA,
 } from '@/app/config';
 import { ABSOLUTE_PATH_FOR_HOME_IMAGE } from '@/app/paths';
+import { Camera } from '@/camera';
+import { formatFocalLength } from '@/focal';
+import { Lens } from '@/lens';
+import { getNextImageUrlForRequest } from '@/platforms/next-image';
+import { FilmSimulation } from '@/simulation';
 import { formatDate, formatDateFromPostgresString } from '@/utility/date';
 import {
   formatAperture,
-  formatIso,
   formatExposureCompensation,
   formatExposureTime,
+  formatIso,
 } from '@/utility/exif';
 import { parameterize } from '@/utility/string';
 import camelcaseKeys from 'camelcase-keys';
@@ -74,9 +74,11 @@ export interface PhotoExif {
 export interface PhotoDbInsert extends PhotoExif {
   id: string
   url: string
+  src: string;
   extension: string
   blurData?: string
   title?: string
+  author: string;
   caption?: string
   semanticDescription?: string
   tags?: string[]
@@ -93,6 +95,8 @@ export interface PhotoDb extends Omit<PhotoDbInsert, 'takenAt' | 'tags'> {
   createdAt: Date
   takenAt: Date
   tags: string[]
+  width: number
+  height: number
 }
 
 // Parsed db response
@@ -104,6 +108,16 @@ export interface Photo extends PhotoDb {
   exposureTimeFormatted?: string
   exposureCompensationFormatted?: string
   takenAtNaiveFormatted: string
+  width: number;
+  height: number;
+  type?: 'video' | 'photo';
+  priority?: boolean;
+  title: string;
+  author: string;
+  tags: string[];
+  hiveMetadata?: {
+    body: string;
+  };
 }
 
 export interface PhotoSetCategory {
@@ -126,7 +140,10 @@ export const parsePhotoFromDb = (photoDbRaw: PhotoDb): Photo => {
   ) as unknown as PhotoDb;
   return {
     ...photoDb,
+    width: photoDb.width,
+    height: photoDb.height,
     tags: photoDb.tags ?? [],
+    title: photoDb.title ?? 'Untitled',
     focalLengthFormatted:
       formatFocalLength(photoDb.focalLength),
     focalLengthIn35MmFormatFormatted:
@@ -240,7 +257,7 @@ export const photoQuantityText = (
 ) =>
   includeParentheses
     ? `(${count} ${photoLabelForCount(count, capitalize)})`
-    : `${count} ${photoLabelForCount(count, capitalize)}`;  
+    : `${count} ${photoLabelForCount(count, capitalize)}`;
 
 export const deleteConfirmationTextForPhoto = (photo: Photo) =>
   `Are you sure you want to delete "${titleForPhoto(photo)}?"`;
@@ -248,7 +265,7 @@ export const deleteConfirmationTextForPhoto = (photo: Photo) =>
 export type PhotoDateRange = { start: string, end: string };
 
 export const descriptionForPhotoSet = (
-  photos:Photo[] = [],
+  photos: Photo[] = [],
   descriptor?: string,
   dateBased?: boolean,
   explicitCount?: number,

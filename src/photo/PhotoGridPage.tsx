@@ -1,22 +1,20 @@
 'use client';
-
-import { Tags } from '@/tag';
-import { Photo } from '.';
 import { Cameras } from '@/camera';
 import { FilmSimulations } from '@/simulation';
-import { PATH_GRID_INFERRED } from '@/app/paths';
-import PhotoGridSidebar from './PhotoGridSidebar';
-import PhotoGridContainer from './PhotoGridContainer';
-import { useEffect } from 'react';
 import { useAppState } from '@/state/AppState';
-import clsx from 'clsx/lite';
+import { Tags } from '@/tag';
+import clsx from 'clsx';
+import { useEffect } from 'react';
+import PhotoGridContainer, { Photo } from './PhotoGridContainer';
+import PhotoGridSidebar from './PhotoGridSidebar';
+const PATH_GRID_INFERRED = 'projects';
 
 export default function PhotoGridPage({
   photos,
   photosCount,
   tags,
   cameras,
-  simulations,
+  simulations
 }: {
   photos: Photo[]
   photosCount: number
@@ -41,11 +39,15 @@ export default function PhotoGridPage({
         'h-6 z-10 pointer-events-none',
       )}
     />;
-
   return (
     <PhotoGridContainer
       cacheKey={`page-${PATH_GRID_INFERRED}`}
-      photos={photos}
+      media={photos.map(photo => ({
+        ...photo,
+        type: photo.type === 'video' ? 'video' : 'photo',
+        thumbnailSrc: photo.type === 'video' ? photo.thumbnailSrc : undefined,
+        videoUrl: photo.type === 'video' ? photo.src : undefined
+      }))}
       count={photosCount}
       sidebar={
         <div

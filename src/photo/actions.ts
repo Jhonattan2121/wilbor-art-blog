@@ -1,24 +1,17 @@
 'use server';
 
 import {
-  deletePhoto,
-  insertPhoto,
-  deletePhotoTagGlobally,
-  updatePhoto,
-  renamePhotoTagGlobally,
-  getPhoto,
-  getPhotos,
-  addTagsToPhotos,
-  getUniqueTags,
-} from '@/photo/db/query';
-import { GetPhotosOptions, areOptionsSensitive } from './db';
+  AI_TEXT_AUTO_GENERATED_FIELDS,
+  AI_TEXT_GENERATION_ENABLED,
+  BLUR_ENABLED,
+} from '@/app/config';
 import {
-  PhotoFormData,
-  convertFormDataToPhotoDbInsert,
-  convertPhotoToFormData,
-} from './form';
-import { redirect } from 'next/navigation';
-import { deleteFile } from '@/platforms/storage';
+  PATH_ADMIN_PHOTOS,
+  PATH_ADMIN_TAGS,
+  PATH_ROOT,
+  pathForPhoto,
+} from '@/app/paths';
+import { runAuthenticatedAdminServerAction } from '@/auth';
 import {
   getPhotosCached,
   getPhotosMetaCached,
@@ -29,28 +22,42 @@ import {
   revalidateTagsKey,
 } from '@/photo/cache';
 import {
-  PATH_ADMIN_PHOTOS,
-  PATH_ADMIN_TAGS,
-  PATH_ROOT,
-  pathForPhoto,
-} from '@/app/paths';
-import { blurImageFromUrl, extractImageDataFromBlobPath } from './server';
-import { TAG_FAVS, isTagFavs } from '@/tag';
-import { convertPhotoToPhotoDbInsert, Photo } from '.';
-import { runAuthenticatedAdminServerAction } from '@/auth';
-import { AiImageQuery, getAiImageQuery } from './ai';
+  addTagsToPhotos,
+  deletePhoto,
+  deletePhotoTagGlobally,
+  getPhoto,
+  getPhotos,
+  getUniqueTags,
+  insertPhoto,
+  renamePhotoTagGlobally,
+  updatePhoto,
+} from '@/photo/db/query';
 import { streamOpenAiImageQuery } from '@/platforms/openai';
-import {
-  AI_TEXT_AUTO_GENERATED_FIELDS,
-  AI_TEXT_GENERATION_ENABLED,
-  BLUR_ENABLED,
-} from '@/app/config';
-import { generateAiImageQueries } from './ai/server';
+import { deleteFile } from '@/platforms/storage';
+import { TAG_FAVS, isTagFavs } from '@/tag';
 import { createStreamableValue } from 'ai/rsc';
+import { redirect } from 'next/navigation';
+import { Photo, convertPhotoToPhotoDbInsert } from '.';
+import { AiImageQuery, getAiImageQuery } from './ai';
+import { generateAiImageQueries } from './ai/server';
+import { GetPhotosOptions, areOptionsSensitive } from './db';
+import {
+  PhotoFormData,
+  convertFormDataToPhotoDbInsert,
+  convertPhotoToFormData,
+} from './form';
+import { blurImageFromUrl, extractImageDataFromBlobPath } from './server';
 import { convertUploadToPhoto } from './storage';
-import { UrlAddStatus } from '@/admin/AdminUploadsClient';
+// import { UrlAddStatus } from '@/admin/AdminUploadsClient';
 import { convertStringToArray } from '@/utility/string';
 import { after } from 'next/server';
+
+type UrlAddStatus = {
+  url: string;
+  status: 'adding' | 'added' | 'error';
+  statusMessage: string;
+  progress: number;
+};
 
 // Private actions
 
@@ -65,7 +72,7 @@ export const createPhotoAction = async (formData: FormData) =>
       urlOrigin: photo.url,
       shouldStripGpsData,
     });
-    
+
     if (updatedUrl) {
       photo.url = updatedUrl;
       await insertPhoto(photo);
@@ -367,7 +374,7 @@ export const syncPhotoAction = async (photoId: string) =>
           ...!photo.caption && { caption: aiCaption },
           ...photo.tags.length === 0 && { tags: aiTags },
           ...!photo.semanticDescription &&
-            { semanticDescription: aiSemanticDescription },
+          { semanticDescription: aiSemanticDescription },
         });
 
         await updatePhoto(photoFormDbInsert)

@@ -1,45 +1,43 @@
 'use client';
 
 import {
-  Photo,
-  altTextForPhoto,
-  doesPhotoNeedBlurCompatibility,
-  shouldShowCameraDataForPhoto,
-  shouldShowExifDataForPhoto,
-  titleForPhoto,
-} from '.';
-import SiteGrid from '@/components/SiteGrid';
-import ImageLarge from '@/components/image/ImageLarge';
-import { clsx } from 'clsx/lite';
-import Link from 'next/link';
+  ALLOW_PUBLIC_DOWNLOADS,
+  SHOULD_PREFETCH_ALL_LINKS,
+  SHOW_TAKEN_AT_TIME,
+} from '@/app/config';
 import {
   pathForFocalLength,
   pathForPhoto,
 } from '@/app/paths';
-import PhotoTags from '@/tag/PhotoTags';
-import ShareButton from '@/share/ShareButton';
-import DownloadButton from '@/components/DownloadButton';
-import PhotoCamera from '../camera/PhotoCamera';
 import { cameraFromPhoto } from '@/camera';
-import PhotoFilmSimulation from '@/simulation/PhotoFilmSimulation';
-import { sortTags } from '@/tag';
 import DivDebugBaselineGrid from '@/components/DivDebugBaselineGrid';
-import PhotoLink from './PhotoLink';
-import {
-  SHOULD_PREFETCH_ALL_LINKS,
-  ALLOW_PUBLIC_DOWNLOADS,
-  SHOW_TAKEN_AT_TIME,
-} from '@/app/config';
-import AdminPhotoMenuClient from '@/admin/AdminPhotoMenuClient';
-import { RevalidatePhoto } from './InfinitePhotoScroll';
-import { useRef } from 'react';
-import useVisible from '@/utility/useVisible';
-import PhotoDate from './PhotoDate';
-import { useAppState } from '@/state/AppState';
-import { LuExpand } from 'react-icons/lu';
-import LoaderButton from '@/components/primitives/LoaderButton';
+import DownloadButton from '@/components/DownloadButton';
+import SiteGrid from '@/components/SiteGrid';
 import Tooltip from '@/components/Tooltip';
+import ImageLarge from '@/components/image/ImageLarge';
 import ZoomControls, { ZoomControlsRef } from '@/components/image/ZoomControls';
+import LoaderButton from '@/components/primitives/LoaderButton';
+import ShareButton from '@/share/ShareButton';
+import PhotoFilmSimulation from '@/simulation/PhotoFilmSimulation';
+import { useAppState } from '@/state/AppState';
+import { sortTags } from '@/tag';
+import PhotoTags from '@/tag/PhotoTags';
+import useVisible from '@/utility/useVisible';
+import { clsx } from 'clsx/lite';
+import Link from 'next/link';
+import { useRef } from 'react';
+import { LuExpand } from 'react-icons/lu';
+import {
+  Photo,
+  altTextForPhoto,
+  doesPhotoNeedBlurCompatibility,
+  shouldShowCameraDataForPhoto,
+  shouldShowExifDataForPhoto
+} from '.';
+import PhotoCamera from '../camera/PhotoCamera';
+import { RevalidatePhoto } from './InfinitePhotoScroll';
+import PhotoDate from './PhotoDate';
+import PhotoLink from './PhotoLink';
 
 export default function PhotoLarge({
   photo,
@@ -199,12 +197,13 @@ export default function PhotoLarge({
                 ? <h1>{renderPhotoLink()}</h1>
                 : renderPhotoLink())}
               <div className="absolute right-0 translate-y-[-4px] z-10">
-                <AdminPhotoMenuClient {...{
-                  photo,
-                  revalidatePhoto,
-                  includeFavorite: includeFavoriteInAdminMenu,
-                  ariaLabel: `Admin menu for '${titleForPhoto(photo)}' photo`,
-                }} />
+                {includeFavoriteInAdminMenu &&
+                  <Link
+                    href={`/admin/favorites?photoId=${photo.id}`}
+                    className="hover:text-main active:text-medium"
+                  >
+                    Favorite
+                  </Link>}
               </div>
             </div>
             <div className="space-y-baseline">

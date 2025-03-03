@@ -1,4 +1,3 @@
-import CommandK from '@/app/CommandK';
 //import { Analytics } from '@vercel/analytics/react';
 //import { SpeedInsights } from '@vercel/speed-insights/react';
 //import { clsx } from 'clsx/lite';
@@ -108,7 +107,7 @@ export default function RootLayout({
                 </div>
                 <Footer />
               </main>
-              <CommandK />
+              {/* <CommandK /> */}
             </SwrConfigClient>
             <Analytics debug={false} />
             <SpeedInsights debug={false} />

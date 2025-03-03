@@ -1,7 +1,7 @@
 import { Photo, PhotoDateRange } from '@/photo';
+import PhotoGridContainer from '@/photo/PhotoGridContainer';
 import { Camera, createCameraKey } from '.';
 import CameraHeader from './CameraHeader';
-import PhotoGridContainer from '@/photo/PhotoGridContainer';
 
 export default function CameraOverview({
   camera,
@@ -23,6 +23,8 @@ export default function CameraOverview({
       count,
       camera,
       animateOnFirstLoadOnly,
+      media: [],
+      sidebar: <div></div>,
       header: <CameraHeader {...{
         camera,
         photos,

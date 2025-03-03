@@ -1,6 +1,6 @@
 import { Photo, PhotoDateRange } from '@/photo';
-import TagHeader from './TagHeader';
 import PhotoGridContainer from '@/photo/PhotoGridContainer';
+import TagHeader from './TagHeader';
 
 export default function TagOverview({
   tag,
@@ -16,7 +16,7 @@ export default function TagOverview({
   animateOnFirstLoadOnly?: boolean,
 }) {
   return (
-    <PhotoGridContainer {...{
+    <PhotoGridContainer media={[]} {...{
       cacheKey: `tag-${tag}`,
       photos,
       count,

@@ -1,6 +1,5 @@
 'use client';
 
-import AdminAppMenu from '@/admin/AdminAppMenu';
 import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
@@ -102,7 +101,7 @@ export default function Nav({
             NAV_HEIGHT_CLASS,
           )}
         >
-          <AdminAppMenu />
+        
         </div>
         : undefined}
       sideHiddenOnMobile

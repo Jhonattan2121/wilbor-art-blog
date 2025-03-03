@@ -1,5 +1,10 @@
-import type { ExifData } from 'ts-exif-parser';
-import { DEFAULT_ASPECT_RATIO, Photo, PhotoDbInsert, PhotoExif } from '..';
+import { GEO_PRIVACY_ENABLED } from '@/app/config';
+import {
+  FILM_SIMULATION_FORM_INPUT_OPTIONS,
+  MAKE_FUJIFILM,
+} from '@/platforms/fujifilm';
+import { FilmSimulation } from '@/simulation';
+import { TAG_FAVS, getValidationMessageForTags } from '@/tag';
 import {
   convertTimestampToNaivePostgresString,
   convertTimestampWithOffsetToPostgresString,
@@ -13,16 +18,11 @@ import {
   getAspectRatioFromExif,
   getOffsetFromExif,
 } from '@/utility/exif';
+import { generateNanoid } from '@/utility/nanoid';
 import { roundToNumber } from '@/utility/number';
 import { convertStringToArray } from '@/utility/string';
-import { generateNanoid } from '@/utility/nanoid';
-import {
-  FILM_SIMULATION_FORM_INPUT_OPTIONS,
-  MAKE_FUJIFILM,
-} from '@/platforms/fujifilm';
-import { FilmSimulation } from '@/simulation';
-import { GEO_PRIVACY_ENABLED } from '@/app/config';
-import { TAG_FAVS, getValidationMessageForTags } from '@/tag';
+import type { ExifData } from 'ts-exif-parser';
+import { DEFAULT_ASPECT_RATIO, Photo, PhotoDbInsert, PhotoExif } from '..';
 
 type VirtualFields = 'favorite';
 
@@ -61,7 +61,7 @@ type FormMeta = {
 };
 
 const STRING_MAX_LENGTH_SHORT = 255;
-const STRING_MAX_LENGTH_LONG  = 1000;
+const STRING_MAX_LENGTH_LONG = 1000;
 
 const FORM_METADATA = (
   tagOptions?: AnnotatedTag[],
@@ -129,6 +129,14 @@ const FORM_METADATA = (
   priorityOrder: { label: 'priority order' },
   favorite: { label: 'favorite', type: 'checkbox', excludeFromInsert: true },
   hidden: { label: 'hidden', type: 'checkbox' },
+  src: {
+    label: 'source',
+    validateStringMaxLength: STRING_MAX_LENGTH_SHORT
+  },
+  author: {
+    label: 'author',
+    validateStringMaxLength: STRING_MAX_LENGTH_SHORT
+  },
 });
 
 export const FORM_METADATA_ENTRIES = (
@@ -173,18 +181,18 @@ export const convertPhotoToFormData = (
 ): PhotoFormData => {
   const valueForKey = (key: keyof Photo, value: any) => {
     switch (key) {
-    case 'tags':
-      return (value ?? [])
-        .filter((tag: string) => tag !== TAG_FAVS)
-        .join(', ');
-    case 'takenAt':
-      return value?.toISOString ? value.toISOString() : value;
-    case 'hidden':
-      return value ? 'true' : 'false';
-    default:
-      return value !== undefined && value !== null
-        ? value.toString()
-        : undefined;
+      case 'tags':
+        return (value ?? [])
+          .filter((tag: string) => tag !== TAG_FAVS)
+          .join(', ');
+      case 'takenAt':
+        return value?.toISOString ? value.toISOString() : value;
+      case 'hidden':
+        return value ? 'true' : 'false';
+      default:
+        return value !== undefined && value !== null
+          ? value.toString()
+          : undefined;
     }
   };
   return Object.entries(photo).reduce((photoForm, [key, value]) => ({
