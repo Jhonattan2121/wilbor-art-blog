@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 import { AnimationConfig } from '@/components/AnimateItems';
 import { ShareModalProps } from '@/share';
-import { InsightIndicatorStatus } from '@/admin/insights';
+import { Dispatch, SetStateAction, createContext, useContext } from 'react';
+// import { InsightIndicatorStatus } from '@/admin/insights';
+type InsightIndicatorStatus = 'idle' | 'loading' | 'success' | 'error';
+
 
 export interface AppStateContext {
   // CORE

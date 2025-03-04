@@ -47,21 +47,53 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['*'],
     },
   },
-  dynamicParams: true,
   images: {
+    domains: [
+      'images.hive.blog',
+      'images.ecency.com',
+      'files.peakd.com',
+      'www.skatehype.com',
+      'hackmd.io',
+      'ipfs.skatehive.app',
+      'files.peakd.com',
+      'dmo9tcngmx442k9p.public.blob.vercel-storage.com'
+    ],
+    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'payload.cargocollective.com',
+        hostname: '**.skatehive.app',
+        pathname: '/ipfs/**'
       },
-      ...remotePatterns
+      {
+        protocol: 'https',
+        hostname: '**.skatehype.com',
+        pathname: '/tempimg/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'hackmd.io',
+        pathname: '/_uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ipfs.skatehive.app',
+        pathname: '/ipfs/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'files.peakd.com',
+        pathname: '/file/**',
+      },
     ],
-    unoptimized: true,
-    imageSizes: [200],
-    minimumCacheTTL: 31536000,
+
   },
 };
 
-module.exports = process.env.ANALYZE === 'true'
-  ? require('@next/bundle-analyzer')()(nextConfig)
-  : nextConfig;
+export default nextConfig;

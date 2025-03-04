@@ -1,6 +1,5 @@
-import { auth } from './src/auth';
-import { NextRequest, NextResponse } from 'next/server';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import {
   PATH_ADMIN,
   PATH_ADMIN_PHOTOS,
@@ -9,9 +8,20 @@ import {
   PREFIX_PHOTO,
   PREFIX_TAG,
 } from './src/app/paths';
+import { auth } from './src/auth';
 
-export default function middleware(req: NextRequest, res:NextResponse) {
+export default function middleware(req: NextRequest, res: NextResponse) {
   const pathname = req.nextUrl.pathname;
+
+  // Novo código para rotas /p/
+  if (pathname.startsWith('/p/')) {
+    const photoId = pathname.split('/').pop();
+
+    if (photoId?.includes('-')) {
+      const [author, permlink] = photoId.split('-');
+      return NextResponse.rewrite(new URL(`/projects/${author}/${permlink}`, req.url));
+    }
+  }
 
   if (pathname === PATH_ADMIN) {
     return NextResponse.redirect(new URL(PATH_ADMIN_PHOTOS, req.url));
@@ -39,19 +49,21 @@ export default function middleware(req: NextRequest, res:NextResponse) {
   );
 }
 
+export async function GET(request: Request) {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
+    const url = new URL('/home', baseUrl);
+
+    return NextResponse.json({ url: url.toString() });
+  } catch (error) {
+    console.error('Error in home-image route:', error);
+    return NextResponse.json({ error: 'Invalid URL configuration' }, { status: 500 });
+  }
+}
+
 export const config = {
-  // Excludes:
-  // - /api + /api/auth*
-  // - /_next/static*
-  // - /_next/image*
-  // - /favicon.ico + /favicons/*
-  // - /grid
-  // - /feed
-  // - / (root)
-  // - /home-image
-  // - /template-image
-  // - /template-image-tight
-  // - /template-url
-  // eslint-disable-next-line max-len
-  matcher: ['/((?!api$|api/auth|_next/static|_next/image|favicon.ico$|favicons/|grid$|feed$|home-image$|template-image$|template-image-tight$|template-url$|$).*)'],
+  matcher: [
+    '/((?!api$|api/auth|_next/static|_next/image|favicon.ico$|favicons/|grid$|feed$|home-image$|template-image$|template-image-tight$|template-url$|$).*)',
+  ],
 };

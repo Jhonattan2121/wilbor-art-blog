@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useEffect, ReactNode, useCallback } from 'react';
-import { AppStateContext } from './AppState';
-import { AnimationConfig } from '@/components/AnimateItems';
-import usePathnames from '@/utility/usePathnames';
-import { getAuthAction } from '@/auth/actions';
-import useSWR from 'swr';
 import {
   HIGH_DENSITY_GRID,
   IS_DEVELOPMENT,
   MATTE_PHOTOS,
   SHOW_ZOOM_CONTROLS,
 } from '@/app/config';
+import { getAuthAction } from '@/auth/actions';
+import { AnimationConfig } from '@/components/AnimateItems';
 import { getPhotosHiddenMetaCachedAction } from '@/photo/actions';
 import { ShareModalProps } from '@/share';
 import { storeTimezoneCookie } from '@/utility/timezone';
-import { getShouldShowInsightsIndicatorAction } from '@/admin/insights/actions';
-import { InsightIndicatorStatus } from '@/admin/insights';
+import usePathnames from '@/utility/usePathnames';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { AppStateContext } from './AppState';
+// import { getShouldShowInsightsIndicatorAction } from '@/admin/insights/actions';
+// import { InsightIndicatorStatus } from '@/admin/insights';
 
 export default function AppStateProvider({
   children,
@@ -34,11 +34,13 @@ export default function AppStateProvider({
     useState<AnimationConfig>();
   const [shouldRespondToKeyboardCommands, setShouldRespondToKeyboardCommands] =
     useState(true);
+
   // MODAL
   const [isCommandKOpen, setIsCommandKOpen] =
     useState(false);
   const [shareModalProps, setShareModalProps] =
     useState<ShareModalProps>();
+
   // ADMIN
   const [userEmail, setUserEmail] =
     useState<string>();
@@ -50,8 +52,7 @@ export default function AppStateProvider({
     useState<string[] | undefined>();
   const [isPerformingSelectEdit, setIsPerformingSelectEdit] =
     useState(false);
-  const [insightIndicatorStatus, setInsightIndicatorStatus] =
-    useState<InsightIndicatorStatus>();
+
   // DEBUG
   const [isGridHighDensity, setIsGridHighDensity] =
     useState(HIGH_DENSITY_GRID);
@@ -74,14 +75,15 @@ export default function AppStateProvider({
       setUserEmail(data?.user?.email ?? undefined);
     }
   }, [data, error]);
+
   const isUserSignedIn = Boolean(userEmail);
   useEffect(() => {
     if (isUserSignedIn) {
-      const timeout = setTimeout(() =>{
+      const timeout = setTimeout(() => {
         getPhotosHiddenMetaCachedAction()
           .then(({ count }) => setHiddenPhotosCount(count));
-        getShouldShowInsightsIndicatorAction()
-          .then(setInsightIndicatorStatus);
+          // getShouldShowInsightsIndicatorAction()
+          // .then(setInsightIndicatorStatus);
       }, 100);
       return () => clearTimeout(timeout);
     } else {
@@ -91,7 +93,7 @@ export default function AppStateProvider({
 
   const registerAdminUpdate = useCallback(() =>
     setAdminUpdateTimes(updates => [...updates, new Date()])
-  , []);
+    , []);
 
   useEffect(() => {
     setHasLoaded?.(true);
@@ -128,8 +130,8 @@ export default function AppStateProvider({
         setSelectedPhotoIds,
         isPerformingSelectEdit,
         setIsPerformingSelectEdit,
-        insightIndicatorStatus,
-        setInsightIndicatorStatus,
+        // insightIndicatorStatus,
+        // setInsightIndicatorStatus,
         // DEBUG
         isGridHighDensity,
         setIsGridHighDensity,
@@ -148,4 +150,4 @@ export default function AppStateProvider({
       {children}
     </AppStateContext.Provider>
   );
-};
+}

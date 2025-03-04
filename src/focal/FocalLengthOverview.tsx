@@ -1,6 +1,6 @@
-import { Photo, PhotoDateRange } from '@/photo';
-import PhotoGridContainer from '@/photo/PhotoGridContainer';
-import FocalLengthHeader from './FocalLengthHeader';
+import { Photo, PhotoDateRange } from "@/photo";
+import PhotoGridContainer from "@/photo/PhotoGridContainer";
+import FocalLengthHeader from "./FocalLengthHeader";
 
 export default function FocalLengthOverview({
   focal,
@@ -16,18 +16,21 @@ export default function FocalLengthOverview({
   animateOnFirstLoadOnly?: boolean,
 }) {
   return (
-    <PhotoGridContainer {...{
-      cacheKey: `focal-${focal}`,
-      photos,
-      count,
-      focal,
-      header: <FocalLengthHeader {...{
-        focal,
-        photos,
-        count,
-        dateRange,
-      }} />,
-      animateOnFirstLoadOnly,
-    }} />
+    <PhotoGridContainer
+      cacheKey={`focal-${focal}`}
+      media={photos.map(photo => ({
+        ...photo,
+        type: photo.type || 'photo',
+        thumbnailSrc: photo.type === 'video' ? photo.src : undefined,
+        videoUrl: photo.type === 'video' ? photo.src : undefined
+      }))}
+      count={count}
+      header={<FocalLengthHeader
+        focal={focal}
+        photos={photos}
+        count={count}
+        dateRange={dateRange} />}
+      animateOnFirstLoadOnly={animateOnFirstLoadOnly}
+      sidebar={undefined} />
   );
 }
