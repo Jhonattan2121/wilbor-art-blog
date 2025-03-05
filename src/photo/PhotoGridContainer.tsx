@@ -97,41 +97,44 @@ const isValidImage = (url: string): boolean => {
 const MediaItem = ({ item }: { item: Media }) => {
   const [imageError, setImageError] = useState(false);
 
-  console.log('🔍 Debug MediaItem:', {
-    id: item.id,
-    type: item.type,
-    src: item.src,
-    isHackMD: item.src.includes('hackmd.io'),
-    isPNG: item.src.toLowerCase().endsWith('.png'),
-    isValid: isValidImage(item.src)
-  });
-
   if (item.type === 'photo' && isValidImage(item.src)) {
     return (
-      <Link
-        href={`/p/${item.id}`}
-        className="relative aspect-square block overflow-hidden rounded-lg hover:opacity-95 transition-all duration-300 transform hover:scale-[1.02]"
-      >
-        <Image
-          src={item.src}
-          alt={item.title || ''}
-          fill
-          className="object-cover"
-          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-          quality={85}
-          priority={false}
-          onError={(e) => {
-            console.error('❌ Erro ao carregar imagem:', item.src);
-            setImageError(true);
-          }}
-          unoptimized={true}
-        />
-        {imageError && (
-          <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-500">Erro ao carregar imagem</span>
+      <div className="relative group">
+        <Link
+          href={`/p/${item.id}`}
+          className="block aspect-square overflow-hidden 
+          rounded-lg hover:opacity-95 transition-all duration-300
+           transform hover:scale-[1.02]"
+        >
+          <Image
+            src={item.src}
+            alt={item.title || ''}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+            quality={85}
+            priority={false}
+            onError={(e) => {
+              console.error('❌ Erro ao carregar imagem:', item.src);
+              setImageError(true);
+            }}
+            unoptimized={true}
+          />
+          <div className="absolute bottom-0 left-0 right-0
+           bg-black bg-opacity-50 p-2 opacity-0 group-hover:opacity-100
+            transition-opacity duration-300">
+            <h3 className="text-white text-sm truncate">
+              {item.title || 'Sem título'}
+            </h3>
           </div>
-        )}
-      </Link>
+          {imageError && (
+            <div className="absolute inset-0 bg-gray-200 flex 
+            items-center justify-center">
+              <span className="text-gray-500">Erro ao carregar imagem</span>
+            </div>
+          )}
+        </Link>
+      </div>
     );
   }
 
@@ -166,6 +169,11 @@ export default function PhotoGridContainer({
     return null;
   }
 
+  const validatedMedia = uniqueMedia.map(item => ({
+    ...item,
+    title: item.title || `Media of ${item.id}`
+  }));
+
   return (
     <SiteGrid
       contentMain={
@@ -175,12 +183,14 @@ export default function PhotoGridContainer({
         )}>
           {header}
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {uniqueMedia.length > 0 ? (
+            {validatedMedia.length > 0 ? (
               uniqueMedia.map((item) => (
                 <MediaItem
                   key={`${item.id}-${item.src}`}
                   item={item}
+
                 />
+
               ))
             ) : (
               <div className="col-span-full text-center py-8 text-gray-500">

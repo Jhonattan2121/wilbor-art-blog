@@ -1,9 +1,18 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { CSSProperties, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import styles from './PhotoGallery.module.css';
 
-export const PhotoGalleryClient = ({ urls }: { urls: string[] }) => {
+export const PhotoGalleryClient = ({
+  urls,
+  postTitle,
+  postBody
+}: {
+  urls: string[];
+  postTitle?: string;
+  postBody?: string;
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState<boolean[]>([]);
@@ -60,104 +69,78 @@ export const PhotoGalleryClient = ({ urls }: { urls: string[] }) => {
     preloadImages();
   }, [preloadImages]);
 
-  const galleryStyles: { [key: string]: CSSProperties } = {
-
-    button: {
-      position: 'absolute' as const,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      background: '#fff',
-      color: '#333',
-      border: 'none',
-      padding: '15px',
-      cursor: 'pointer',
-      borderRadius: '50%',
-      fontSize: '18px',
-      width: '46px',
-      height: '46px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-      transition: 'all 0.2s ease',
-
-    },
-    prevButton: {
-      left: '20px',
-    },
-    nextButton: {
-      right: '20px',
-    },
-    counter: {
-      position: 'absolute' as const,
-      bottom: '20px',
-      right: '20px',
-      background: '#fff',
-      color: '#333',
-      padding: '8px 16px',
-      borderRadius: '20px',
-      fontSize: '14px',
-      fontWeight: '500',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-    },
-    loadingIndicator: {
-      position: 'absolute' as const,
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      display: imagesLoaded[currentIndex] ? 'none' : 'block',
-    }
-  };
-
-
   return (
-    <div style={galleryStyles.container}>
-      <div
-        className={styles.mainImageContainer}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {!imagesLoaded[currentIndex] && (
-          <div style={galleryStyles.loadingIndicator}>
-            Loading...
+    <div>
+      <div className={styles.container}>
+        <div
+          className={styles.mainImageContainer}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {!imagesLoaded[currentIndex] && (
+            <div className={styles.loadingIndicator}>
+              Loading...
+            </div>
+          )}
+          <button
+            onClick={previousImage}
+            className={styles.prevButton}
+            aria-label="Previous image"
+          >
+            ←
+          </button>
+
+          <img
+            src={urls[currentIndex]}
+            alt={`Image ${currentIndex + 1}`}
+            loading="eager"
+            decoding="async"
+            className={styles.image}
+            style={{
+              opacity: imagesLoaded[currentIndex] ? 1 : 0.5,
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+          />
+
+          <button
+            onClick={nextImage}
+            className={styles.nextButton}
+            aria-label="Next image"
+          >
+            →
+          </button>
+
+          <div className={styles.counter}>
+            {currentIndex + 1} / {urls.length}
           </div>
-        )}
-        <button
-          onClick={previousImage}
-          style={{ ...galleryStyles.button, ...galleryStyles.prevButton }}
-          aria-label="Previous image"
-        >
-          ←
-        </button>
-
-        <img
-          src={urls[currentIndex]}
-          alt={`Image ${currentIndex + 1}`}
-          loading="eager"
-          decoding="async"
-          className={styles.image}
-          style={{
-            opacity: imagesLoaded[currentIndex] ? 1 : 0.5,
-            transition: 'opacity 0.3s ease-in-out'
-          }}
-        />
-
-        <button
-          onClick={nextImage}
-          style={{ ...galleryStyles.button, ...galleryStyles.nextButton }}
-          aria-label="Next image"
-        >
-          →
-        </button>
-
-        <div style={galleryStyles.counter}>
-          {currentIndex + 1} / {urls.length}
         </div>
-
-
       </div>
 
-
+      <div className={styles.infoContainer}>
+        {postTitle && (
+          <h1 className={styles.title}>
+            {postTitle}
+          </h1>
+        )}
+        {postBody && (
+          <div className={styles.body}>
+            <ReactMarkdown
+              components={{
+                h1: ({ node, ...props }) => <h1 className={styles.heading} {...props} />,
+                h2: ({ node, ...props }) => <h2 className={styles.heading} {...props} />,
+                h3: ({ node, ...props }) => <h3 className={styles.heading} {...props} />,
+                p: ({ node, ...props }) => <p className={styles.paragraph} {...props} />,
+                a: ({ node, ...props }) => <a className={styles.link} {...props} />,
+                ul: ({ node, ...props }) => <ul className={styles.list} {...props} />,
+                ol: ({ node, ...props }) => <ol className={styles.orderedList} {...props} />,
+                li: ({ node, ...props }) => <li className={styles.listItem} {...props} />
+              }}
+            >
+              {postBody}
+            </ReactMarkdown>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

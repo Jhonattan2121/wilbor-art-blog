@@ -92,7 +92,7 @@ async function getHivePosts(username: string) {
 
         return {
           id: `${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
-          title: post.title || '',
+          title: post.title,
           url: `/p/${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
           src: media.url,
           type: getMediaType(media.url, media.type),
