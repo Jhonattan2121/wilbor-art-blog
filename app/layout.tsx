@@ -27,6 +27,7 @@ import { Metadata } from 'next/types';
 //import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
 //import ShareModals from '@/share/ShareModals';
 import Image from 'next/image';
+import Link from 'next/link';
 import BannerWilbor from "../public/wilborPhotos/bannerWilbor.png";
 import '../tailwind.css';
 
@@ -84,11 +85,13 @@ export default function RootLayout({
             <SwrConfigClient>
               <div className="w-full bg-white dark:bg-black px-3 py-3">
                 <div className="w-full max-w-[1280px] mx-auto flex justify-center">
-                  <Image
-                    src={BannerWilbor}
-                    alt="Wilbor Art Logo"
-                    className="h-24 sm:h-32 w-auto object-contain"
-                  />
+                  <Link href="/projects">
+                    <Image
+                      src={BannerWilbor}
+                      alt="Wilbor Art Logo"
+                      className="h-24 sm:h-32 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                    />
+                  </Link>
                 </div>
               </div>
               <main className={clsx(
@@ -97,7 +100,7 @@ export default function RootLayout({
               )}>
                 <div className="flex flex-col items-center">
                 </div>
-                <Nav siteDomainOrTitle="Wilbor Art" />
+                <Nav siteDomainOrTitle="" />
                 <div className={clsx(
                   'min-h-[16rem] sm:min-h-[30rem]',
                   'mb-12 w-full',

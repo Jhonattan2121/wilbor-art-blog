@@ -70,33 +70,43 @@ export default function About() {
         <div className="prose prose-lg max-w-none space-y-6">
           <h1 className="text-4xl font-bold text-center mb-6">Wilson Domingues "Wilbor"</h1>
 
-          <p className="text-lg mb-4">Carioca, artista visual, diretor de filmes e skatista. Dirigiu, atuou e produziu o primeiro vídeo de street skate carioca, <span className="font-semibold">"021 RSRJ"</span> (59 min), lançado em 2002 em VHS. Em 2007, lançou <span className="font-semibold">"Sangue e Suor"</span> (40 min), também sobre a cena do skate carioca, exibido no festival independente <span className="italic">Camera Mundo</span>, na Holanda.</p>
+          <p className="text-lg mb-4">
+            Wilson Domingues, conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
+          </p>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3">Coletivo XV e Praça XV</h2>
-          <p className="mb-4">Fundador do <span className="font-semibold">Coletivo XV</span>, responsável pela legalização do skate na Praça XV, ocupada por skatistas desde 1997. Desde 2011, promove eventos culturais e inclusão de mobiliário urbano para o skate e outros usos.</p>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Legado na Praça XV</h2>
+          <p className="mb-4">
+            Como fundador do <span className="font-semibold">Coletivo XV</span>, Wilbor foi fundamental na legalização do skate na Praça XV, um espaço ocupado pela comunidade skatista desde 1997. Desde 2011, seu trabalho transformou o local em um polo cultural, integrando mobiliário urbano para prática do skate e outras manifestações artísticas.
+          </p>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3">Atuação nas Artes</h2>
-          <p className="mb-4">Foi curador e produtor da exposição <span className="italic">"República do Skate"</span> (2011) no Museu da República. Participou da coletiva internacional <span className="italic">"Deslize"</span> (2013) no Museu de Arte do Rio com xilogravuras feitas em shapes de skate e videoarte, além de curadoria da sessão de filmes de skate. Possui obras no acervo do Skate em Berlim e participou da exposição <span className="italic">"Mocambo"</span> (2013), também em Berlim. Exibiu trabalhos na Romênia, China e, em 2015, fez a individual <span className="italic">"Carve"</span> em Nova York.</p>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Trajetória Artística</h2>
+          <p className="mb-4">
+            Sua carreira nas artes visuais inclui marcos importantes como a curadoria da exposição <span className="italic">"República do Skate"</span> (2011) no Museu da República e participação na exposição internacional <span className="italic">"Deslize"</span> (2013) no MAR. Suas obras, que incluem xilogravuras em shapes de skate e videoarte, já foram exibidas em Berlim, Romênia, China e Nova York, onde realizou sua exposição individual <span className="italic">"Carve"</span> em 2015.
+          </p>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3">Xilogravura e Novos Suportes</h2>
-          <p className="mb-4">Desenvolve uma linha de xilogravuras utilizando shapes de skate como matriz. Inspirado na xilogravura nordestina, explora novos suportes como tábuas de carne e discos de vinil. Sua pesquisa busca não apenas formar imagens, mas também explorar o significado e a relação dos objetos com seu cotidiano.</p>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Inovação em Xilogravura</h2>
+          <p className="mb-4">
+            Wilbor revoluciona a técnica da xilogravura ao usar shapes de skate como suporte. Inspirado pela tradição nordestina, ele expande suas possibilidades criativas incorporando materiais inusitados como tábuas de carne e discos de vinil. Seu processo artístico vai além da criação de imagens, buscando ressignificar objetos do cotidiano através da arte.
+          </p>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3">Curadoria e Produção Cultural</h2>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Produção Cultural</h2>
           <ul className="list-disc ml-6 space-y-2">
-            <li>Curadoria e produção no evento <span className="italic">"República do Skate"</span> no Museu da República, com debates, exibição de filmes, bandas e exposição com 56 artistas.</li>
-            <li>Participação na coletiva <span className="italic">"Deslize Surfe Skate"</span> (2014) no Museu de Arte do Rio.</li>
-            <li>Curadoria de sessões de filmes independentes.</li>
+            <li>Idealizou e produziu o <span className="italic">"República do Skate"</span>, um evento multidisciplinar no Museu da República que reuniu 56 artistas, debates, exibições e shows ao vivo.</li>
+            <li>Contribuiu com obras e curadoria na exposição <span className="italic">"Deslize Surfe Skate"</span> (2014) no MAR.</li>
+            <li>Desenvolve curadoria especializada em cinema independente de skate.</li>
           </ul>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3">Direção e Produção Audiovisual</h2>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Cinema e Audiovisual</h2>
           <ul className="list-disc ml-6 space-y-2">
-            <li>Direção e atuação no primeiro vídeo de skate carioca <span className="italic">"Representando o Skate do Rio"</span> (2002).</li>
-            <li>Direção do documentário <span className="italic">"Sangue e Suor"</span> (2007), exibido no Festival de Filme Independente de Roterdã.</li>
-            <li>Fundador do coletivo <span className="font-semibold">Zerovinteum Filmes</span>, especializado em vídeos de skate.</li>
+            <li>Pioneiro no audiovisual skatista com <span className="italic">"Representando o Skate do Rio"</span> (2002).</li>
+            <li>Diretor do aclamado <span className="italic">"Sangue e Suor"</span> (2007), com reconhecimento no Festival de Roterdã.</li>
+            <li>Criador do <span className="font-semibold">Zerovinteum Filmes</span>, produtora especializada em cultura skate.</li>
           </ul>
 
-          <h2 className="text-2xl font-semibold mt-6 mb-3">Gráficos e Produção para Marcas</h2>
-          <p className="mb-4">Criou gráficos para marcas de skate aplicados em shapes, rodas e estampas. Entre 2009 e 2013, dirigiu vídeos musicais e chamadas para os shows do Circo Voador, veiculadas na MTV.</p>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Design e Mídia</h2>
+          <p className="mb-4">
+            Sua arte se estende ao design comercial, criando identidades visuais para marcas de skate em shapes, rodas e vestuário. Entre 2009 e 2013, expandiu sua atuação dirigindo conteúdo audiovisual para o Circo Voador, com veiculação na MTV, consolidando sua versatilidade criativa.
+          </p>
 
           <footer className="mt-8 text-center text-gray-600 text-sm">Fotos por Tio Verde, Alex Carvalho, Cauã Csik, Henrique Madeira, Bianca Moraes, Felipe Tavora.</footer>
         </div>

@@ -19,7 +19,7 @@ export default function IconGrid({
       stroke="currentColor"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {includeTitle && <title>projects</title>}
+      {includeTitle && <title>Projetos</title>}
       <rect x="5.625" y="6.625" width="16.75" height="10.75" rx="1" strokeWidth="1.25"/>
       <line x1="11.375" y1="7" x2="11.375" y2="18" strokeWidth="1.25"/>
       <line x1="16.875" y1="7" x2="16.875" y2="18" strokeWidth="1.25"/>

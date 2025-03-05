@@ -2,23 +2,64 @@
 
 import ThemeSwitcher from '@/app/ThemeSwitcher';
 import SwitcherItem from '@/components/SwitcherItem';
+import { useEffect, useState } from 'react';
 import IconInstagram from './IconInstagram';
 import IconOdysee from './iconOdysee';
 import IconShop from './IconShop';
 import IconVimeo from './IconVimeo';
 
 export default function Footer() {
+  const [visitCount, setVisitCount] = useState(0);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const incrementVisits = async () => {
+      try {
+        if (!sessionStorage.getItem('visited')) {
+          const response = await fetch('/api/visits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to increment visits');
+          }
+
+          const data = await response.json();
+          setVisitCount(data.count);
+          sessionStorage.setItem('visited', 'true');
+        } else {
+          const response = await fetch('/api/visits');
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch visits');
+          }
+
+          const data = await response.json();
+          setVisitCount(data.count);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to update counter');
+      }
+    };
+
+    incrementVisits();
+  }, []);
 
   return (
-    <footer className="  w-full">
+    <footer className="w-full">
       <div className="max-w-7xl mx-auto p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Parte 1 - Esquerda */}
-          <div className="flex flex-col items-center 
-          md:items-start justify-start">
+          <div className="flex flex-col items-center md:items-start justify-start">
             <ThemeSwitcher />
             <p className="text-sm mt-2">
-              <strong>Copyright Wilbor Art @ 2025</strong></p>
+              <strong>Copyright Wilbor Art @ 2025</strong>
+            </p>
+            <p className="text-sm mt-2">
+            views: <strong>{visitCount}</strong>
+            </p>
           </div>
 
           {/* Parte 2 - Centro */}
@@ -27,7 +68,7 @@ export default function Footer() {
             <div className="flex gap-4">
               <SwitcherItem
                 icon={<IconInstagram />}
-                href="https://instagram.com/wilbordomingues"
+                href="https://instagram.com/wilbor_domina"
                 target="_blank"
                 rel="noopener noreferrer"
               />
