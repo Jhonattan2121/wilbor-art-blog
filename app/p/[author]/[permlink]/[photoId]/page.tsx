@@ -102,8 +102,8 @@ const fetchPhoto = async (id: string) => {
     const variations = [
       cleanId,
       cleanId.replace(/^\//, ''),
-      cleanId.replace(/-/g, '/'),  
-      cleanId.split('/').pop() || '' 
+      cleanId.replace(/-/g, '/'),
+      cleanId.split('/').pop() || ''
     ];
 
     for (const variation of variations) {
@@ -162,9 +162,23 @@ export default async function PhotoPage({
 
     console.log('Unique URLs after filtering:', uniqueIpfsUrls.length);
 
+    // Process the post body removing the images
+    const processedBody = hivePost.body
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/<img.*?>/g, '')
+      .replace(/<iframe.*?<\/iframe>/g, '')
+      .replace(/https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|webp)(?:\?[^\s<>"']*)?/gi, '') // Remove URLs de imagens
+      .replace(/##\s*DIY/g, '')
+      .replace(/\n\s*\n/g, '\n\n')
+      .trim();
+
     return (
       <div className="photo-container">
-        <PhotoGalleryClient urls={uniqueIpfsUrls} />
+        <PhotoGalleryClient
+          urls={uniqueIpfsUrls}
+          postTitle={hivePost.title}
+          postBody={processedBody}
+        />
       </div>
     );
 
