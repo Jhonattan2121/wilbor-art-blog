@@ -215,71 +215,65 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function GridPage({ 
-  searchParams 
-}: { 
-  searchParams: { page?: string } 
-}) {
+export default async function GridPage(props: any) {
+  const { searchParams } = props;
   const username = process.env.NEXT_PUBLIC_HIVE_USERNAME;
   const ITEMS_PER_PAGE = 12;
-  
-  // Usando uma variável intermediária para evitar o erro
-  const pageParam = searchParams?.page;
-  const currentPage = Number(pageParam) || 1;
+  const currentPage = Number(searchParams?.page) || 1;
 
   if (!username) {
-    console.log('Username não definido');
+    console.error('Username not defined');
     return <PhotosEmptyState />;
   }
 
-  try {
-    const { formattedPosts, originalPosts } = await getHivePosts(username);
+  const { formattedPosts, originalPosts } = await getHivePosts(username);
 
-    // Adiciona logs para debug
-    console.log('Posts originais encontrados:', originalPosts.length);
-    console.log('Posts formatados:', formattedPosts.length);
+  // Debug
+  console.log('Original posts:', originalPosts.length);
 
-    // Validação adicional
-    if (!formattedPosts || formattedPosts.length === 0) {
-      console.log('Nenhum post formatado encontrado');
-      return 
-    }
+  // Pagination
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedPosts = formattedPosts.slice(startIndex, endIndex).map(post => ({
+    ...post,
+    type: post.type === 'photo'
+      ? 'photo'
+      : post.type === 'video'
+        ? 'video'
+        : undefined
+  })) as Photo[];
 
-    // Paginação
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedPosts = formattedPosts
-      .slice(startIndex, endIndex)
-      .map(post => ({
-        ...post,
-        type: post.type as 'photo' | 'video'
-      }));
+  const postTags = extractAndCountTags(originalPosts, paginatedPosts);
 
-      const postTags = extractAndCountTags(originalPosts, paginatedPosts);
+  const photosCount = formattedPosts.length;
+  const totalPages = Math.ceil(photosCount / ITEMS_PER_PAGE);
+
+  // Current page validation
+  if (currentPage > totalPages) {
+    console.log('Redirecting - Invalid page:', { currentPage, totalPages });
+    return redirect('/projects?page=1');
+  }
 
 
-    const photosCount = formattedPosts.length;
-    const totalPages = Math.ceil(photosCount / ITEMS_PER_PAGE);
 
-    // Validação de página
-    if (currentPage < 1 || (totalPages > 0 && currentPage > totalPages)) {
-      console.log('Página inválida, redirecionando...');
-      return redirect('/projects?page=1');
-    }
+  // Sidebar data
+  const sidebarData = {
+    tags: postTags,
+    cameras: [],
+    simulations: [],
+  };
 
- // Sidebar data
- const sidebarData = {
-  tags: postTags,
-  cameras: [],
-  simulations: [],
-};
-    console.log('Debug final:', {
-      totalPosts: photosCount,
-      currentPage,
-      totalPages,
-      postsNaPagina: paginatedPosts.length,
-      tagsEncontradas: postTags.length
-    });
+  if (photosCount === 0) {
+    console.log('No posts found');
+    return <PhotosEmptyState />;
+  }
+
+  console.log('Debug - Rendering grid with:', {
+    totalPosts: photosCount,
+    postsOnPage: paginatedPosts.length,
+    page: currentPage,
+    totalPages: totalPages
+  });
 
     return (
       <div className="flex flex-row">
@@ -314,14 +308,10 @@ export default async function GridPage({
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
               >
                 Próxima
-              </Link>
-            )}
-          </div>
+                </Link>
+          )}
         </div>
       </div>
-    );
-  } catch (error) {
-    console.error('Error in GridPage:', error);
-    return 
-  }
+    </div>
+  );
 }
