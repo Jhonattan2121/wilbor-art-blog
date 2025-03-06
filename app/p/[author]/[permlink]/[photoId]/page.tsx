@@ -17,6 +17,7 @@ import { redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { PhotoGalleryClient } from './PhotoGalleryClient';
+import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 
 export const maxDuration = 60;
 
@@ -136,46 +137,27 @@ export default async function PhotoPage({
       redirect(PATH_ROOT);
     }
 
-    const bodyIpfsUrls = hivePost.body.match(/https:\/\/ipfs\.skatehive\.app\/ipfs\/[A-Za-z0-9]+/g) || [];
+    // Extrair mídia usando o MarkdownRenderer
+    const mediaItems = MarkdownRenderer.extractMediaFromHive(hivePost);
+    console.log('Mídia encontrada:', mediaItems);
 
-    let metadataIpfsUrls: string[] = [];
-    try {
-      const metadata = JSON.parse(hivePost.json_metadata);
-      const images = metadata.image || [];
-      metadataIpfsUrls = images.filter((url: string) =>
-        url.includes('ipfs.skatehive.app/ipfs/')
-      );
-    } catch (e) {
-      console.warn('Error parsing json_metadata:', e);
-    }
-
-    const allIpfsUrls = [...new Set([...bodyIpfsUrls, ...metadataIpfsUrls])];
-    console.log('Total IPFS URLs found:', allIpfsUrls.length);
-
-    const photoResult = await fetchPhoto(`${author}/${permlink}`);
-    const photoUrls = photoResult?.photos?.map(photo => photo.src) || [];
-
-    const uniqueIpfsUrls = allIpfsUrls.filter(url => {
-      const hash = extractIpfsHash(url);
-      return !photoUrls.some(photoUrl => photoUrl.includes(hash));
-    });
-
-    console.log('Unique URLs after filtering:', uniqueIpfsUrls.length);
-
-    // Process the post body removing the images
     const processedBody = hivePost.body
-      .replace(/!\[.*?\]\(.*?\)/g, '')
-      .replace(/<img.*?>/g, '')
-      .replace(/<iframe.*?<\/iframe>/g, '')
-      .replace(/https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|webp)(?:\?[^\s<>"']*)?/gi, '') // Remove URLs de imagens
-      .replace(/##\s*DIY/g, '')
-      .replace(/\n\s*\n/g, '\n\n')
-      .trim();
+  .replace(/<center>[\s\S]*?3Speak[\s\S]*?<\/center>/g, '')
+  .replace(/▶️[\s\S]*?3Speak/g, '')
+  .replace(/<iframe[\s\S]*?<\/iframe>/g, '')
+  .replace(/<img[\s\S]*?>/g, '')
+  .replace(/!\[.*?\]\(.*?\)/g, '')
+  .replace(/https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|webp)(?:\?[^\s<>"']*)?/gi, '')
+  .replace(/<center>\s*<\/center>/g, '')
+  .replace(/<[^>]*>/g, '')
+  .replace(/\n{3,}/g, '\n\n')
+  .replace(/^\s+|\s+$/gm, '')
+  .trim();
 
     return (
       <div className="photo-container">
         <PhotoGalleryClient
-          urls={uniqueIpfsUrls}
+          media={mediaItems}
           postTitle={hivePost.title}
           postBody={processedBody}
         />
