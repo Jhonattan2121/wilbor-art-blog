@@ -51,10 +51,24 @@ const extractIpfsHash = (url: string) => {
 };
 
 const getMediaType = (url: string, mediaType?: string) => {
+  if (url.includes('3speak.tv/embed')) {
+    return 'iframe';
+  }
+
+  if (url.includes('3speak.tv/embed') || url.includes('3speak.tv/watch')) {
+    return 'iframe';
+  }
+
+  if (url.includes('ipfs.skatehive.app/ipfs/')) {
+    return 'iframe';
+  }
   const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
     url.includes('type=video') ||
     mediaType === 'video' ||
-    url.includes('skatehype.com/ifplay.php');
+    url.includes('skatehype.com/ifplay.php') ||
+    url.includes('3speak.tv/watch') || 
+    url.includes('3speak.tv/embed');   
+
   if (isVideo) return 'video';
 
   if (url.includes('hackmd.io/_uploads/')) return 'photo';
@@ -90,12 +104,14 @@ async function getHivePosts(username: string) {
           postTags = post.category ? [post.category] : [];
         }
 
+        const type = getMediaType(media.url);
+
         return {
           id: `${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
           title: post.title,
           url: `/p/${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
           src: media.url,
-          type: getMediaType(media.url, media.type),
+          type: type,
           videoUrl: getMediaType(media.url, media.type) === 'video' ? media.url : undefined,
           blurData: '',
           takenAt: new Date(),
@@ -120,7 +136,16 @@ async function getHivePosts(username: string) {
             body: post.body
           },
           author: post.author,
-          permlink: post.permlink
+          permlink: post.permlink,
+          iframeHtml: type === 'iframe' ? 
+            `<iframe 
+              src="${media.url}" 
+              width="100%" 
+              height="100%" 
+              frameborder="0" 
+              allowfullscreen
+            ></iframe>`
+            : undefined
         } as Photo;
       });
     });
@@ -190,103 +215,113 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function GridPage(props: any) {
-  const { searchParams } = props;
+export default async function GridPage({ 
+  searchParams 
+}: { 
+  searchParams: { page?: string } 
+}) {
   const username = process.env.NEXT_PUBLIC_HIVE_USERNAME;
   const ITEMS_PER_PAGE = 12;
-  const currentPage = Number(searchParams?.page) || 1;
+  
+  // Usando uma variável intermediária para evitar o erro
+  const pageParam = searchParams?.page;
+  const currentPage = Number(pageParam) || 1;
 
   if (!username) {
-    console.error('Username not defined');
+    console.log('Username não definido');
     return <PhotosEmptyState />;
   }
 
-  const { formattedPosts, originalPosts } = await getHivePosts(username);
+  try {
+    const { formattedPosts, originalPosts } = await getHivePosts(username);
 
-  // Debug
-  console.log('Original posts:', originalPosts.length);
+    // Adiciona logs para debug
+    console.log('Posts originais encontrados:', originalPosts.length);
+    console.log('Posts formatados:', formattedPosts.length);
 
-  // Pagination
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedPosts = formattedPosts.slice(startIndex, endIndex).map(post => ({
-    ...post,
-    type: post.type === 'photo'
-      ? 'photo'
-      : post.type === 'video'
-        ? 'video'
-        : undefined
-  })) as Photo[];
+    // Validação adicional
+    if (!formattedPosts || formattedPosts.length === 0) {
+      console.log('Nenhum post formatado encontrado');
+      return 
+    }
 
-  const postTags = extractAndCountTags(originalPosts, paginatedPosts);
+    // Paginação
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedPosts = formattedPosts
+      .slice(startIndex, endIndex)
+      .map(post => ({
+        ...post,
+        type: post.type as 'photo' | 'video'
+      }));
 
-  const photosCount = formattedPosts.length;
-  const totalPages = Math.ceil(photosCount / ITEMS_PER_PAGE);
-
-  // Current page validation
-  if (currentPage > totalPages) {
-    console.log('Redirecting - Invalid page:', { currentPage, totalPages });
-    return redirect('/projects?page=1');
-  }
+      const postTags = extractAndCountTags(originalPosts, paginatedPosts);
 
 
+    const photosCount = formattedPosts.length;
+    const totalPages = Math.ceil(photosCount / ITEMS_PER_PAGE);
 
-  // Sidebar data
-  const sidebarData = {
-    tags: postTags,
-    cameras: [],
-    simulations: [],
-  };
+    // Validação de página
+    if (currentPage < 1 || (totalPages > 0 && currentPage > totalPages)) {
+      console.log('Página inválida, redirecionando...');
+      return redirect('/projects?page=1');
+    }
 
-  if (photosCount === 0) {
-    console.log('No posts found');
-    return <PhotosEmptyState />;
-  }
+ // Sidebar data
+ const sidebarData = {
+  tags: postTags,
+  cameras: [],
+  simulations: [],
+};
+    console.log('Debug final:', {
+      totalPosts: photosCount,
+      currentPage,
+      totalPages,
+      postsNaPagina: paginatedPosts.length,
+      tagsEncontradas: postTags.length
+    });
 
-  console.log('Debug - Rendering grid with:', {
-    totalPosts: photosCount,
-    postsOnPage: paginatedPosts.length,
-    page: currentPage,
-    totalPages: totalPages
-  });
-
-  return (
-    <div className="flex flex-row">
-      <div className="flex-1">
-        <PhotoGridPage
-          photos={paginatedPosts as Photo[]}
-          photosCount={photosCount}
-          tags={sidebarData.tags}
-          cameras={[] as Cameras}
-          simulations={[] as FilmSimulations}
-        />
+    return (
+      <div className="flex flex-row">
+        <div className="flex-1">
+          <PhotoGridPage
+            photos={paginatedPosts as Photo[]}
+            photosCount={photosCount}
+            tags={sidebarData.tags}
+            cameras={[] as Cameras}
+            simulations={[] as FilmSimulations}
+          />
 
 
+          {/* Paginação existente */}
+          <div className="flex justify-center gap-4 mt-8 mb-8">
+            {currentPage > 1 && (
+              <Link
+                href={`/projects?page=${currentPage - 1}`}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                Anterior
+              </Link>
+            )}
 
-        <div className="flex justify-center gap-4 mt-8 mb-8">
-          {currentPage > 1 && (
-            <Link
-              href={`/projects?page=${currentPage - 1}`}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Previous
-            </Link>
-          )}
+            <span className="px-4 py-2">
+              Página {currentPage} de {totalPages}
+            </span>
 
-          <span className="px-4 py-2">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          {currentPage < totalPages && (
-            <Link
-              href={`/projects?page=${currentPage + 1}`}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Next
-            </Link>
-          )}
+            {currentPage < totalPages && (
+              <Link
+                href={`/projects?page=${currentPage + 1}`}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                Próxima
+              </Link>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error in GridPage:', error);
+    return 
+  }
 }

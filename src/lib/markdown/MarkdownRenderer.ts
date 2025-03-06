@@ -1,55 +1,105 @@
 interface MediaContent {
-  type: 'image' | 'video';
+  type: 'image' | 'video' | 'iframe';
   url: string;
   thumbnailSrc?: string;
+  iframeHtml?: string;
 }
+
+const PINATA_GATEWAY = 'https://lime-useful-snake-714.mypinata.cloud';
+const SUPPORTED_IMAGE_TYPES = /\.(jpg|jpeg|png|gif|webp|avif|svg|bmp)$/i;
+const SUPPORTED_VIDEO_TYPES = /\.(mp4|webm|ogg|mov|avi|m4v)$/i;
 
 export class MarkdownRenderer {
   static extractMediaFromHive(post: any): MediaContent[] {
-    const mediaItems: MediaContent[] = [];
+    const mediaItems: Set<string> = new Set();
+    const result: MediaContent[] = [];
 
     if (!post?.body) return [];
 
-    // Extract images from markdown
-    const imagePattern = /!\[.*?\]\((.*?)\)/g;
-    const images = [...post.body.matchAll(imagePattern)].map(match => match[1]);
+    const threeSpeakPatterns = [
+      /<center><iframe.*?src="(https:\/\/3speak\.tv\/embed\?v=.*?)".*?><\/iframe><\/center>/g,
+      /<iframe.*?src="(https:\/\/3speak\.tv\/embed\?v=.*?)".*?><\/iframe>/g,
+      /\[3speak\](.*?)\[\/3speak\]/g,
+      /https:\/\/3speak\.tv\/watch\?v=([\w\d\.-]+\/[\w\d\.-]+)/g
+    ];
 
-    // Extract direct image URLs
-    const directImagePattern = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif))/gi;
-    const directImages = [...post.body.matchAll(directImagePattern)].map(match => match[1]);
+    let videoFound = false;
+    for (const pattern of threeSpeakPatterns) {
+      if (videoFound) break;
+      
+      const matches = [...post.body.matchAll(pattern)];
+      for (const match of matches) {
+        let videoId = match[1];
+        
+        if (videoId?.includes('3speak.tv')) {
+          videoId = videoId.includes('embed?v=')
+            ? videoId.split('embed?v=')[1]
+            : videoId.split('watch?v=')[1];
+        }
 
-    // Add found images
-    [...new Set([...images, ...directImages])].forEach(url => {
-      mediaItems.push({
-        type: 'image',
-        url: url
-      });
+        const cleanVideoId = videoId?.split('&')[0]?.trim();
+        
+        if (cleanVideoId && !mediaItems.has(cleanVideoId)) {
+          mediaItems.add(cleanVideoId);
+          result.push({
+            type: 'iframe',
+            url: `https://3speak.tv/embed?v=${cleanVideoId}`,
+            iframeHtml: `<iframe src="https://3speak.tv/embed?v=${cleanVideoId}" allowfullscreen></iframe>`
+          });
+          videoFound = true;
+          break;
+        }
+      }
+    }
+
+    const markdownImagePattern = /!\[.*?\]\((.*?)\)/g;
+    const markdownImages = [...post.body.matchAll(markdownImagePattern)];
+    markdownImages.forEach(match => {
+      const url = match[1].trim();
+      if (url && !mediaItems.has(url) && SUPPORTED_IMAGE_TYPES.test(url)) {
+        mediaItems.add(url);
+        result.push({ type: 'image', url });
+      }
     });
 
-    // Extract YouTube videos
-    const youtubePattern = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/g;
-    const youtubeMatches = [...post.body.matchAll(youtubePattern)];
-    youtubeMatches.forEach(match => {
-      const videoId = match[1];
-      mediaItems.push({
-        type: 'video',
-        url: `https://www.youtube.com/embed/${videoId}`,
-        thumbnailSrc: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-      });
+    const htmlImagePattern = /<img.*?src="(.*?)".*?>/g;
+    const htmlImages = [...post.body.matchAll(htmlImagePattern)];
+    htmlImages.forEach(match => {
+      const url = match[1].trim();
+      if (url && !mediaItems.has(url) && SUPPORTED_IMAGE_TYPES.test(url)) {
+        mediaItems.add(url);
+        result.push({ type: 'image', url });
+      }
     });
 
-    // Extract Skatehype videos
-    const skatehypePattern = /skatehype\.com\/(?:ifplay\.php\?v=|v\/[^\/]+\/)(\d+)/g;
-    const skatehypeMatches = [...post.body.matchAll(skatehypePattern)];
-    skatehypeMatches.forEach(match => {
-      const videoId = match[1];
-      mediaItems.push({
-        type: 'video',
-        url: `https://www.skatehype.com/ifplay.php?v=${videoId}`,
-        thumbnailSrc: `https://www.skatehype.com/tempimg/wilbor-${videoId}-hive.jpg`
-      });
+    const urlPattern = /https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|webp)(?:\?[^\s<>"']*)?/gi;
+    const urlImages = [...post.body.matchAll(urlPattern)];
+    urlImages.forEach(match => {
+      const url = match[0].trim();
+      if (url && !mediaItems.has(url)) {
+        mediaItems.add(url);
+        result.push({ type: 'image', url });
+      }
     });
 
-    return mediaItems;
+    try {
+      const metadata = JSON.parse(post.json_metadata);
+      const images = metadata.image || [];
+      images.forEach((url: string) => {
+        if (url && typeof url === 'string' && !mediaItems.has(url)) {
+          mediaItems.add(url);
+          result.push({ type: 'image', url });
+        }
+      });
+    } catch (e) {
+      console.warn('Erro ao parsear json_metadata:', e);
+    }
+
+    console.log('Total de mídia encontrada:', {
+      videos: result.filter(item => item.type === 'iframe').length,
+      imagens: result.filter(item => item.type === 'image').length
+    });
+
+    return result;
   }
 }

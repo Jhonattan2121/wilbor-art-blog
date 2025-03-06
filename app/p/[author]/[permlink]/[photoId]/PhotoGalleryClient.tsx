@@ -4,12 +4,18 @@ import { useCallback, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import styles from './PhotoGallery.module.css';
 
+interface MediaItem {
+  type: 'image' | 'video' | 'iframe';
+  url: string;
+  iframeHtml?: string;
+}
+
 export const PhotoGalleryClient = ({
-  urls,
+  media = [], 
   postTitle,
   postBody
 }: {
-  urls: string[];
+  media: MediaItem[];
   postTitle?: string;
   postBody?: string;
 }) => {
@@ -29,11 +35,11 @@ export const PhotoGalleryClient = ({
   }, []);
 
   const nextImage = () => {
-    setCurrentIndex((prev) => (prev + 1) % urls.length);
+    setCurrentIndex((prev) => (prev + 1) % media.length);
   };
 
   const previousImage = () => {
-    setCurrentIndex((prev) => (prev - 1 + urls.length) % urls.length);
+    setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -51,23 +57,71 @@ export const PhotoGalleryClient = ({
   }, [touchStart]);
 
   const preloadImages = useCallback(() => {
-    urls.forEach((url, index) => {
-      const img = new Image();
-      img.src = url;
-      img.onload = () => {
-        setImagesLoaded(prev => {
-          const newLoaded = [...prev];
-          newLoaded[index] = true;
-          return newLoaded;
-        });
-      };
-      setPreloadedImages(prev => [...prev, img]);
+    media.forEach((item, index) => {
+      if (item.type === 'image') {
+        const img = new Image();
+        img.src = item.url;
+        img.onload = () => {
+          setImagesLoaded(prev => {
+            const newLoaded = [...prev];
+            newLoaded[index] = true;
+            return newLoaded;
+          });
+        };
+        setPreloadedImages(prev => [...prev, img]);
+      }
     });
-  }, [urls]);
+  }, [media]);
 
   useEffect(() => {
     preloadImages();
   }, [preloadImages]);
+
+  const renderMedia = (item: MediaItem) => {
+    switch (item.type) {
+      case 'iframe':
+        return (
+          <div 
+            className={styles.iframeContainer}
+            dangerouslySetInnerHTML={{ __html: item.iframeHtml || '' }}
+          />
+        );
+      case 'image':
+        return (
+          <img
+            src={item.url}
+            alt={`Image ${currentIndex + 1}`}
+            loading="eager"
+            decoding="async"
+            className={styles.image}
+            style={{
+              opacity: imagesLoaded[currentIndex] ? 1 : 0.5,
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (!media || media.length === 0) {
+    return (
+      <div className={styles.infoContainer}>
+        <div className={styles.loadingIndicator}>
+          Nenhuma mídia encontrada
+        </div>
+        {postTitle && <h1 className={styles.title}>{postTitle}</h1>}
+        {postBody && (
+          <div className={styles.body}>
+            <ReactMarkdown>
+              {postBody}
+            </ReactMarkdown>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -90,17 +144,7 @@ export const PhotoGalleryClient = ({
             ←
           </button>
 
-          <img
-            src={urls[currentIndex]}
-            alt={`Image ${currentIndex + 1}`}
-            loading="eager"
-            decoding="async"
-            className={styles.image}
-            style={{
-              opacity: imagesLoaded[currentIndex] ? 1 : 0.5,
-              transition: 'opacity 0.3s ease-in-out'
-            }}
-          />
+          {renderMedia(media[currentIndex])}
 
           <button
             onClick={nextImage}
@@ -111,7 +155,7 @@ export const PhotoGalleryClient = ({
           </button>
 
           <div className={styles.counter}>
-            {currentIndex + 1} / {urls.length}
+            {currentIndex + 1} / {media.length}
           </div>
         </div>
       </div>
