@@ -49,14 +49,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     domains: [
-      'images.hive.blog',
-      'images.ecency.com',
-      'files.peakd.com',
-      'www.skatehype.com',
-      'hackmd.io',
+     
       'ipfs.skatehive.app',
-      'files.peakd.com',
-      'dmo9tcngmx442k9p.public.blob.vercel-storage.com'
+   
+      'https://lime-useful-snake-714.mypinata.cloud'
     ],
     unoptimized: true,
     formats: ['image/avif', 'image/webp'],
@@ -94,6 +90,9 @@ const nextConfig: NextConfig = {
     ],
 
   },
+  env: {
+    PINATA_JWT: process.env.PINATA_JWT,
+  }
 };
 
 export default nextConfig;

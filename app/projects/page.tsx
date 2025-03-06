@@ -51,10 +51,24 @@ const extractIpfsHash = (url: string) => {
 };
 
 const getMediaType = (url: string, mediaType?: string) => {
+  if (url.includes('3speak.tv/embed')) {
+    return 'iframe';
+  }
+
+  if (url.includes('3speak.tv/embed') || url.includes('3speak.tv/watch')) {
+    return 'iframe';
+  }
+
+  if (url.includes('ipfs.skatehive.app/ipfs/')) {
+    return 'iframe';
+  }
   const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
     url.includes('type=video') ||
     mediaType === 'video' ||
-    url.includes('skatehype.com/ifplay.php');
+    url.includes('skatehype.com/ifplay.php') ||
+    url.includes('3speak.tv/watch') || 
+    url.includes('3speak.tv/embed');   
+
   if (isVideo) return 'video';
 
   if (url.includes('hackmd.io/_uploads/')) return 'photo';
@@ -90,12 +104,14 @@ async function getHivePosts(username: string) {
           postTags = post.category ? [post.category] : [];
         }
 
+        const type = getMediaType(media.url);
+
         return {
           id: `${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
           title: post.title,
           url: `/p/${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
           src: media.url,
-          type: getMediaType(media.url, media.type),
+          type: type,
           videoUrl: getMediaType(media.url, media.type) === 'video' ? media.url : undefined,
           blurData: '',
           takenAt: new Date(),
@@ -120,7 +136,16 @@ async function getHivePosts(username: string) {
             body: post.body
           },
           author: post.author,
-          permlink: post.permlink
+          permlink: post.permlink,
+          iframeHtml: type === 'iframe' ? 
+            `<iframe 
+              src="${media.url}" 
+              width="100%" 
+              height="100%" 
+              frameborder="0" 
+              allowfullscreen
+            ></iframe>`
+            : undefined
         } as Photo;
       });
     });
@@ -250,40 +275,40 @@ export default async function GridPage(props: any) {
     totalPages: totalPages
   });
 
-  return (
-    <div className="flex flex-row">
-      <div className="flex-1">
-        <PhotoGridPage
-          photos={paginatedPosts as Photo[]}
-          photosCount={photosCount}
-          tags={sidebarData.tags}
-          cameras={[] as Cameras}
-          simulations={[] as FilmSimulations}
-        />
+    return (
+      <div className="flex flex-row">
+        <div className="flex-1">
+          <PhotoGridPage
+            photos={paginatedPosts as Photo[]}
+            photosCount={photosCount}
+            tags={sidebarData.tags}
+            cameras={[] as Cameras}
+            simulations={[] as FilmSimulations}
+          />
 
 
+          {/* Paginação existente */}
+          <div className="flex justify-center gap-4 mt-8 mb-8">
+            {currentPage > 1 && (
+              <Link
+                href={`/projects?page=${currentPage - 1}`}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                Anterior
+              </Link>
+            )}
 
-        <div className="flex justify-center gap-4 mt-8 mb-8">
-          {currentPage > 1 && (
-            <Link
-              href={`/projects?page=${currentPage - 1}`}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Previous
-            </Link>
-          )}
+            <span className="px-4 py-2">
+              Página {currentPage} de {totalPages}
+            </span>
 
-          <span className="px-4 py-2">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          {currentPage < totalPages && (
-            <Link
-              href={`/projects?page=${currentPage + 1}`}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Next
-            </Link>
+            {currentPage < totalPages && (
+              <Link
+                href={`/projects?page=${currentPage + 1}`}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                Próxima
+                </Link>
           )}
         </div>
       </div>
