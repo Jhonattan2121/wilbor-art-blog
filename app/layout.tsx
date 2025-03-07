@@ -64,7 +64,6 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-              <Footer />
               <div className="w-full bg-white dark:bg-black px-3 py-3">
                 <div className="w-full max-w-[1280px] mx-auto flex justify-center">
                   <Link href="/projects">
@@ -90,7 +89,7 @@ export default function RootLayout({
                   <ShareModals />
                   {children}
                 </div>
-
+                <Footer />
               </main>
               {/* <CommandK /> */}
             </SwrConfigClient>

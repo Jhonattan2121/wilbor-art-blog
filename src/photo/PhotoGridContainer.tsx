@@ -13,7 +13,7 @@ export interface Photo {
   url: string;
   src: string;
   title: string;
-  type: 'photo' | 'video' | 'iframe'; 
+  type: 'photo' | 'video' | 'iframe';
   thumbnailSrc?: string;
   videoUrl?: string;
   width: number;
@@ -41,7 +41,7 @@ export interface Photo {
   };
   author?: string;
   permlink?: string;
-  iframeHtml?: string;  
+  iframeHtml?: string;
 }
 
 interface Media {
@@ -49,12 +49,13 @@ interface Media {
   url: string;
   src: string;
   title: string;
-  type: 'photo' | 'video' | 'iframe';  
+  type: 'photo' | 'video' | 'iframe';
   thumbnailSrc?: string;
   width?: number;
   videoUrl?: string;
   height?: number;
-  iframeHtml?: string; 
+  iframeHtml?: string;
+  tags?: string[];
 }
 
 interface PhotoGridContainerProps {
@@ -85,7 +86,6 @@ const MediaItem = ({ item }: { item: Media & { hiveMetadata?: { body: string } }
       return (
         <iframe
           src={`https://3speak.tv/embed?v=${cleanVideoId}&player=1&autoplay=0&controls=1&title=0&showinfo=0&branding=0`}
-         
           allowFullScreen
         />
       );
@@ -124,6 +124,8 @@ const MediaItem = ({ item }: { item: Media & { hiveMetadata?: { body: string } }
     return null;
   };
 
+
+
   return (
     <Link href={`/p/${item.id}`} className="block">
       <div
@@ -135,7 +137,6 @@ const MediaItem = ({ item }: { item: Media & { hiveMetadata?: { body: string } }
           <div className="w-full h-full flex items-center justify-center">
             {renderMedia()}
           </div>
-
           <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <h3 className="text-white text-sm truncate">
               {item.title || 'Sem título'}
