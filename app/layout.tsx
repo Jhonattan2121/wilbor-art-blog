@@ -1,6 +1,3 @@
-//import { Analytics } from '@vercel/analytics/react';
-//import { SpeedInsights } from '@vercel/speed-insights/react';
-//import { clsx } from 'clsx/lite';
 import {
   BASE_URL,
   DEFAULT_THEME,
@@ -18,16 +15,9 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { clsx } from 'clsx/lite';
 import { ThemeProvider } from 'next-themes';
-import { Metadata } from 'next/types';
-//import { ThemeProvider } from 'next-themes';
-//import Nav from '@/app/Nav';
-//import Footer from '@/app/Footer';
-//import CommandK from '@/app/CommandK';
-//import SwrConfigClient from '@/state/SwrConfigClient';
-//import AdminBatchEditPanel from '@/admin/AdminBatchEditPanel';
-//import ShareModals from '@/share/ShareModals';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Metadata } from 'next/types';
 import BannerWilbor from "../public/wilborPhotos/bannerWilbor.png";
 import '../tailwind.css';
 
@@ -44,27 +34,14 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   },
   icons: [{
-    url: '/favicon.ico',
     rel: 'icon',
+    url: '/favicons/icon.png',
     type: 'image/png',
-    sizes: '180x180',
+    sizes: '32x32'
   }, {
-    url: '/favicons/light.png',
-    rel: 'icon',
-    media: '(prefers-color-scheme: light)',
-    type: 'image/png',
-    sizes: '32x32',
-  }, {
-    url: '/favicons/dark.png',
-    rel: 'icon',
-    media: '(prefers-color-scheme: dark)',
-    type: 'image/png',
-    sizes: '32x32',
-  }, {
-    url: '/favicons/apple-touch-icon.png',
-    rel: 'icon',
-    type: 'image/png',
-    sizes: '180x180',
+    rel: 'apple-touch-icon',
+    url: '/favicons/favicon.png',
+    sizes: '180x180'
   }],
 };
 
@@ -79,6 +56,10 @@ export default function RootLayout({
       // Suppress hydration errors due to next-themes behavior
       suppressHydrationWarning
     >
+      <head>
+        <link rel="icon" type="image/png" href="/favicons/icon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon.png" />
+      </head>
       <body>
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
