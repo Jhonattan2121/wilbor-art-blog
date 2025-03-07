@@ -115,7 +115,7 @@ export default function About() {
             href="/projects"
             className="group bg-black/70 hover:bg-black/90 text-white px-8 py-3 rounded-full text-lg font-medium transition-all flex items-center gap-2"
           >
-            Ver nossos projetos →
+            Ver Meus projetos →
           </a>
         </div>
       </section>
