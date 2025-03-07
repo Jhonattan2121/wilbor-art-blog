@@ -10,6 +10,14 @@ import { getPhotosTagDataCached } from '@/tag/data';
 import type { Metadata } from 'next';
 import { cache } from 'react';
 
+interface TagPageParams {
+  tag: string;
+}
+
+interface PageProps {
+  params: Promise<TagPageParams>;
+}
+
 const getPhotosTagDataCachedCached = cache((tag: string) =>
   getPhotosTagDataCached({ tag, limit: INFINITE_SCROLL_GRID_INITIAL }));
 
@@ -23,51 +31,27 @@ if (STATICALLY_OPTIMIZED_PHOTO_CATEGORIES && IS_PRODUCTION) {
   };
 }
 
-interface TagProps {
-  params: Promise<{ tag: string }>
-}
+export async function generateMetadata({ 
+  params 
+}: PageProps): Promise<Metadata> {
+  const { tag } = await params;
+  const decodedTag = decodeURIComponent(tag);
+  
+  const [photos, { count, dateRange }] = await getPhotosTagDataCachedCached(decodedTag);
 
-export async function generateMetadata({
-  params,
-}: TagProps): Promise<Metadata> {
-  const { tag: tagFromParams } = await params;
+  if (photos.length === 0) return {};
 
-  const tag = decodeURIComponent(tagFromParams);
-
-  const [
-    photos,
-    { count, dateRange },
-  ] = await getPhotosTagDataCachedCached(tag);
-
-  if (photos.length === 0) { return {}; }
-
-  const {
-    url,
-    title,
-    description,
-    images,
-  } = generateMetaForTag(tag, photos, count, dateRange);
+  const { url, title, description, images } = generateMetaForTag(decodedTag, photos, count, dateRange);
 
   return {
     title,
-    openGraph: {
-      title,
-      description,
-      images,
-      url,
-    },
+    openGraph: { title, description, images, url },
     twitter: {
       images,
       description,
       card: 'summary_large_image',
     },
     description,
-  };
-}
-
-interface TagPageProps {
-  params: {
-    tag: string;
   };
 }
 
@@ -106,8 +90,10 @@ const getMediaType = (url: string, mediaType?: string) => {
   return 'photo';
 };
 
-export default async function TagPage({ params }: TagPageProps) {
-  const { tag } = params;
+export default async function TagPage({ 
+  params 
+}: PageProps) {
+  const { tag } = await params;
   const decodedTag = decodeURIComponent(tag);
   const username = process.env.NEXT_PUBLIC_HIVE_USERNAME;
 
