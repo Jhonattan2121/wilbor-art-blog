@@ -6,7 +6,6 @@ import {
 } from '@/app/paths';
 import Switcher from '@/components/Switcher';
 import SwitcherItem from '@/components/SwitcherItem';
-import { useAppState } from '@/state/AppState';
 import { GRID_HOMEPAGE_ENABLED } from './config';
 
 export type SwitcherSelection = 'feed' | 'portifolio';
@@ -18,7 +17,6 @@ export default function ViewSwitcher({
   currentSelection?: SwitcherSelection
   showAdmin?: boolean
 }) {
-  const { setIsCommandKOpen } = useAppState();
 
   const renderItemFeed = () =>
     <SwitcherItem
