@@ -4,6 +4,7 @@ import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
   isPathAdmin,
+  isPathContact,
   isPathFeed,
   isPathGrid,
   isPathSignIn
@@ -45,11 +46,13 @@ export default function Nav({
 
   const switcherSelectionForPath = (): SwitcherSelection | undefined => {
     if (pathname === PATH_ROOT) {
-      return GRID_HOMEPAGE_ENABLED ? 'portifolio' : 'feed';
+      return GRID_HOMEPAGE_ENABLED ? 'projects' : 'feed';
     } else if (isPathGrid(pathname)) {
-      return 'portifolio';
+      return 'projects';
     } else if (isPathFeed(pathname)) {
       return 'feed';
+    } else if (isPathContact(pathname)) {
+      return 'contact';
     }
   };
 
