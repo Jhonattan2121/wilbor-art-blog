@@ -10,8 +10,13 @@ import {
 } from './src/app/paths';
 import { auth } from './src/auth';
 
-export default function middleware(req: NextRequest, res: NextResponse) {
-  const pathname = req.nextUrl.pathname;
+export function middleware(request: NextRequest) {
+  // If on root route, redirect to /projects
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/projects', request.url));
+  }
+
+  const pathname = request.nextUrl.pathname;
 
   // Novo código para rotas /p/
   if (pathname.startsWith('/p/')) {
@@ -19,33 +24,33 @@ export default function middleware(req: NextRequest, res: NextResponse) {
 
     if (photoId?.includes('-')) {
       const [author, permlink] = photoId.split('-');
-      return NextResponse.rewrite(new URL(`/projects/${author}/${permlink}`, req.url));
+      return NextResponse.rewrite(new URL(`/projects/${author}/${permlink}`, request.url));
     }
   }
 
   if (pathname === PATH_ADMIN) {
-    return NextResponse.redirect(new URL(PATH_ADMIN_PHOTOS, req.url));
+    return NextResponse.redirect(new URL(PATH_ADMIN_PHOTOS, request.url));
   } else if (pathname === PATH_OG) {
-    return NextResponse.redirect(new URL(PATH_OG_SAMPLE, req.url));
+    return NextResponse.redirect(new URL(PATH_OG_SAMPLE, request.url));
   } else if (/^\/photos\/(.)+$/.test(pathname)) {
     // Accept /photos/* paths, but serve /p/*
     const matches = pathname.match(/^\/photos\/(.+)$/);
     return NextResponse.rewrite(new URL(
       `${PREFIX_PHOTO}/${matches?.[1]}`,
-      req.url,
+      request.url,
     ));
   } else if (/^\/t\/(.)+$/.test(pathname)) {
     // Accept /t/* paths, but serve /tag/*
     const matches = pathname.match(/^\/t\/(.+)$/);
     return NextResponse.rewrite(new URL(
       `${PREFIX_TAG}/${matches?.[1]}`,
-      req.url,
+      request.url,
     ));
   }
 
   return auth(
-    req as unknown as NextApiRequest,
-    res as unknown as NextApiResponse,
+    request as unknown as NextApiRequest,
+    NextResponse as unknown as NextApiResponse,
   );
 }
 
@@ -64,6 +69,7 @@ export async function GET(request: Request) {
 
 export const config = {
   matcher: [
+    '/',
     '/((?!api$|api/auth|_next/static|_next/image|favicon.ico$|favicons/|grid$|feed$|home-image$|template-image$|template-image-tight$|template-url$|$).*)',
   ],
 };

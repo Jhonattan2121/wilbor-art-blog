@@ -4,7 +4,6 @@ import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
   isPathAdmin,
-  isPathContact,
   isPathFeed,
   isPathGrid,
   isPathSignIn
@@ -51,8 +50,7 @@ export default function Nav({
       return 'projects';
     } else if (isPathFeed(pathname)) {
       return 'feed';
-    } else if (isPathContact(pathname)) {
-      return 'contact';
+
     }
   };
 
@@ -104,7 +102,7 @@ export default function Nav({
             NAV_HEIGHT_CLASS,
           )}
         >
-        
+
         </div>
         : undefined}
       sideHiddenOnMobile

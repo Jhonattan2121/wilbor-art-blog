@@ -34,13 +34,11 @@ export class MarkdownRenderer {
             type: 'iframe',
             url: url,
             iframeHtml: `<iframe 
-              src="${url}?autoplay=1&controls=0&muted=1&loop=1&showinfo=0&modestbranding=1&playsinline=1"
+              src="${url}?autoplay=1&controls=1&muted=1&loop=1&showinfo=1&modestbranding=1&playsinline=1"
               className="w-full h-full"
               style="aspect-ratio: 1/1;"
-              allow="autoplay"
+              allow="autoplay; fullscreen"
               frameborder="0"
-              controlslist="nodownload nofullscreen noremoteplayback"
-              disablePictureInPicture
             ></iframe>`
           });
         }
