@@ -216,8 +216,7 @@ export const SHOW_REPO_LINK =
 
 // GRID
 
-export const GRID_HOMEPAGE_ENABLED =
-  process.env.NEXT_PUBLIC_GRID_HOMEPAGE === '1';
+export const GRID_HOMEPAGE_ENABLED = true; 
 export const GRID_ASPECT_RATIO =
   process.env.NEXT_PUBLIC_GRID_ASPECT_RATIO
     ? parseFloat(process.env.NEXT_PUBLIC_GRID_ASPECT_RATIO)

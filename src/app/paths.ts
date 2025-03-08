@@ -18,7 +18,6 @@ export const PATH_OG = '/og';
 export const PATH_GRID_INFERRED = GRID_HOMEPAGE_ENABLED ? PATH_ROOT : PATH_GRID;
 // eslint-disable-next-line max-len
 export const PATH_FEED_INFERRED = GRID_HOMEPAGE_ENABLED ? PATH_FEED : PATH_ROOT;
-
 // Path prefixes
 export const PREFIX_PHOTO = '/p';
 export const PREFIX_TAG = '/tag';

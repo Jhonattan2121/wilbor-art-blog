@@ -7,6 +7,12 @@ import {
 import Switcher from '@/components/Switcher';
 import SwitcherItem from '@/components/SwitcherItem';
 import { GRID_HOMEPAGE_ENABLED } from './config';
+import IconEmail from './IconEmail';
+import IconInstagram from './IconInstagram';
+import IconOdysee from './iconOdysee';
+import IconShop from './IconShop';
+import IconVimeo from './IconVimeo';
+import IconWhatsapp from './IconWhatsapp';
 
 export type SwitcherSelection = 'projects' | 'feed';
 
@@ -17,8 +23,6 @@ export default function ViewSwitcher({
   currentSelection?: SwitcherSelection
   showAdmin?: boolean
 }) {
-
-
 
   const renderItemGrid = () =>
     <SwitcherItem
@@ -36,20 +40,51 @@ export default function ViewSwitcher({
       noPadding
     />;
 
-
-
   return (
     <div className="flex gap-1 sm:gap-2">
       <Switcher>
         {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
         {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
       </Switcher>
-      {/* <Switcher type="borderless">
+      <Switcher>
         <SwitcherItem
-          icon={<IconSearch />}
-          onClick={() => setIsCommandKOpen?.(true)}
+          icon={<IconInstagram />}
+          href="https://instagram.com/wilbor_domina"
+          target="_blank"
+          rel="noopener noreferrer"
         />
-      </Switcher> */}
+        <SwitcherItem
+          icon={<IconVimeo />}
+          href="https://vimeo.com/wilbor"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <SwitcherItem
+          icon={<IconOdysee />}
+          href="https://odysee.com/@wilbor"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <SwitcherItem
+          icon={<IconShop />}
+          href="https://web.marcelforart.com/wilson_domingues/collections"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <SwitcherItem
+          icon={<IconWhatsapp />}
+          href="https://wa.me/5521986351316"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <SwitcherItem
+          icon={<IconEmail />}
+          href="mailto:wilsondomingues@gmail.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      </Switcher>
+
     </div>
   );
 }
