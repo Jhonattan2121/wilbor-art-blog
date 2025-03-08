@@ -5,53 +5,49 @@ interface MediaContent {
   iframeHtml?: string;
 }
 
-const PINATA_GATEWAY = 'https://lime-useful-snake-714.mypinata.cloud';
 const SUPPORTED_IMAGE_TYPES = /\.(jpg|jpeg|png|gif|webp|avif|svg|bmp)$/i;
-const SUPPORTED_VIDEO_TYPES = /\.(mp4|webm|ogg|mov|avi|m4v)$/i;
 
 export class MarkdownRenderer {
   static extractMediaFromHive(post: any): MediaContent[] {
     const mediaItems: Set<string> = new Set();
     const result: MediaContent[] = [];
 
-    if (!post?.body) return [];
+    // Add debug logs
+    console.log('Processing post:', post.author, post.permlink);
 
-    const threeSpeakPatterns = [
-      /<center><iframe.*?src="(https:\/\/3speak\.tv\/embed\?v=.*?)".*?><\/iframe><\/center>/g,
-      /<iframe.*?src="(https:\/\/3speak\.tv\/embed\?v=.*?)".*?><\/iframe>/g,
-      /\[3speak\](.*?)\[\/3speak\]/g,
-      /https:\/\/3speak\.tv\/watch\?v=([\w\d\.-]+\/[\w\d\.-]+)/g
+    // New flexible regex pattern for IPFS skatehive iframes
+    const skatehivePatterns = [
+      /<iframe[^>]*src=["'](https?:\/\/ipfs\.skatehive\.app\/ipfs\/[^"']+)["'][^>]*>/i,
+      /<iframe[^>]*src=["']([^"']*ipfs\.skatehive\.app[^"']*)["'][^>]*>/i
     ];
 
-    let videoFound = false;
-    for (const pattern of threeSpeakPatterns) {
-      if (videoFound) break;
-      
-      const matches = [...post.body.matchAll(pattern)];
-      for (const match of matches) {
-        let videoId = match[1];
+    // Search for IPFS skatehive iframes
+    for (const pattern of skatehivePatterns) {
+      const matches = post.body.match(pattern);
+      if (matches) {
+        const url = matches[1];
+        console.log('IPFS URL found:', url);
         
-        if (videoId?.includes('3speak.tv')) {
-          videoId = videoId.includes('embed?v=')
-            ? videoId.split('embed?v=')[1]
-            : videoId.split('watch?v=')[1];
-        }
-
-        const cleanVideoId = videoId?.split('&')[0]?.trim();
-        
-        if (cleanVideoId && !mediaItems.has(cleanVideoId)) {
-          mediaItems.add(cleanVideoId);
+        if (!mediaItems.has(url)) {
+          mediaItems.add(url);
           result.push({
             type: 'iframe',
-            url: `https://3speak.tv/embed?v=${cleanVideoId}`,
-            iframeHtml: `<iframe src="https://3speak.tv/embed?v=${cleanVideoId}" allowfullscreen></iframe>`
+            url: url,
+            iframeHtml: `<iframe 
+              src="${url}?autoplay=1&controls=0&muted=1&loop=1&showinfo=0&modestbranding=1&playsinline=1"
+              className="w-full h-full"
+              style="aspect-ratio: 1/1;"
+              allow="autoplay"
+              frameborder="0"
+              controlslist="nodownload nofullscreen noremoteplayback"
+              disablePictureInPicture
+            ></iframe>`
           });
-          videoFound = true;
-          break;
         }
       }
     }
 
+    // Process markdown images
     const markdownImagePattern = /!\[.*?\]\((.*?)\)/g;
     const markdownImages = [...post.body.matchAll(markdownImagePattern)];
     markdownImages.forEach(match => {
@@ -92,14 +88,15 @@ export class MarkdownRenderer {
         }
       });
     } catch (e) {
-      console.warn('Erro ao parsear json_metadata:', e);
+      console.warn('Error parsing json_metadata:', e);
     }
 
-    console.log('Total de mídia encontrada:', {
+    console.log('Total media found:', {
       videos: result.filter(item => item.type === 'iframe').length,
-      imagens: result.filter(item => item.type === 'image').length
+      images: result.filter(item => item.type === 'image').length
     });
 
+    console.log('Final result:', result);
     return result;
   }
 }

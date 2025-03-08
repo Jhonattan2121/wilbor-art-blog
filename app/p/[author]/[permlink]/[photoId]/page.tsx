@@ -5,6 +5,7 @@ import {
   PATH_ROOT
 } from '@/app/paths';
 import { getPost as fetchHivePost } from '@/lib/hive/hive-client';
+import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import {
   descriptionForPhoto,
   RELATED_GRID_PHOTOS_TO_SHOW,
@@ -17,7 +18,6 @@ import { redirect } from 'next/navigation';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 import { PhotoGalleryClient } from './PhotoGalleryClient';
-import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 
 export const maxDuration = 60;
 
@@ -73,56 +73,6 @@ export async function generateMetadata({
   };
 }
 
-const extractIpfsHash = (url: string) => {
-  // Debug
-  console.log('Received URL:', url);
-
-  const patterns = [
-    /ipfs\.skatehive\.app\/ipfs\/([A-Za-z0-9]+)/,
-    /\/ipfs\/([A-Za-z0-9]+)/,
-    /^([A-Za-z0-9]+)$/
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) {
-      console.log('Hash found:', match[1]);
-      return match[1];
-    }
-  }
-
-  console.log('No IPFS hash found');
-  return '';
-};
-
-const fetchPhoto = async (id: string) => {
-  try {
-    const cleanId = id.replace(/\/+/g, '/').trim();
-    console.log('Clean ID:', cleanId);
-
-    const variations = [
-      cleanId,
-      cleanId.replace(/^\//, ''),
-      cleanId.replace(/-/g, '/'),
-      cleanId.split('/').pop() || ''
-    ];
-
-    for (const variation of variations) {
-      console.log('Trying variation:', variation);
-      const result = await getPhotosNearIdCachedCached(variation);
-      if (result?.photo) {
-        console.log('Photo found with variation:', variation);
-        return result;
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error fetching photo:', error);
-    return null;
-  }
-};
-
 export default async function PhotoPage({
   params,
 }: PhotoProps) {
@@ -137,22 +87,22 @@ export default async function PhotoPage({
       redirect(PATH_ROOT);
     }
 
-    // Extrair mídia usando o MarkdownRenderer
+    // Extract media using MarkdownRenderer
     const mediaItems = MarkdownRenderer.extractMediaFromHive(hivePost);
     console.log('Mídia encontrada:', mediaItems);
 
     const processedBody = hivePost.body
-  .replace(/<center>[\s\S]*?3Speak[\s\S]*?<\/center>/g, '')
-  .replace(/▶️[\s\S]*?3Speak/g, '')
-  .replace(/<iframe[\s\S]*?<\/iframe>/g, '')
-  .replace(/<img[\s\S]*?>/g, '')
-  .replace(/!\[.*?\]\(.*?\)/g, '')
-  .replace(/https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|webp)(?:\?[^\s<>"']*)?/gi, '')
-  .replace(/<center>\s*<\/center>/g, '')
-  .replace(/<[^>]*>/g, '')
-  .replace(/\n{3,}/g, '\n\n')
-  .replace(/^\s+|\s+$/gm, '')
-  .trim();
+      .replace(/https:\/\/lime-useful-snake-714\.mypinata\.cloud\/ipfs\/[^\s?]+(\?pinataGatewayToken=[^\s]+)?/g, '')
+      .replace(/<center>[\s\S]*?3Speak[\s\S]*?<\/center>/g, '')
+      .replace(/▶️[\s\S]*?3Speak/g, '')
+      .replace(/<iframe[\s\S]*?<\/iframe>/g, '')
+      .replace(/<img[\s\S]*?>/g, '')
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|webp)(?:\?[^\s<>"']*)?/gi, '')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/^\s+|\s+$/gm, '')
+      .trim();
 
     return (
       <div className="photo-container">

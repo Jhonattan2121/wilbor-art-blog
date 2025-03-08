@@ -71,25 +71,39 @@ interface PhotoGridContainerProps {
 
 
 const MediaItem = ({ item }: { item: Media & { hiveMetadata?: { body: string } } }) => {
-
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const renderMedia = () => {
-    if (item.type === 'iframe' || item.src?.includes('3speak.tv')) {
-      const videoId = item.src?.includes('?v=')
-        ? item.src.split('?v=')[1]
-        : item.src.includes('/watch?v=')
-          ? item.src.split('/watch?v=')[1]
-          : item.src;
-      const cleanVideoId = videoId.split('&')[0];
+    console.log('Rendering media:', { 
+      type: item.type, 
+      src: item.src, 
+      includes: item.src?.includes('ipfs.skatehive.app/ipfs/') 
+    });
+
+    if (item.src?.includes('ipfs.skatehive.app/ipfs/')) {
       return (
-        <iframe
-          src={`https://3speak.tv/embed?v=${cleanVideoId}&player=1&autoplay=0&controls=1&title=0&showinfo=0&branding=0`}
-          allowFullScreen
-        />
+        <div className="relative w-full h-full aspect-square overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <iframe
+            src={`${item.src}?autoplay=1&mute=1&controls=0&loop=1&showinfo=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${window.location.origin}&preload=auto&loading=lazy`}
+            className="w-[200%] h-[200%]"
+            style={{
+              transform: 'scale(0.7)',
+              transformOrigin: 'center',
+              pointerEvents: 'none'
+            }}
+          allow="autoplay"
+              frameBorder="0"
+          />
+        </div>
+      </div>
+
+         
       );
     }
+    
+    // Check other media types
     if (item.type === 'photo') {
       return (
 
@@ -104,22 +118,6 @@ const MediaItem = ({ item }: { item: Media & { hiveMetadata?: { body: string } }
           unoptimized={true}
         />
       );
-    }
-    if (item.type === 'video') {
-      if (item.videoUrl) {
-        return (
-          <div className="relative w-full pt-[56.25%]">
-            <video
-              src={item.videoUrl}
-              className="absolute inset-0 w-full h-full object-cover"
-              controls={isHovered}
-              muted
-              loop
-              playsInline
-            />
-          </div>
-        );
-      }
     }
     return null;
   };
@@ -139,14 +137,14 @@ const MediaItem = ({ item }: { item: Media & { hiveMetadata?: { body: string } }
           </div>
           <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <h3 className="text-white text-sm truncate">
-              {item.title || 'Sem título'}
+              {item.title || 'No title'}
             </h3>
           </div>
         </div>
 
         {imageError && (
           <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-500">Erro ao carregar mídia</span>
+            <span className="text-gray-500">Failed to load media</span>
           </div>
         )}
       </div>
@@ -179,7 +177,7 @@ export default function PhotoGridContainer({
   const uniqueMedia = removeDuplicates(media);
 
   if (!Array.isArray(media)) {
-    console.warn('Media não é um array:', media);
+    console.warn('Media is not an array:', media);
     return null;
   }
 
@@ -208,7 +206,7 @@ export default function PhotoGridContainer({
               ))
             ) : (
               <div className="col-span-full text-center py-8 text-gray-500">
-                Nenhuma mídia encontrada
+                No media found
               </div>
             )}
           </div>

@@ -109,7 +109,10 @@ export default async function TagPage({
     try {
       const metadata = JSON.parse(post.json_metadata || '{}');
       const postTags = metadata.tags || [];
-      return postTags.includes(decodedTag);
+      
+      const hasHiddenTag = postTags.includes('hidden');
+      
+      return postTags.includes(decodedTag) && !hasHiddenTag;
     } catch (e) {
       console.warn('Error parsing tags:', e);
       return false;

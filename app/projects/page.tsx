@@ -12,70 +12,25 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
-const extractIpfsHash = (url: string) => {
-
-  if (url.includes('ipfs.skatehive.app/ipfs/')) {
-    const ipfsMatch = url.match(/ipfs\.skatehive\.app\/ipfs\/([A-Za-z0-9]+)/);
-    if (ipfsMatch) {
-      return ipfsMatch[1];
-    }
-  }
-
-  if (url.includes('hackmd.io/_uploads/')) {
-    const hackmdMatch = url.match(/hackmd\.io\/_uploads\/([A-Za-z0-9-_]+)/);
-    if (hackmdMatch) {
-      return hackmdMatch[1];
-    }
-  }
-
-  if (url.includes('.blob.vercel-storage.com/')) {
-    const blobMatch = url.match(/([A-Za-z0-9-_]+)\.(jpg|jpeg|png|gif|webp)/i);
-    if (blobMatch) {
-      return blobMatch[1];
-    }
-  }
-
-  if (url.includes('files.peakd.com/')) {
-    const peakdMatch = url.match(/([A-Za-z0-9]+)\.(jpg|jpeg|png|gif|webp)/i);
-    if (peakdMatch) {
-      return peakdMatch[1];
-    }
-  }
-
-  const genericMatch = url.match(/\/([A-Za-z0-9-_]+)\.(jpg|jpeg|png|gif|webp)$/i);
-  if (genericMatch) {
-    return genericMatch[1];
-  }
-
-  return url.split('/').pop()?.split('.')[0] || '';
-};
-
 const getMediaType = (url: string, mediaType?: string) => {
-  if (url.includes('3speak.tv/embed')) {
+  if (url.includes('ipfs.skatehive.app/ipfs/')) {
+    console.log('Encontrado URL do IPFS skatehive:', url);
     return 'iframe';
   }
 
-  if (url.includes('3speak.tv/embed') || url.includes('3speak.tv/watch')) {
-    return 'iframe';
-  }
-
+  // First check if it is an IPFS skatehive link
   if (url.includes('ipfs.skatehive.app/ipfs/')) {
     return 'iframe';
   }
-  const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/) ||
-    url.includes('type=video') ||
-    mediaType === 'video' ||
-    url.includes('skatehype.com/ifplay.php') ||
-    url.includes('3speak.tv/watch') || 
-    url.includes('3speak.tv/embed');   
 
+  const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/);
   if (isVideo) return 'video';
 
   if (url.includes('hackmd.io/_uploads/')) return 'photo';
 
   if (url.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/)) return 'photo';
 
-  if (url.includes('ipfs.skatehive.app/ipfs/') ||
+  if (url.includes('ipfs.skatehive.app/') ||
     url.includes('.blob.vercel-storage.com/') ||
     url.includes('files.peakd.com/')) {
     return 'photo';
@@ -87,9 +42,22 @@ const getMediaType = (url: string, mediaType?: string) => {
 async function getHivePosts(username: string) {
   try {
     const posts = await getPostsByAuthor(username);
+    console.log('Posts encontrados:', posts.length);
 
     const formattedPosts = posts.flatMap(post => {
+      // Check if the post has the "hidden" tag
+      try {
+        const metadata = JSON.parse(post.json_metadata || '{}');
+        const postTags = metadata.tags || [];
+        if (postTags.includes('hidden')) {
+          return [];
+        }
+      } catch (e) {
+        console.warn('Error checking hidden tag:', e);
+      }
+
       const mediaItems = MarkdownRenderer.extractMediaFromHive(post);
+      console.log('Media items found:', mediaItems.length);
 
       return mediaItems.map((media) => {
         let postTags: string[] = [];
@@ -104,14 +72,31 @@ async function getHivePosts(username: string) {
           postTags = post.category ? [post.category] : [];
         }
 
-        const type = getMediaType(media.url);
+        const extractIpfsHash = (url: string): string => {
+          if (url.includes('ipfs.skatehive.app/ipfs/')) {
+            const match = url.match(/ipfs\/([a-zA-Z0-9]+)/);
+            return match ? match[1] : '';
+          }
+          return '';
+        };
 
         return {
           id: `${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
           title: post.title,
           url: `/p/${post.author}/${post.permlink}/${extractIpfsHash(media.url)}`,
+          type: media.type === 'iframe' || media.url.includes('ipfs.skatehive.app/ipfs/')
+            ? 'iframe'
+            : getMediaType(media.url),
           src: media.url,
-          type: type,
+          iframeHtml: media.url.includes('ipfs.skatehive.app/ipfs/')
+            ? `<iframe 
+                src="${media.url}?autoplay=1&controls=0&muted=1&loop=1"
+                className="w-full h-full"
+                style="aspect-ratio: 1/1;"
+                allow="autoplay"
+                frameborder="0"
+              ></iframe>`
+            : undefined,
           videoUrl: getMediaType(media.url, media.type) === 'video' ? media.url : undefined,
           blurData: '',
           takenAt: new Date(),
@@ -137,15 +122,6 @@ async function getHivePosts(username: string) {
           },
           author: post.author,
           permlink: post.permlink,
-          iframeHtml: type === 'iframe' ? 
-            `<iframe 
-              src="${media.url}" 
-              width="100%" 
-              height="100%" 
-              frameborder="0" 
-              allowfullscreen
-            ></iframe>`
-            : undefined
         } as Photo;
       });
     });
@@ -168,7 +144,7 @@ async function getHivePosts(username: string) {
       originalPosts: posts
     };
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Erro ao processar posts:', error);
     return {
       formattedPosts: [],
       originalPosts: []
@@ -234,14 +210,16 @@ export default async function GridPage(props: any) {
   // Pagination
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedPosts = formattedPosts.slice(startIndex, endIndex).map(post => ({
-    ...post,
-    type: post.type === 'photo'
-      ? 'photo'
-      : post.type === 'video'
-        ? 'video'
-        : undefined
-  })) as Photo[];
+  const paginatedPosts = formattedPosts.slice(startIndex, endIndex).map(post => {
+    // Mantém o tipo original do post
+    return {
+      ...post,
+      // Se for um iframe do IPFS skatehive, força o tipo como 'iframe'
+      type: post.src?.includes('ipfs.skatehive.app/ipfs/')
+        ? 'iframe'
+        : post.type
+    } as Photo;
+  });
 
   const postTags = extractAndCountTags(originalPosts, paginatedPosts);
 
@@ -275,40 +253,40 @@ export default async function GridPage(props: any) {
     totalPages: totalPages
   });
 
-    return (
-      <div className="flex flex-row">
-        <div className="flex-1">
-          <PhotoGridPage
-            photos={paginatedPosts as Photo[]}
-            photosCount={photosCount}
-            tags={sidebarData.tags}
-            cameras={[] as Cameras}
-            simulations={[] as FilmSimulations}
-          />
+  return (
+    <div className="flex flex-row">
+      <div className="flex-1">
+        <PhotoGridPage
+          photos={paginatedPosts as Photo[]}
+          photosCount={photosCount}
+          tags={sidebarData.tags}
+          cameras={[] as Cameras}
+          simulations={[] as FilmSimulations}
+        />
 
 
-          {/* Paginação existente */}
-          <div className="flex justify-center gap-4 mt-8 mb-8">
-            {currentPage > 1 && (
-              <Link
-                href={`/projects?page=${currentPage - 1}`}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-              >
-                Anterior
-              </Link>
-            )}
+        {/* Paginação existente */}
+        <div className="flex justify-center gap-4 mt-8 mb-8">
+          {currentPage > 1 && (
+            <Link
+              href={`/projects?page=${currentPage - 1}`}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              Anterior
+            </Link>
+          )}
 
-            <span className="px-4 py-2">
-              Página {currentPage} de {totalPages}
-            </span>
+          <span className="px-4 py-2">
+            Página {currentPage} de {totalPages}
+          </span>
 
-            {currentPage < totalPages && (
-              <Link
-                href={`/projects?page=${currentPage + 1}`}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-              >
-                Próxima
-                </Link>
+          {currentPage < totalPages && (
+            <Link
+              href={`/projects?page=${currentPage + 1}`}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              Próxima
+            </Link>
           )}
         </div>
       </div>

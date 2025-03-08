@@ -49,29 +49,12 @@ const nextConfig: NextConfig = {
   },
   images: {
     domains: [
-     
       'ipfs.skatehive.app',
-   
-      'https://lime-useful-snake-714.mypinata.cloud'
+      'lime-useful-snake-714.mypinata.cloud'
     ],
     unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.skatehive.app',
-        pathname: '/ipfs/**'
-      },
-      {
-        protocol: 'https',
-        hostname: '**.skatehype.com',
-        pathname: '/tempimg/**'
-      },
-      {
-        protocol: 'https',
-        hostname: 'hackmd.io',
-        pathname: '/_uploads/**',
-      },
       {
         protocol: 'https',
         hostname: 'ipfs.skatehive.app',
@@ -79,16 +62,22 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.blob.vercel-storage.com',
-        pathname: '/**',
+        hostname: 'lime-useful-snake-714.mypinata.cloud',
+        pathname: '/ipfs/**',
+      }
+    ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/ipfs/:path*',
+        destination: 'https://ipfs.skatehive.app/ipfs/:path*'
       },
       {
-        protocol: 'https',
-        hostname: 'files.peakd.com',
-        pathname: '/file/**',
-      },
-    ],
-
+        source: '/pinata/:path*',
+        destination: 'https://lime-useful-snake-714.mypinata.cloud/ipfs/:path*'
+      }
+    ];
   },
   env: {
     PINATA_JWT: process.env.PINATA_JWT,

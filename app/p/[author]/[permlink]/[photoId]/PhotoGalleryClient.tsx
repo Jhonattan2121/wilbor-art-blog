@@ -11,7 +11,7 @@ interface MediaItem {
 }
 
 export const PhotoGalleryClient = ({
-  media = [], 
+  media = [],
   postTitle,
   postBody
 }: {
@@ -34,42 +34,37 @@ export const PhotoGalleryClient = ({
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  const nextImage = () => {
-    setCurrentIndex((prev) => (prev + 1) % media.length);
-  };
+  const nextImage = useCallback(() => {
+    setCurrentIndex(prev => {
+      const images = media.filter(item => item.type === 'image');
+      return (prev + 1) % images.length;
+    });
+  }, [media]);
 
-  const previousImage = () => {
-    setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    const touchEnd = e.changedTouches[0].clientX;
-    const diff = touchStart - touchEnd;
-
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) nextImage();
-      else previousImage();
-    }
-  }, [touchStart]);
+  const previousImage = useCallback(() => {
+    setCurrentIndex(prev => {
+      const images = media.filter(item => item.type === 'image');
+      return (prev - 1 + images.length) % images.length;
+    });
+  }, [media]);
 
   const preloadImages = useCallback(() => {
-    media.forEach((item, index) => {
-      if (item.type === 'image') {
-        const img = new Image();
-        img.src = item.url;
-        img.onload = () => {
-          setImagesLoaded(prev => {
-            const newLoaded = [...prev];
-            newLoaded[index] = true;
-            return newLoaded;
-          });
-        };
-        setPreloadedImages(prev => [...prev, img]);
-      }
+    const imageItems = media.filter(item => item.type === 'image');
+
+    // Initialize the array of loaded images
+    setImagesLoaded(new Array(imageItems.length).fill(false));
+
+    imageItems.forEach((item, index) => {
+      const img = new Image();
+      img.src = item.url;
+      img.onload = () => {
+        setImagesLoaded(prev => {
+          const newLoaded = [...prev];
+          newLoaded[index] = true;
+          return newLoaded;
+        });
+      };
+      setPreloadedImages(prev => [...prev, img]);
     });
   }, [media]);
 
@@ -81,7 +76,7 @@ export const PhotoGalleryClient = ({
     switch (item.type) {
       case 'iframe':
         return (
-          <div 
+          <div
             className={styles.iframeContainer}
             dangerouslySetInnerHTML={{ __html: item.iframeHtml || '' }}
           />
@@ -123,48 +118,30 @@ export const PhotoGalleryClient = ({
     );
   }
 
+  // Separate iframes and images
+  const iframes = media.filter(item => item.type === 'iframe');
+  const images = media.filter(item => item.type === 'image');
+
   return (
     <div>
-      <div className={styles.container}>
-        <div
-          className={styles.mainImageContainer}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {!imagesLoaded[currentIndex] && (
-            <div className={styles.loadingIndicator}>
-              Loading...
+      {/* Featured iframe section */}
+      {iframes.length > 0 && (
+        <div className={styles.mainIframeContainer}>
+          {iframes.map((iframe, index) => (
+            <div key={index} className={styles.iframeWrapper}>
+              <div
+                className={styles.iframeContainer}
+                dangerouslySetInnerHTML={{ __html: iframe.iframeHtml || '' }}
+              />
             </div>
-          )}
-          <button
-            onClick={previousImage}
-            className={styles.prevButton}
-            aria-label="Previous image"
-          >
-            ←
-          </button>
-
-          {renderMedia(media[currentIndex])}
-
-          <button
-            onClick={nextImage}
-            className={styles.nextButton}
-            aria-label="Next image"
-          >
-            →
-          </button>
-
-          <div className={styles.counter}>
-            {currentIndex + 1} / {media.length}
-          </div>
+          ))}
         </div>
-      </div>
+      )}
 
+      {/* Text section */}
       <div className={styles.infoContainer}>
         {postTitle && (
-          <h1 className={styles.title}>
-            {postTitle}
-          </h1>
+          <h1 className={styles.title}>{postTitle}</h1>
         )}
         {postBody && (
           <div className={styles.body}>
@@ -185,6 +162,35 @@ export const PhotoGalleryClient = ({
           </div>
         )}
       </div>
+
+      {/* Image gallery */}
+      {images.length > 0 && (
+        <div className={styles.imageGalleryContainer}>
+          <div className={styles.mainImageContainer}>
+            {images[currentIndex] && !imagesLoaded[currentIndex] && (
+              <div className={styles.loadingIndicator}>Carregando...</div>
+            )}
+            <button
+              onClick={previousImage}
+              className={styles.prevButton}
+              disabled={images.length <= 1}
+            >
+              ←
+            </button>
+            {images[currentIndex] && renderMedia(images[currentIndex])}
+            <button
+              onClick={nextImage}
+              className={styles.nextButton}
+              disabled={images.length <= 1}
+            >
+              →
+            </button>
+            <div className={styles.counter}>
+              {currentIndex + 1} / {images.length}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
