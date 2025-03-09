@@ -7,7 +7,6 @@ import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';
 import { Discussion } from '@hiveio/dhive';
-import { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
@@ -182,13 +181,6 @@ function extractAndCountTags(posts: Discussion[], paginatedPosts: Photo[]): Tags
   return Array.from(tagCount.entries())
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count);
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: 'Hive Posts',
-    description: 'My posts from Hive blockchain',
-  };
 }
 
 export default async function GridPage(props: any) {

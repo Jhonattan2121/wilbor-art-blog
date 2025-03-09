@@ -11,7 +11,6 @@ export const SHOULD_PREFETCH_ALL_LINKS: boolean | undefined = undefined;
 
 // TEMPLATE META
 
-export const TEMPLATE_TITLE = 'Wilbor Studios';
 export const TEMPLATE_DESCRIPTION = 'Store photos with original camera data';
 
 // SOURCE CODE
@@ -69,8 +68,7 @@ export const VERCEL_BYPASS_SECRET = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 // SITE META
 
 export const SITE_TITLE =
-  process.env.NEXT_PUBLIC_SITE_TITLE ||
-  TEMPLATE_TITLE;
+  process.env.NEXT_PUBLIC_SITE_TITLE;
 
 // User-facing domain, potential site title
 const SITE_DOMAIN =
