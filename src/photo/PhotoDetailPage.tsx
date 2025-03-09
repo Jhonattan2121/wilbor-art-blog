@@ -16,7 +16,7 @@ import PhotoLarge from './PhotoLarge';
 
 interface Photo extends Omit<BasePhoto, 'updatedAt' | 'createdAt' | 'takenAt'> {
   id: string;
-  type?: 'video' | 'photo';
+  type?: 'video' | 'photo' | 'iframe';
   src: string;
   url: string;
   title: string;
@@ -24,6 +24,8 @@ interface Photo extends Omit<BasePhoto, 'updatedAt' | 'createdAt' | 'takenAt'> {
   height: number;
   priority?: boolean;
   hiveMetadata?: {
+    author: string;
+    permlink: string;
     body: string;
   };
   tags: string[];

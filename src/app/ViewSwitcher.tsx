@@ -43,8 +43,8 @@ export default function ViewSwitcher({
   return (
     <div className="flex gap-1 sm:gap-2">
       <Switcher>
-        {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
         {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
+        {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
       </Switcher>
       <Switcher>
         <SwitcherItem

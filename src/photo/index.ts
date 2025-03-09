@@ -110,12 +110,14 @@ export interface Photo extends PhotoDb {
   takenAtNaiveFormatted: string
   width: number;
   height: number;
-  type?: 'video' | 'photo';
+  type?: 'video' | 'photo' | 'iframe';
   priority?: boolean;
   title: string;
   author: string;
   tags: string[];
   hiveMetadata?: {
+    author: string;
+    permlink: string;
     body: string;
   };
 }

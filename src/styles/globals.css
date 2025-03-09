@@ -1,0 +1,36 @@
+.markdown-content {
+  @apply text-gray-200;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-bold text-white mt-8 mb-4;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-semibold text-white mt-6 mb-3;
+}
+
+.markdown-content p {
+  @apply mb-4 leading-relaxed;
+}
+
+.markdown-content a {
+  @apply text-blue-400 hover:text-blue-300 no-underline hover:underline;
+}
+
+.markdown-content hr {
+  @apply border-gray-700 my-6;
+}
+
+.markdown-content ul {
+  @apply list-disc pl-6 mb-4;
+}
+
+.markdown-content li {
+  @apply mb-2;
+}
+
+/* Estilo especial para emojis */
+.markdown-content p:has(span[role="img"]) {
+  @apply flex items-center gap-2;
+}

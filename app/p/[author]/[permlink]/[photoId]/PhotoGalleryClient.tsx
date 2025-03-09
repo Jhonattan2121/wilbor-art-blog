@@ -72,7 +72,14 @@ export const PhotoGalleryClient = ({
     preloadImages();
   }, [preloadImages]);
 
+  useEffect(() => {
+    console.log('Media received:', media);
+    console.log('Images filtered:', media.filter(item => item.type === 'image'));
+    console.log('IFrames filtered:', media.filter(item => item.type === 'iframe'));
+  }, [media]);
+
   const renderMedia = (item: MediaItem) => {
+    console.log('Trying to render item:', item);
     switch (item.type) {
       case 'iframe':
         return (
@@ -82,6 +89,7 @@ export const PhotoGalleryClient = ({
           />
         );
       case 'image':
+        console.log('Rendering image:', item.url);
         return (
           <img
             src={item.url}
@@ -93,25 +101,38 @@ export const PhotoGalleryClient = ({
               opacity: imagesLoaded[currentIndex] ? 1 : 0.5,
               transition: 'opacity 0.3s ease-in-out'
             }}
+            onError={(e) => {
+              console.error('Error loading image:', item.url);
+              const imgElement = e.target as HTMLImageElement;
+              if (imgElement.src.includes('pinataGatewayToken')) {
+                const newSrc = imgElement.src.split('?')[0];
+                console.log('Trying to reload without token:', newSrc);
+                imgElement.src = newSrc;
+              }
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully:', item.url);
+            }}
           />
         );
       default:
+        console.warn('Unsupported media type:', item.type);
         return null;
     }
   };
 
+  // Modify the render condition to be more specific
   if (!media || media.length === 0) {
+    console.log('No media found');
     return (
       <div className={styles.infoContainer}>
         <div className={styles.loadingIndicator}>
-          Nenhuma mídia encontrada
+          No media found. Check console for details.
         </div>
         {postTitle && <h1 className={styles.title}>{postTitle}</h1>}
         {postBody && (
           <div className={styles.body}>
-            <ReactMarkdown>
-              {postBody}
-            </ReactMarkdown>
+            <ReactMarkdown>{postBody}</ReactMarkdown>
           </div>
         )}
       </div>

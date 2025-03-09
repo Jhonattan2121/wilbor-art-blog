@@ -48,7 +48,6 @@ export default function PhotoGridPage({
         thumbnailSrc: photo.type === 'video' ? photo.thumbnailSrc : undefined,
         videoUrl: photo.type === 'video' ? photo.src : undefined
       }))}
-      count={photosCount}
       sidebar={
         <div
           className={clsx(

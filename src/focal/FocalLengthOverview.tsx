@@ -19,18 +19,29 @@ export default function FocalLengthOverview({
     <PhotoGridContainer
       cacheKey={`focal-${focal}`}
       media={photos.map(photo => ({
-        ...photo,
+        id: photo.id,
+        url: photo.url,
+        src: photo.src,
+        title: photo.title,
         type: photo.type || 'photo',
         thumbnailSrc: photo.type === 'video' ? photo.src : undefined,
-        videoUrl: photo.type === 'video' ? photo.src : undefined
+        videoUrl: photo.type === 'video' ? photo.src : undefined,
+        width: photo.width,
+        height: photo.height,
+        tags: photo.tags,
+        hiveMetadata: photo.hiveMetadata && {
+          author: photo.hiveMetadata.author || '',
+          permlink: photo.hiveMetadata.permlink || '',
+          body: photo.hiveMetadata.body || ''
+        }
       }))}
-      count={count}
       header={<FocalLengthHeader
         focal={focal}
         photos={photos}
         count={count}
         dateRange={dateRange} />}
       animateOnFirstLoadOnly={animateOnFirstLoadOnly}
-      sidebar={undefined} />
+      sidebar={undefined}
+    />
   );
 }

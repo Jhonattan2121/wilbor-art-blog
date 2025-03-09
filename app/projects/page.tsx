@@ -7,8 +7,6 @@ import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';
 import { Discussion } from '@hiveio/dhive';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 
 const getMediaType = (url: string, mediaType?: string) => {
@@ -184,10 +182,7 @@ function extractAndCountTags(posts: Discussion[], paginatedPosts: Photo[]): Tags
 }
 
 export default async function GridPage(props: any) {
-  const { searchParams } = props;
   const username = process.env.NEXT_PUBLIC_HIVE_USERNAME;
-  const ITEMS_PER_PAGE = 12;
-  const currentPage = Number(searchParams?.page) || 1;
 
   if (!username) {
     console.error('Username not defined');
@@ -199,88 +194,41 @@ export default async function GridPage(props: any) {
   // Debug
   console.log('Original posts:', originalPosts.length);
 
-  // Pagination
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedPosts = formattedPosts.slice(startIndex, endIndex).map(post => {
-    // Mantém o tipo original do post
+  const posts = formattedPosts.map(post => {
     return {
       ...post,
-      // Se for um iframe do IPFS skatehive, força o tipo como 'iframe'
       type: post.src?.includes('ipfs.skatehive.app/ipfs/')
         ? 'iframe'
         : post.type
     } as Photo;
   });
 
-  const postTags = extractAndCountTags(originalPosts, paginatedPosts);
+  const postTags = extractAndCountTags(originalPosts, posts);
 
   const photosCount = formattedPosts.length;
-  const totalPages = Math.ceil(photosCount / ITEMS_PER_PAGE);
-
-  // Current page validation
-  if (currentPage > totalPages) {
-    console.log('Redirecting - Invalid page:', { currentPage, totalPages });
-    return redirect('/projects?page=1');
-  }
-
-
-
-  // Sidebar data
-  const sidebarData = {
-    tags: postTags,
-    cameras: [],
-    simulations: [],
-  };
 
   if (photosCount === 0) {
     console.log('No posts found');
     return <PhotosEmptyState />;
   }
 
-  console.log('Debug - Rendering grid with:', {
-    totalPosts: photosCount,
-    postsOnPage: paginatedPosts.length,
-    page: currentPage,
-    totalPages: totalPages
-  });
+  // Sidebar data com todas as tags
+  const sidebarData = {
+    tags: postTags,
+    cameras: [],
+    simulations: [],
+  };
 
   return (
     <div className="flex flex-row">
       <div className="flex-1">
         <PhotoGridPage
-          photos={paginatedPosts as Photo[]}
+          photos={posts as Photo[]}
           photosCount={photosCount}
           tags={sidebarData.tags}
           cameras={[] as Cameras}
           simulations={[] as FilmSimulations}
         />
-
-
-        {/* Paginação existente */}
-        <div className="flex justify-center gap-4 mt-8 mb-8">
-          {currentPage > 1 && (
-            <Link
-              href={`/projects?page=${currentPage - 1}`}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Anterior
-            </Link>
-          )}
-
-          <span className="px-4 py-2">
-            Página {currentPage} de {totalPages}
-          </span>
-
-          {currentPage < totalPages && (
-            <Link
-              href={`/projects?page=${currentPage + 1}`}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Próxima
-            </Link>
-          )}
-        </div>
       </div>
     </div>
   );
