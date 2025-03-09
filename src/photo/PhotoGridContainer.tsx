@@ -2,6 +2,7 @@
 
 import SiteGrid from '@/components/SiteGrid';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
+import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { JSX, useState } from 'react';
@@ -287,8 +288,10 @@ const MediaItem = ({
   return (
     <article
       className={clsx(
-        'bg-black rounded-lg overflow-hidden transition-all duration-300',
-        isExpanded ? 'col-span-full' : 'cursor-pointer hover:opacity-90'
+        'rounded-lg overflow-hidden transition-all duration-300',
+        isExpanded
+          ? 'col-span-full'
+          : 'cursor-pointer hover:opacity-90'
       )}
       onClick={() => !isExpanded && onExpand()}
     >
@@ -314,7 +317,7 @@ const MediaItem = ({
                   e.stopPropagation();
                   onExpand();
                 }}
-                className="text-white bg-black/50 rounded-full p-2 hover:bg-black/75"
+                className="text-white bg-black/30 rounded-full p-2 hover:bg-black/50 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -335,38 +338,36 @@ const MediaItem = ({
 
             {mainItem.hiveMetadata?.body && (
               <div className="prose prose-invert prose-lg max-w-none mb-8">
-                <div className="bg-black/30 rounded-lg p-6">
-                  <div className="text-gray-200 leading-relaxed markdown-content space-y-4">
-                    <ReactMarkdown
-                      components={{
-                        p: ({ children }) => (
-                          <p className="mb-4 last:mb-0">{children}</p>
-                        ),
-                        a: ({ children, href }) => (
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300"
-                          >
-                            {children}
-                          </a>
-                        )
-                      }}
-                    >
-                      {formatPostContent(mainItem.hiveMetadata.body)}
-                    </ReactMarkdown>
-                  </div>
+                <div className=" leading-relaxed markdown-content space-y-4">
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => (
+                        <p className="mb-4 last:mb-0">{children}</p>
+                      ),
+                      a: ({ children, href }) => (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300"
+                        >
+                          {children}
+                        </a>
+                      )
+                    }}
+                  >
+                    {formatPostContent(mainItem.hiveMetadata.body)}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}
 
             {photos.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-white text-xl mb-4">Galeria de Fotos ({photos.length})</h3>
-                <div className="relative">
+                <div className="relative ">
                   <Slider
                     dots={true}
+                    dotsClass="slick-dots"
                     infinite={true}
                     speed={500}
                     slidesToShow={3}
@@ -390,6 +391,7 @@ const MediaItem = ({
                         }
                       }
                     ]}
+
                   >
                     {photos.map((photo, index) => (
                       <div key={photo.id || index} className="px-2">
@@ -400,17 +402,13 @@ const MediaItem = ({
                             fill
                             className="object-cover"
                             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                            quality={85}
+                            quality={50}
                             unoptimized={true}
                             onError={(e) => {
                               console.error('Erro ao carregar imagem:', photo.src);
                             }}
                           />
-                          {photo.title && (
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                              <p className="text-white text-sm">{photo.title}</p>
-                            </div>
-                          )}
+
                         </div>
                       </div>
                     ))}

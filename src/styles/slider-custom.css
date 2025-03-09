@@ -1,0 +1,23 @@
+/* Base style for dots and arrows */
+.slick-dots li button:before,
+.slick-dots li.slick-active button:before,
+.slick-prev:before,
+.slick-next:before {
+  opacity: 0.75;
+}
+
+/* Dark mode */
+:root[class~="dark"] .slick-dots li button:before,
+:root[class~="dark"] .slick-dots li.slick-active button:before,
+:root[class~="dark"] .slick-prev:before,
+:root[class~="dark"] .slick-next:before {
+  color: white !important;
+}
+
+/* Light mode */
+:root:not([class~="dark"]) .slick-dots li button:before,
+:root:not([class~="dark"]) .slick-dots li.slick-active button:before,
+:root:not([class~="dark"]) .slick-prev:before,
+:root:not([class~="dark"]) .slick-next:before {
+  color: black !important;
+}
