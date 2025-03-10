@@ -1,5 +1,5 @@
 import { Photo, PhotoDateRange } from '@/photo';
-import PhotoGridContainer from '@/photo/PhotoGridContainer';
+import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
 import TagHeader from './TagHeader';
 
 export default function TagOverview({

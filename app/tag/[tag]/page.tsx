@@ -2,8 +2,8 @@ import { IS_PRODUCTION, STATICALLY_OPTIMIZED_PHOTO_CATEGORIES } from '@/app/conf
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { INFINITE_SCROLL_GRID_INITIAL } from '@/photo';
-import { Photo } from '@/photo/PhotoGridContainer';
 import PhotoGridPage from '@/photo/PhotoGridPage';
+import { Photo } from '@/photo/PhotoProjectsContainer';
 import { getUniqueTags } from '@/photo/db/query';
 import { generateMetaForTag } from '@/tag';
 import { getPhotosTagDataCached } from '@/tag/data';

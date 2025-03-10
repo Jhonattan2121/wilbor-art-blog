@@ -5,8 +5,8 @@ import { useAppState } from '@/state/AppState';
 import { Tags } from '@/tag';
 import clsx from 'clsx';
 import { useEffect } from 'react';
-import PhotoGridContainer, { Photo } from './PhotoGridContainer';
 import PhotoGridSidebar from './PhotoGridSidebar';
+import PhotoGridContainer, { Photo } from './PhotoProjectsContainer';
 const PATH_GRID_INFERRED = 'projects';
 
 export default function PhotoGridPage({
@@ -49,24 +49,26 @@ export default function PhotoGridPage({
         videoUrl: photo.type === 'video' ? photo.src : undefined
       }))}
       sidebar={
-        <div
-          className={clsx(
-            'sticky top-0 -mb-5 -mt-5',
-            'max-h-screen h-full',
-          )}
-        >
+        <div className={clsx(
+          'sticky top-0 -mt-5',
+        )}>
           {renderGuard('top')}
           <div className={clsx(
-            'max-h-full overflow-y-auto [scrollbar-width:none]',
-            'py-4',
+            tags.length > 15 ? 'overflow-y-auto' : 'overflow-y-hidden',
+            'max-h-[calc(100vh-120px)]',
+            '[scrollbar-width:none]',
+            'py-4'
           )}>
             <PhotoGridSidebar {...{
               tags,
               cameras,
               simulations,
-              photosCount,
+
             }}
             />
+            <div className="py-4 text-sm text-gray-500">
+              {photosCount} {photosCount === 1 ? 'photo' : 'photos'}
+            </div>
           </div>
           {renderGuard('bottom')}
         </div>

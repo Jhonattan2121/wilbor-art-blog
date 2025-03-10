@@ -21,3 +21,22 @@
 :root:not([class~="dark"]) .slick-next:before {
   color: black !important;
 }
+
+/* Positioning of navigation buttons */
+.slick-prev {
+  left: -10px !important;
+  z-index: 1;
+}
+
+.slick-next {
+  right: -10px !important; 
+  z-index: 1;
+}
+
+/* Ensures that buttons are on top of the content */
+.slick-prev,
+.slick-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}

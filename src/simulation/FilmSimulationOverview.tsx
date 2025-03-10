@@ -1,5 +1,5 @@
 import { Photo, PhotoDateRange } from '@/photo';
-import PhotoGridContainer from '@/photo/PhotoGridContainer';
+import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
 import { FilmSimulation } from '.';
 import FilmSimulationHeader from './FilmSimulationHeader';
 

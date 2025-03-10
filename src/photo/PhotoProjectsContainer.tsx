@@ -232,7 +232,7 @@ const MediaItem = ({
           />
           {media.title && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-              <p className="text-white text-sm">{media.title}</p>
+              <p className=" text-sm">{media.title}</p>
             </div>
           )}
         </div>
@@ -276,7 +276,7 @@ const MediaItem = ({
           />
           {media.title && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-              <p className="text-white text-sm">{media.title}</p>
+              <p className=" text-sm">{media.title}</p>
             </div>
           )}
         </div>
@@ -286,31 +286,29 @@ const MediaItem = ({
   };
 
   return (
-    <article
-      className={clsx(
-        'rounded-lg overflow-hidden transition-all duration-300',
-        isExpanded
-          ? 'col-span-full'
-          : 'cursor-pointer hover:opacity-90'
-      )}
+    <div className={clsx(
+      'rounded-lg overflow-hidden transition-all duration-300',
+      isExpanded
+        ? 'col-span-full w-full mx-auto sm:px-4 px-0'
+        : 'cursor-pointer hover:opacity-90'
+    )}
       onClick={() => !isExpanded && onExpand()}
     >
       <div className={clsx(
         'w-full transition-all duration-300',
-        isExpanded ? 'max-w-6xl mx-auto' : ''
+        isExpanded ? 'sm:max-w-2xl mx-auto' : ''
       )}>
         {!isExpanded && (
           <>
             <div className="relative w-full h-0 pb-[100%]">
               {renderMedia(mainItem)}
             </div>
-
           </>
         )}
 
         {isExpanded && (
-          <div className="p-6">
-            <div className="flex items-start justify-between mb-6">
+          <div className="sm:p-6 p-4">
+            <div className="flex items-start justify-between mb-4">
               <h2 className="text-2xl font-bold text-white">{mainItem.title}</h2>
               <button
                 onClick={(e) => {
@@ -326,12 +324,12 @@ const MediaItem = ({
             </div>
 
             {videos.length > 0 && (
-              <div className="mb-8">
+              <div className="mb-2">
                 <div className="relative aspect-video rounded-lg overflow-hidden">
                   {renderMedia(videos[0], true)}
                 </div>
                 {videos[0].title && (
-                  <h3 className="text-white text-lg mt-2">{videos[0].title}</h3>
+                  <h3 className=" text-lg mt-2">{videos[0].title}</h3>
                 )}
               </div>
             )}
@@ -363,7 +361,7 @@ const MediaItem = ({
             )}
 
             {photos.length > 0 && (
-              <div className="mt-8">
+              <div className="mt-4">
                 <div className="relative ">
                   <Slider
                     dots={true}
@@ -381,13 +379,15 @@ const MediaItem = ({
                         settings: {
                           slidesToShow: 2,
                           slidesToScroll: 1,
+                          dots: true
                         }
                       },
                       {
                         breakpoint: 600,
                         settings: {
                           slidesToShow: 1,
-                          slidesToScroll: 1
+                          slidesToScroll: 1,
+                          dots: false
                         }
                       }
                     ]}
@@ -419,7 +419,7 @@ const MediaItem = ({
           </div>
         )}
       </div>
-    </article>
+    </div>
   );
 };
 
@@ -444,8 +444,8 @@ export default function PhotoGridContainer({
     <SiteGrid
       contentMain={
         <div className={clsx(
-          'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-          header && 'space-y-8 mt-1.5'
+          'max-w-5xl mx-auto',
+          header ? 'mb-8' : 'mb-4'
         )}>
           {header}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">

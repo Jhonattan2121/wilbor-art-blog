@@ -7,8 +7,8 @@ import {
 import { getPhotoSidebarData } from '@/photo/data';
 import { getPhotos, getPhotosMeta } from '@/photo/db/query';
 import PhotoFeedPage from '@/photo/PhotoFeedPage';
-import { Photo } from '@/photo/PhotoGridContainer';
 import PhotoGridPage from '@/photo/PhotoGridPage';
+import { Photo } from '@/photo/PhotoProjectsContainer';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { Metadata } from 'next/types';
 import { cache } from 'react';

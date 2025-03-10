@@ -19,20 +19,20 @@ import { clsx } from 'clsx/lite';
 import { useMemo } from 'react';
 import { FaTag } from 'react-icons/fa';
 import { IoMdCamera } from 'react-icons/io';
-import { PhotoDateRange, dateRangeForPhotos, photoQuantityText } from '.';
+import { PhotoDateRange, dateRangeForPhotos } from '.';
 import FavsTag from '../tag/FavsTag';
 
 export default function PhotoGridSidebar({
   tags,
   cameras,
   simulations,
-  photosCount,
+
   photosDateRange,
 }: {
   tags: Tags
   cameras: Cameras
   simulations: FilmSimulations
-  photosCount: number
+
   photosDateRange?: PhotoDateRange
 }) {
   const { start, end } = dateRangeForPhotos(undefined, photosDateRange);
@@ -44,7 +44,7 @@ export default function PhotoGridSidebar({
     , [tags, hiddenPhotosCount]);
 
   return (
-    <div className="space-y-2"> 
+    <div className="space-y-2">
       {SITE_ABOUT && <HeaderList
         items={[<p
           key="about"
@@ -136,16 +136,6 @@ export default function PhotoGridSidebar({
               />
             </div>)}
       />}
-      {photosCount > 0 && start
-        ? <HeaderList
-          title={photoQuantityText(photosCount, false)}
-          items={start === end
-            ? [start]
-            : [`${end} –`, start]}
-        />
-        : <HeaderList
-          items={[photoQuantityText(photosCount, false)]}
-        />}
     </div>
   );
 }
