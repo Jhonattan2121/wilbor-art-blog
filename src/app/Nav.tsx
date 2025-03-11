@@ -45,11 +45,11 @@ export default function Nav({
 
   const switcherSelectionForPath = (): SwitcherSelection | undefined => {
     if (pathname === PATH_ROOT) {
-      return GRID_HOMEPAGE_ENABLED ? 'projects' : 'feed';
+      return GRID_HOMEPAGE_ENABLED ? 'projects' : 'about';
     } else if (isPathGrid(pathname)) {
       return 'projects';
     } else if (isPathFeed(pathname)) {
-      return 'feed';
+      return 'about';
 
     }
   };

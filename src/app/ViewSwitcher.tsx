@@ -14,7 +14,7 @@ import IconShop from './IconShop';
 import IconVimeo from './IconVimeo';
 import IconWhatsapp from './IconWhatsapp';
 
-export type SwitcherSelection = 'projects' | 'feed';
+export type SwitcherSelection = 'projects' | 'about';
 
 export default function ViewSwitcher({
   currentSelection,
@@ -36,7 +36,7 @@ export default function ViewSwitcher({
     <SwitcherItem
       icon={<IconFeed />}
       href={PATH_FEED_INFERRED}
-      active={currentSelection === 'feed'}
+      active={currentSelection === 'about'}
       noPadding
     />;
 

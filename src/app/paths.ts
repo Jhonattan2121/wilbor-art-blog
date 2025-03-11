@@ -9,7 +9,7 @@ import { BASE_URL, GRID_HOMEPAGE_ENABLED } from './config';
 export const PATH_ROOT = '/';
 export const PATH_GRID = '/projects';
 export const Path_Contact = '/contact';
-export const PATH_FEED = '/feed';
+export const PATH_FEED = '/about';
 export const PATH_ADMIN = '/admin';
 export const PATH_API = '/api';
 export const PATH_SIGN_IN = '/sign-in';
