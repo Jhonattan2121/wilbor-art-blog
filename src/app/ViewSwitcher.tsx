@@ -44,60 +44,114 @@ export default function ViewSwitcher({
     />;
 
   return (
-    <div className="flex gap-1 sm:gap-2">
-      <Switcher>
-        {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
-        {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
-      </Switcher>
+    <div className="flex flex-col gap-1 sm:gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between relative">
+        {/* Menu mobile */}
+        <div className="sm:hidden relative">
+          <SwitcherItem
+            icon={<IconMenu />}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            noPadding
+          />
 
-      {/* Mobile Menu */}
-      <div className="sm:hidden">
-        <SwitcherItem
-          icon={<IconMenu />}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        />
+          {/* Menu mobile dropdown */}
+          <Switcher className={`
+            ${!isMenuOpen ? 'hidden' : 'flex'} 
+            absolute 
+            left-5 
+            ml-2
+            top-3 
+            -translate-y-1/2 
+            bg-white 
+
+          `}>
+            <SwitcherItem
+              icon={<IconInstagram />}
+              href="https://instagram.com/wilbor_domina"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+            <SwitcherItem
+              icon={<IconVimeo />}
+              href="https://vimeo.com/wilbor"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+            <SwitcherItem
+              icon={<IconOdysee />}
+              href="https://odysee.com/@wilbor"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+            <SwitcherItem
+              icon={<IconShop />}
+              href="https://web.marcelforart.com/wilson_domingues/collections"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+            <SwitcherItem
+              icon={<IconWhatsapp />}
+              href="https://wa.me/5521986351316"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+            <SwitcherItem
+              icon={<IconEmail />}
+              href="mailto:wilsondomingues@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          </Switcher>
+        </div>
+
+        {/* Main navigation */}
+        <div className="flex gap-1 sm:gap-2">
+          <Switcher>
+            {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
+            {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
+          </Switcher>
+        </div>
+
+        {/* Social media links */}
+        <Switcher className="hidden sm:flex">
+          <SwitcherItem
+            icon={<IconInstagram />}
+            href="https://instagram.com/wilbor_domina"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          <SwitcherItem
+            icon={<IconVimeo />}
+            href="https://vimeo.com/wilbor"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          <SwitcherItem
+            icon={<IconOdysee />}
+            href="https://odysee.com/@wilbor"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          <SwitcherItem
+            icon={<IconShop />}
+            href="https://web.marcelforart.com/wilson_domingues/collections"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          <SwitcherItem
+            icon={<IconWhatsapp />}
+            href="https://wa.me/5521986351316"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+          <SwitcherItem
+            icon={<IconEmail />}
+            href="mailto:wilsondomingues@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          />
+        </Switcher>
       </div>
-
-      {/* Social media links */}
-      <Switcher className={`${!isMenuOpen ? 'hidden sm:flex' : 'flex'}`}>
-        <SwitcherItem
-          icon={<IconInstagram />}
-          href="https://instagram.com/wilbor_domina"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-        <SwitcherItem
-          icon={<IconVimeo />}
-          href="https://vimeo.com/wilbor"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-        <SwitcherItem
-          icon={<IconOdysee />}
-          href="https://odysee.com/@wilbor"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-        <SwitcherItem
-          icon={<IconShop />}
-          href="https://web.marcelforart.com/wilson_domingues/collections"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-        <SwitcherItem
-          icon={<IconWhatsapp />}
-          href="https://wa.me/5521986351316"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-        <SwitcherItem
-          icon={<IconEmail />}
-          href="mailto:wilsondomingues@gmail.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        />
-      </Switcher>
-
     </div>
   );
 }
