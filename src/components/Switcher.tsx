@@ -13,7 +13,7 @@ export default function Switcher({
      SwitcherProps) 
      {
   return (
-    <div className={`flex items-center gap-1 ${type === 'regular' ? 'bg-neutral-100 p-1 rounded-lg' : ''} ${className}`}>
+    <div className={`flex items-center gap-1 ${type === 'regular' ? ' p-1 rounded-lg' : ''} ${className}`}>
       {children}
     </div>
   );

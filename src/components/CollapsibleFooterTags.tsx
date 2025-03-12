@@ -28,21 +28,21 @@ export default function CollapsibleFooterTags({ tags }: { tags: string[] }) {
           "shadow-md",
           "overflow-hidden",
           isOpen
-            ? "min-w-fit rounded-md transition-[width] duration-300 ease-in-out"
-            : "w-[80px] rounded-md transition-[width] duration-300 ease-in-out",
+            ? "min-w-fit rounded-lg transition-[width] duration-300 ease-in-out"
+            : "w-[120px] rounded-lg transition-[width] duration-300 ease-in-out", // aumentado de 80px para 120px
           "border border-gray-200 dark:border-gray-800"
         )}
       >
         <button
           onClick={() => isTagPage ? handleBackToProjects() : setIsOpen(!isOpen)}
           className={clsx(
-            "flex items-center justify-center gap-1 px-2 py-1",
+            "flex items-center justify-center gap-2 px-6 py-3",
             "text-gray-700 dark:text-gray-300",
             "hover:bg-gray-50 dark:hover:bg-gray-900",
-            "rounded-md",
-            "text-xs",
+            "rounded-lg",
+            "text-base font-medium",
             "w-full",
-            "min-w-[80px]",
+            "min-w-[120px]",
           )}
         >
           <span className="font-medium">
@@ -50,9 +50,9 @@ export default function CollapsibleFooterTags({ tags }: { tags: string[] }) {
           </span>
           {!isTagPage && (
             isOpen ? (
-              <ChevronDownIcon className="h-3 w-3" />
+              <ChevronDownIcon className="h-5 w-5" />
             ) : (
-              <ChevronUpIcon className="h-3 w-3" />
+              <ChevronUpIcon className="h-5 w-5" />
             )
           )}
         </button>
@@ -65,9 +65,9 @@ export default function CollapsibleFooterTags({ tags }: { tags: string[] }) {
                   key={tag}
                   onClick={() => handleTagClick(tag)}
                   className={clsx(
-                    "px-1.5 py-0.5",
+                    "px-3 py-2",
                     "text-gray-700 dark:text-gray-300",
-                    "text-xs",
+                    "text-sm",
                     "rounded",
                     "transition-all duration-200",
                     "hover:bg-gray-100 dark:hover:bg-gray-800",
