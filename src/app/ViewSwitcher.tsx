@@ -6,9 +6,11 @@ import {
 } from '@/app/paths';
 import Switcher from '@/components/Switcher';
 import SwitcherItem from '@/components/SwitcherItem';
+import { useState } from 'react';
 import { GRID_HOMEPAGE_ENABLED } from './config';
 import IconEmail from './IconEmail';
 import IconInstagram from './IconInstagram';
+import IconMenu from './IconMenu';
 import IconOdysee from './iconOdysee';
 import IconShop from './IconShop';
 import IconVimeo from './IconVimeo';
@@ -23,6 +25,7 @@ export default function ViewSwitcher({
   currentSelection?: SwitcherSelection
   showAdmin?: boolean
 }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const renderItemGrid = () =>
     <SwitcherItem
@@ -46,7 +49,17 @@ export default function ViewSwitcher({
         {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
         {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
       </Switcher>
-      <Switcher>
+
+      {/* Mobile Menu */}
+      <div className="sm:hidden">
+        <SwitcherItem
+          icon={<IconMenu />}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        />
+      </div>
+
+      {/* Social media links */}
+      <Switcher className={`${!isMenuOpen ? 'hidden sm:flex' : 'flex'}`}>
         <SwitcherItem
           icon={<IconInstagram />}
           href="https://instagram.com/wilbor_domina"

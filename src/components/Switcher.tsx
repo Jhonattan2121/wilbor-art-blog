@@ -1,24 +1,20 @@
 import { ReactNode } from 'react';
-import { clsx } from 'clsx/lite';
 
-export default function Switcher({
+type SwitcherProps = {
+  children: ReactNode;
+  type?: 'regular' | 'borderless';
+  className?: string;
+};
+
+export default function Switcher({ 
   children,
-  type = 'regular',
-}: {
-  children: ReactNode
-  type?: 'regular' | 'borderless'
-}) {
+   type = 'regular',
+    className = '' }:
+     SwitcherProps) 
+     {
   return (
-    <div className={clsx(
-      'flex divide-x overflow-hidden',
-      'divide-gray-300 dark:divide-gray-800',
-      'border rounded-md',
-      type === 'regular'
-        ? 'border-gray-300 dark:border-gray-800'
-        : 'border-transparent',
-      type === 'regular' && 'shadow-xs',
-    )}>
+    <div className={`flex items-center gap-1 ${type === 'regular' ? 'bg-neutral-100 p-1 rounded-lg' : ''} ${className}`}>
       {children}
     </div>
   );
-};
+}
