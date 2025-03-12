@@ -50,23 +50,25 @@ export default function PhotoGridPage({
       }))}
       sidebar={
         <div className={clsx(
-          'sticky top-0 -mt-5',
+          'sticky top-0 pt-5',
+          'w-full max-w-[250px]',
+          'md:min-w-[200px]'
         )}>
           {renderGuard('top')}
           <div className={clsx(
-            tags.length > 15 ? 'overflow-y-auto' : 'overflow-y-hidden',
-            'max-h-[calc(100vh-120px)]',
-            '[scrollbar-width:none]',
-            'py-4'
+            'overflow-y-auto',
+            'max-h-[calc(100vh-100px)]',
+            'scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700',
+            'scrollbar-track-transparent',
+            'px-2 py-4'
           )}>
             <PhotoGridSidebar {...{
               tags,
               cameras,
               simulations,
-
             }}
             />
-            <div className="py-4 text-sm text-gray-500">
+            <div className="py-4 text-sm  dark:text-gray-400">
               {photosCount} {photosCount === 1 ? 'photo' : 'photos'}
             </div>
           </div>

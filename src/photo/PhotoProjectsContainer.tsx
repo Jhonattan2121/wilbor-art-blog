@@ -7,9 +7,9 @@ import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { JSX, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick-theme.css';
-import 'slick-carousel/slick/slick.css';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
 
 interface HiveMetadata {
   author: string;
@@ -205,6 +205,7 @@ const MediaItem = ({
   isExpanded: boolean;
   onExpand: () => void;
 }) => {
+  const [isCarousel, setIsCarousel] = useState(false);
   const mainItem = items[0];
 
   // Separar vídeos e fotos baseado na URL do serviço
@@ -362,58 +363,94 @@ const MediaItem = ({
 
             {photos.length > 0 && (
               <div className="mt-4">
-                <div className="relative ">
-                  <Slider
-                    dots={true}
-                    dotsClass="slick-dots"
-                    infinite={true}
-                    speed={500}
-                    slidesToShow={3}
-                    slidesToScroll={1}
-                    autoplay={true}
-                    autoplaySpeed={3000}
-                    pauseOnHover={true}
-                    responsive={[
-                      {
-                        breakpoint: 1024,
-                        settings: {
-                          slidesToShow: 2,
-                          slidesToScroll: 1,
-                          dots: true
-                        }
-                      },
-                      {
-                        breakpoint: 600,
-                        settings: {
-                          slidesToShow: 1,
-                          slidesToScroll: 1,
-                          dots: false
-                        }
-                      }
-                    ]}
-
+                <div className="flex items-center justify-between mb-6">
+                  <div className="border-t border-gray-800 flex-grow"></div>
+                  <button
+                    onClick={() => setIsCarousel(!isCarousel)}
+                    className="ml-4 px-3 py-1 text-sm rounded-full bg-gray-800 dark:bg-gray-700 text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                   >
+                    {isCarousel ? 'Modo Vertical' : 'Modo Carrossel'}
+                  </button>
+                </div>
+
+                {isCarousel ? (
+                  // Carousel Mode
+                  <div className="relative">
+                    <Slider
+                      dots={true}
+                      dotsClass="slick-dots"
+                      infinite={true}
+                      speed={500}
+                      slidesToShow={1}
+                      slidesToScroll={1}
+                      className="carousel-container"
+                      responsive={[
+                        {
+                          breakpoint: 1024,
+                          settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1,
+                            dots: false
+                          }
+                        },
+                        {
+                          breakpoint: 600,
+                          settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1,
+                            dots: false
+                          }
+                        }
+                      ]}
+                    >
+                      {photos.map((photo, index) => (
+                        <div key={photo.id || index} className="px-2">
+                          <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
+                            <Image
+                              src={photo.src}
+                              alt={photo.title || ''}
+                              fill
+                              className="object-cover"
+                              sizes="100vw"
+                              quality={85}
+                              unoptimized={true}
+                            />
+                          </div>
+                          {photo.title && (
+                            <div className="mt-2">
+                              <p className="text-sm ">{photo.title}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </Slider>
+                  </div>
+                ) : (
+                  // Vertical Mode (default)
+                  <div className="space-y-4">
                     {photos.map((photo, index) => (
-                      <div key={photo.id || index} className="px-2">
-                        <div className="relative aspect-square rounded-lg overflow-hidden">
+                      <div key={photo.id || index} className="relative">
+                        <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
                           <Image
                             src={photo.src}
                             alt={photo.title || ''}
                             fill
                             className="object-cover"
-                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                            quality={50}
+                            sizes="(max-width: 640px) 100vw, 50vw"
+                            quality={85}
                             unoptimized={true}
-                            onError={(e) => {
-                              console.error('Erro ao carregar imagem:', photo.src);
-                            }}
+                            priority={index < 2}
                           />
-
                         </div>
+                        {photo.title && (
+                          <div className="mt-2">
+                            <p className="text-sm ">{photo.title}</p>
+                          </div>
+                        )}
                       </div>
                     ))}
-                  </Slider>
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

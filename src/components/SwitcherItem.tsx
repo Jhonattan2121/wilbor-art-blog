@@ -35,12 +35,12 @@ export default function SwitcherItem({
     'hover:bg-gray-100/60 active:bg-gray-100',
     'dark:hover:bg-gray-900/75 dark:active:bg-gray-900',
     active
-      ? 'text-black dark:text-white'
-      : 'text-gray-400 dark:text-gray-600',
+      ? 'text-[#c03131] dark:text-[#c03131]'
+      : 'text-[#ff9999] dark:text-[#ff6666]',
     active
-      ? 'hover:text-black dark:hover:text-white'
-      : 'hover:text-gray-700 dark:hover:text-gray-400',
-  );
+      ? 'hover:text-[#c03131] dark:hover:text-[#c03131]'
+      : 'hover:text-[#c03131] dark:hover:text-[#c03131]',
+);
 
   const renderIcon = () => noPadding
     ? icon
