@@ -3,7 +3,7 @@ import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { INFINITE_SCROLL_GRID_INITIAL } from '@/photo';
 import PhotoGridPage from '@/photo/PhotoGridPage';
-import { Photo } from '@/photo/PhotoProjectsContainer';
+import { Photo } from '@/photo/components/types';
 import { getUniqueTags } from '@/photo/db/query';
 import { generateMetaForTag } from '@/tag';
 import { getPhotosTagDataCached } from '@/tag/data';

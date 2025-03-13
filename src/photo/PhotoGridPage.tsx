@@ -5,7 +5,8 @@ import { FilmSimulations } from '@/simulation';
 import { useAppState } from '@/state/AppState';
 import { Tags } from '@/tag';
 import { useEffect } from 'react';
-import PhotoGridContainer, { Photo } from './PhotoProjectsContainer';
+import PhotoGridContainer from './PhotoProjectsContainer';
+import { Photo } from './components/types';
 
 const PATH_GRID_INFERRED = 'projects';
 

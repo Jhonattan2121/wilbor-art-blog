@@ -1,8 +1,8 @@
 import { Cameras } from '@/camera';
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
+import { Photo } from '@/photo/components/types';
 import PhotoGridPage from '@/photo/PhotoGridPage';
-import { Photo } from '@/photo/PhotoProjectsContainer';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';

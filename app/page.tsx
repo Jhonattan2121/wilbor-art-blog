@@ -4,11 +4,11 @@ import {
   INFINITE_SCROLL_GRID_INITIAL,
   generateOgImageMetaForPhotos,
 } from '@/photo';
+import { Photo } from '@/photo/components/types';
 import { getPhotoSidebarData } from '@/photo/data';
 import { getPhotos, getPhotosMeta } from '@/photo/db/query';
 import PhotoFeedPage from '@/photo/PhotoFeedPage';
 import PhotoGridPage from '@/photo/PhotoGridPage';
-import { Photo } from '@/photo/PhotoProjectsContainer';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
