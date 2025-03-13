@@ -5,133 +5,18 @@ import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
-import { JSX, useState } from 'react';
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Slider from "react-slick";
+import rehypeRaw from 'rehype-raw';
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-
-interface HiveMetadata {
-  author: string;
-  permlink: string;
-  body: string;
-}
-
-export interface Photo {
-  cameraKey?: string;
-  camera?: any;
-  simulation?: any;
-  id: string;
-  url: string;
-  src: string;
-  title: string;
-  type: 'photo' | 'video' | 'iframe';
-  thumbnailSrc?: string;
-  videoUrl?: string;
-  width: number;
-  height: number;
-  blurData: string;
-  tags: string[];
-  takenAt: Date;
-  takenAtNaive: string;
-  takenAtNaiveFormatted: string;
-  updatedAt: Date;
-  createdAt: Date;
-  aspectRatio: number;
-  priority: boolean;
-  extension: string;
-  focalLengthFormatted?: string;
-  focalLengthIn35MmFormatFormatted?: string;
-  fNumberFormatted?: string;
-  isoFormatted?: string;
-  exposureTimeFormatted?: string;
-  exposureCompensationFormatted?: string;
-  hiveMetadata?: HiveMetadata;
-  author?: string;
-  permlink?: string;
-  iframeHtml?: string;
-}
-
-interface Media {
-  id: string;
-  url: string;
-  src: string;
-  title: string;
-  type: 'photo' | 'video' | 'iframe';
-  thumbnailSrc?: string;
-  width?: number;
-  videoUrl?: string;
-  height?: number;
-  iframeHtml?: string;
-  tags?: string[];
-  // Adicionando hiveMetadata
-  hiveMetadata?: {
-    author: string;
-    permlink: string;
-    body: string;
-  };
-}
-
-interface PhotoGridContainerProps {
-  cacheKey: string;
-  media: Media[];
-  sidebar?: JSX.Element;
-  canSelect?: boolean;
-  header?: JSX.Element;
-  animateOnFirstLoadOnly?: boolean;
-}
-
-// Modify the formatPostContent function to also remove PEAKD links
-const formatPostContent = (content: string): string => {
-  if (!content) return '';
-
-  let text = content;
-
-  // Remove iframes and their content
-  text = text.replace(/<iframe[\s\S]*?<\/iframe>/g, '');
-
-  // Remove broken images in markdown format
-  text = text.replace(/!\[.*?\]\(\s*!\[.*?\]\(.*?\)\s*\)/g, '');
-
-  // Remove images in markdown format
-  text = text.replace(/!\[.*?\]\(.*?\)/g, '');
-
-  // Remove IPFS links
-  text = text.replace(/https:\/\/ipfs\.skatehive\.app\/ipfs\/[^\s]*/g, '');
-
-  // Remove URLs from Pinata
-  text = text.replace(/https:\/\/lime-useful-snake[^\s]*/g, '');
-
-  // Remove URLs from PEAKD
-  text = text.replace(/https:\/\/files\.peakd\.com\/file\/peakd-hive[^\s]*/g, '');
-
-  // Format emojis and section titles
-  const sections = text.split('\n').map(line => {
-    // Remove lines that contain only empty brackets or parentheses
-    if (/^\s*[\[\]()]+\s*$/.test(line)) return '';
-
-    // Add space after emojis for better readability
-    line = line.replace(/([\u{1F300}-\u{1F9FF}])/gu, '$1 ');
-
-    // Format Instagram links while keeping the emoji
-    line = line.replace(/([\u{1F300}-\u{1F9FF}])\s*@(\w+)/gu, '$1 [@$2](https://instagram.com/$2)');
-
-    return line;
-  });
-
-  // Join the lines back together, removing extra empty lines
-  text = sections
-    .filter(line => line.trim().length > 0)
-    .join('\n');
-
-  // Remove extra whitespace and residual characters
-  text = text
-    .replace(/\n\s*\n/g, '\n\n')
-    .replace(/\[\s*\]/g, '') // Remove empty brackets
-    .replace(/\(\s*\)/g, '') // Remove empty parentheses
-    .trim();
-
-  return text;
+import { Media, PhotoGridContainerProps } from './components/types';
+const formatPinataUrl = (url: string): string => {
+  if (url.includes('pinataGatewayToken')) {
+    return url.split('?')[0];
+  }
+  return url;
 };
 
 // First, let's create a function to group the media by permlink
@@ -205,16 +90,16 @@ const MediaItem = ({
   isExpanded: boolean;
   onExpand: () => void;
 }) => {
-  const [isCarousel, setIsCarousel] = useState(false);
   const mainItem = items[0];
+  const [isCarousel, setIsCarousel] = useState(false);
 
-  // Separar vídeos e fotos baseado na URL do serviço
+  const formatPostContent = (content: string): string => {
+    if (!content) return '';
 
-  const videos = items.filter(item => item.src?.includes(SKATEHIVE_URL));
-  const photos = items.filter(item =>
-    item.src?.includes(PINATA_URL) ||
-    item.src?.includes(PEAKD_URL)
-  );
+    const formattedContent = content.replace(/!\[([^\]]*)\]\(([^)]+)\)\s*!\[/g, '![[$1]]($2)\n\n![');
+
+    return formattedContent;
+  };
 
   const renderMedia = (media: Media, isMainVideo: boolean = false) => {
 
@@ -324,133 +209,129 @@ const MediaItem = ({
               </button>
             </div>
 
-            {videos.length > 0 && (
-              <div className="mb-2">
-                <div className="relative aspect-video rounded-lg overflow-hidden">
-                  {renderMedia(videos[0], true)}
-                </div>
-                {videos[0].title && (
-                  <h3 className=" text-lg mt-2">{videos[0].title}</h3>
-                )}
-              </div>
-            )}
-
             {mainItem.hiveMetadata?.body && (
               <div className="prose prose-invert prose-lg max-w-none mb-8">
-                <div className=" leading-relaxed markdown-content space-y-4">
+                <div className="leading-relaxed markdown-content space-y-4">
                   <ReactMarkdown
+                    rehypePlugins={[rehypeRaw]}
                     components={{
-                      p: ({ children }) => (
-                        <p className="mb-4 last:mb-0">{children}</p>
-                      ),
-                      a: ({ children, href }) => (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300"
-                        >
-                          {children}
-                        </a>
-                      )
+                      img: ({ src, alt }) => {
+                        const formattedSrc = formatPinataUrl(src || '');
+                        return (
+                          <Image
+                            src={formattedSrc}
+                            alt={alt || ''}
+                            width={800}
+                            height={600}
+                            className="rounded-lg w-full h-auto"
+                            unoptimized={true}
+                          />
+                        );
+                      }
                     }}
                   >
-                    {formatPostContent(mainItem.hiveMetadata.body)}
+
+                    {formatPostContent(mainItem.hiveMetadata.body.split('![')[0])}
+                  </ReactMarkdown>
+
+                  <div className="mt-4">
+                    {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 1 && (
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="border-t border-gray-800 flex-grow"></div>
+                        <button
+                          onClick={() => setIsCarousel(!isCarousel)}
+                          className="ml-4 px-3 py-1 text-sm rounded-full bg-gray-800 dark:bg-gray-700 text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          {isCarousel ? 'Modo Vertical' : 'Modo Carrossel'}
+                        </button>
+                      </div>
+                    )}
+
+                    {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0 && (
+                      isCarousel ? (
+                        <Slider
+                          dots={true}
+                          dotsClass="slick-dots"
+                          infinite={true}
+                          speed={500}
+                          slidesToShow={1}
+                          slidesToScroll={1}
+                          className="carousel-container"
+                          adaptiveHeight={true}
+                          responsive={[
+                            {
+                              breakpoint: 1024,
+                              settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1,
+                                dots: false
+                              }
+                            },
+                            {
+                              breakpoint: 600,
+                              settings: {
+                                slidesToShow: 1,
+                                slidesToScroll: 1,
+                                dots: false
+                              }
+                            }
+                          ]}
+                        >
+                          {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
+                            <div key={index} className="px-2">
+                              <div className="relative w-full" style={{ minHeight: '300px' }}>
+                                <Image
+                                  src={imgSrc}
+                                  alt=""
+                                  layout="responsive"
+                                  width={16}
+                                  height={9}
+                                  className="object-contain"
+                                  unoptimized={true}
+                                  style={{
+                                    maxHeight: '80vh',
+                                    margin: '0 auto'
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </Slider>
+                      ) : (
+                        <div className="space-y-4">
+                          {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
+                            <div key={index} className="my-4">
+                              <div className="relative w-full">
+                                <Image
+                                  src={imgSrc}
+                                  alt=""
+                                  width={0}
+                                  height={0}
+                                   sizes="(max-width: 640px) 100vw, 50vw"
+                                  className="w-full h-auto object-contain"
+                                  unoptimized={true}
+                                  style={{
+                                    maxHeight: '80vh',
+                                    margin: '0 auto'
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    )}
+                  </div>
+
+                  <ReactMarkdown
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      img: () => null
+                    }}
+                  >
+                    {formatPostContent(mainItem.hiveMetadata.body.split('![').slice(-1)[0]?.split(')')[1] || '')}
                   </ReactMarkdown>
                 </div>
-              </div>
-            )}
-
-            {photos.length > 0 && (
-              <div className="mt-4">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="border-t border-gray-800 flex-grow"></div>
-                  <button
-                    onClick={() => setIsCarousel(!isCarousel)}
-                    className="ml-4 px-3 py-1 text-sm rounded-full bg-gray-800 dark:bg-gray-700 text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    {isCarousel ? 'Modo Vertical' : 'Modo Carrossel'}
-                  </button>
-                </div>
-
-                {isCarousel ? (
-                  // Carousel Mode
-                  <div className="relative">
-                    <Slider
-                      dots={true}
-                      dotsClass="slick-dots"
-                      infinite={true}
-                      speed={500}
-                      slidesToShow={1}
-                      slidesToScroll={1}
-                      className="carousel-container"
-                      responsive={[
-                        {
-                          breakpoint: 1024,
-                          settings: {
-                            slidesToShow: 2,
-                            slidesToScroll: 1,
-                            dots: false
-                          }
-                        },
-                        {
-                          breakpoint: 600,
-                          settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            dots: false
-                          }
-                        }
-                      ]}
-                    >
-                      {photos.map((photo, index) => (
-                        <div key={photo.id || index} className="px-2">
-                          <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
-                            <Image
-                              src={photo.src}
-                              alt={photo.title || ''}
-                              fill
-                              className="object-cover"
-                              sizes="100vw"
-                              quality={85}
-                              unoptimized={true}
-                            />
-                          </div>
-                          {photo.title && (
-                            <div className="mt-2">
-                              <p className="text-sm ">{photo.title}</p>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </Slider>
-                  </div>
-                ) : (
-                  // Vertical Mode (default)
-                  <div className="space-y-4">
-                    {photos.map((photo, index) => (
-                      <div key={photo.id || index} className="relative">
-                        <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
-                          <Image
-                            src={photo.src}
-                            alt={photo.title || ''}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 640px) 100vw, 50vw"
-                            quality={85}
-                            unoptimized={true}
-                            priority={index < 2}
-                          />
-                        </div>
-                        {photo.title && (
-                          <div className="mt-2">
-                            <p className="text-sm ">{photo.title}</p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -459,6 +340,20 @@ const MediaItem = ({
     </div>
   );
 };
+
+// Helper function to extract URLs from markdown images
+function extractImagesFromMarkdown(markdown: string): string[] {
+  const imageRegex = /!\[.*?\]\((.*?)\)/g;
+  const images: string[] = [];
+  let match;
+
+  while ((match = imageRegex.exec(markdown)) !== null) {
+    const imageUrl = formatPinataUrl(match[1]);
+    images.push(imageUrl);
+  }
+
+  return images;
+}
 
 export default function PhotoGridContainer({
   sidebar,

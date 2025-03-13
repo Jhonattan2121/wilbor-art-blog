@@ -1,0 +1,71 @@
+import { JSX } from "react";
+
+export interface HiveMetadata {
+  author: string;
+  permlink: string;
+  body: string;
+}
+
+export  interface Photo {
+  cameraKey?: string;
+  camera?: any;
+  simulation?: any;
+  id: string;
+  url: string;
+  src: string;
+  title: string;
+  type: 'photo' | 'video' | 'iframe';
+  thumbnailSrc?: string;
+  videoUrl?: string;
+  width: number;
+  height: number;
+  blurData: string;
+  tags: string[];
+  takenAt: Date;
+  takenAtNaive: string;
+  takenAtNaiveFormatted: string;
+  updatedAt: Date;
+  createdAt: Date;
+  aspectRatio: number;
+  priority: boolean;
+  extension: string;
+  focalLengthFormatted?: string;
+  focalLengthIn35MmFormatFormatted?: string;
+  fNumberFormatted?: string;
+  isoFormatted?: string;
+  exposureTimeFormatted?: string;
+  exposureCompensationFormatted?: string;
+  hiveMetadata?: HiveMetadata;
+  author?: string;
+  permlink?: string;
+  iframeHtml?: string;
+}
+
+export interface Media {
+  id: string;
+  url: string;
+  src: string;
+  title: string;
+  type: 'photo' | 'video' | 'iframe';
+  thumbnailSrc?: string;
+  width?: number;
+  videoUrl?: string;
+  height?: number;
+  iframeHtml?: string;
+  tags?: string[];
+  // Adicionando hiveMetadata
+  hiveMetadata?: {
+    author: string;
+    permlink: string;
+    body: string;
+  };
+}
+
+export interface PhotoGridContainerProps {
+  cacheKey: string;
+  media: Media[];
+  sidebar?: JSX.Element;
+  canSelect?: boolean;
+  header?: JSX.Element;
+  animateOnFirstLoadOnly?: boolean;
+}
