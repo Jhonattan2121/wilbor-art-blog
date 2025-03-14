@@ -187,7 +187,33 @@ const MediaItem = ({
         {!isExpanded && (
           <>
             <div className="relative w-full h-0 pb-[100%]">
-              {renderMedia(mainItem)}
+              {mainItem.hiveMetadata?.body ? (
+                <>
+                  {extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0] ? (
+                    // If you find an image in the post, show it
+                    <>
+                      <Image
+                        src={extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0]}
+                        alt={mainItem.title || ''}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                        quality={85}
+                        unoptimized={true}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <p className="text-white text-sm line-clamp-2">{mainItem.title}</p>
+                      </div>
+                    </>
+                  ) : (
+                    // If you can't find an image, use renderMedia which can show video
+                    renderMedia(mainItem)
+                  )}
+                </>
+              ) : (
+                // Fallback to original renderMedia
+                renderMedia(mainItem)
+              )}
             </div>
           </>
         )}
