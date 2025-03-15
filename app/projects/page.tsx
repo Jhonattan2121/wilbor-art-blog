@@ -7,6 +7,7 @@ import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';
 import { Discussion } from '@hiveio/dhive';
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
+
 export const dynamic = 'force-dynamic';
 
 const getMediaType = (url: string, mediaType?: string) => {
@@ -38,7 +39,9 @@ const getMediaType = (url: string, mediaType?: string) => {
 
 async function getHivePosts(username: string) {
   try {
-    const posts = await getPostsByAuthor(username);
+    const posts = await retryOperation(async () => {
+      return await getPostsByAuthor(username);
+    });
     
     console.log('Posts found:', posts.length);
 
@@ -150,7 +153,20 @@ async function getHivePosts(username: string) {
   }
 }
 
-
+// Move the retryOperation function to local scope if needed
+async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
+      console.warn(`Attempt ${attempt} failed, retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error('All attempts failed');
+}
 
 // Modify the extractAndCountTags function to receive paginated posts
 function extractAndCountTags(posts: Discussion[], paginatedPosts: Photo[]): Tags {
