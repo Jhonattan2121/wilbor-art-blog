@@ -60,7 +60,9 @@ async function testNode(client: Client): Promise<boolean> {
 
     return Array.isArray(testResult) && testResult.length > 0;
   } catch (error) {
-    console.warn('Node test failed:', error.message);
+    console.warn('Node test failed:', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
     return false;
   }
 }
@@ -93,7 +95,9 @@ export async function createWorkingClient(): Promise<Client> {
       }
       console.warn(`❌  ${node} failed tests`);
     } catch (error) {
-      console.warn(`❌ Failed to connect to ${node}: ${error.message}`);
+      console.warn(
+        `❌ Failed to connect to ${node}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
   
@@ -105,11 +109,13 @@ export async function getPostsByAuthor(username: string) {
   try {
     const posts = await client.database.getDiscussions('blog', {
       tag: username,
-   
+    limit: 100,
     });
     return posts;
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error fetching posts:', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
     throw error;
   }
 }
