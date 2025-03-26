@@ -16,7 +16,7 @@ export default function CollapsibleFooterTags({ tags }: { tags: string[] }) {
   };
 
   const handleBackToProjects = () => {
-    router.push('/projects');
+    router.push('/dashboard');
     setIsOpen(false);
   };
 

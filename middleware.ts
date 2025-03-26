@@ -13,7 +13,7 @@ import { auth } from './src/auth';
 export function middleware(request: NextRequest) {
   // If on root route, redirect to /projects
   if (request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/projects', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   const pathname = request.nextUrl.pathname;

@@ -66,7 +66,7 @@ export default function RootLayout({
             <SwrConfigClient>
               <div className="w-full bg-white dark:bg-black px-3 py-3">
                 <div className="w-full max-w-[1280px] mx-auto flex justify-center">
-                  <Link href="/projects">
+                  <Link href="/dashboard">
                     <Image
                       src={BannerWilbor}
                       alt="Wilbor Art Logo"
