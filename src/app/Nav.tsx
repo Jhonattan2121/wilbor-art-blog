@@ -1,6 +1,6 @@
 'use client';
 
-import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
+import { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
   isPathAdmin,
@@ -68,10 +68,10 @@ export default function Nav({
                 'flex items-center w-full',
                 NAV_HEIGHT_CLASS,
               )}>
-              <ViewSwitcher
+              {/* <ViewSwitcher
                 currentSelection={switcherSelectionForPath()}
                 showAdmin={isUserSignedIn}
-              />
+              /> */}
               <div className={clsx(
                 'grow text-right min-w-0',
                 'hidden xs:block',

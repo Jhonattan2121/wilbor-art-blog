@@ -6,6 +6,8 @@ interface MediaContent {
 }
 
 const SUPPORTED_IMAGE_TYPES = /\.(jpg|jpeg|png|gif|webp|avif|svg|bmp)$/i;
+const IMAGE_IPFS_GATEWAY = 'images.hive.blog';
+const VIDEO_IPFS_GATEWAY = 'lime-useful-snake-714.mypinata.cloud';
 
 export class MarkdownRenderer {
   static extractMediaFromHive(post: any): MediaContent[] {
@@ -50,9 +52,17 @@ export class MarkdownRenderer {
     const markdownImages = [...post.body.matchAll(markdownImagePattern)];
     markdownImages.forEach(match => {
       const url = match[1].trim();
-      if (url && !mediaItems.has(url) && SUPPORTED_IMAGE_TYPES.test(url)) {
-        mediaItems.add(url);
-        result.push({ type: 'image', url });
+      if (url && !mediaItems.has(url)) {
+        // Convert IPFS URLs to use the appropriate gateway
+        let processedUrl = url;
+        if (url.includes('/ipfs/')) {
+          const ipfsHash = url.split('/ipfs/').pop()?.split('?')[0];
+          if (ipfsHash) {
+            processedUrl = `https://${IMAGE_IPFS_GATEWAY}/${ipfsHash}`;
+          }
+        }
+        mediaItems.add(processedUrl);
+        result.push({ type: 'image', url: processedUrl });
       }
     });
 
@@ -60,9 +70,17 @@ export class MarkdownRenderer {
     const htmlImages = [...post.body.matchAll(htmlImagePattern)];
     htmlImages.forEach(match => {
       const url = match[1].trim();
-      if (url && !mediaItems.has(url) && SUPPORTED_IMAGE_TYPES.test(url)) {
-        mediaItems.add(url);
-        result.push({ type: 'image', url });
+      if (url && !mediaItems.has(url)) {
+        // Convert IPFS URLs to use the appropriate gateway
+        let processedUrl = url;
+        if (url.includes('/ipfs/')) {
+          const ipfsHash = url.split('/ipfs/').pop()?.split('?')[0];
+          if (ipfsHash) {
+            processedUrl = `https://${IMAGE_IPFS_GATEWAY}/${ipfsHash}`;
+          }
+        }
+        mediaItems.add(processedUrl);
+        result.push({ type: 'image', url: processedUrl });
       }
     });
 
@@ -71,8 +89,16 @@ export class MarkdownRenderer {
     urlImages.forEach(match => {
       const url = match[0].trim();
       if (url && !mediaItems.has(url)) {
-        mediaItems.add(url);
-        result.push({ type: 'image', url });
+        // Convert IPFS URLs to use the appropriate gateway
+        let processedUrl = url;
+        if (url.includes('/ipfs/')) {
+          const ipfsHash = url.split('/ipfs/').pop()?.split('?')[0];
+          if (ipfsHash) {
+            processedUrl = `https://${IMAGE_IPFS_GATEWAY}/${ipfsHash}`;
+          }
+        }
+        mediaItems.add(processedUrl);
+        result.push({ type: 'image', url: processedUrl });
       }
     });
 

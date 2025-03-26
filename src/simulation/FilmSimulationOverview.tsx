@@ -1,7 +1,5 @@
 import { Photo, PhotoDateRange } from '@/photo';
-import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
 import { FilmSimulation } from '.';
-import FilmSimulationHeader from './FilmSimulationHeader';
 
 export default function FilmSimulationOverview({
   simulation,
@@ -17,19 +15,20 @@ export default function FilmSimulationOverview({
   animateOnFirstLoadOnly?: boolean,
 }) {
   return (
-    <PhotoGridContainer media={[]} {...{
-      cacheKey: `simulation-${simulation}`,
-      photos,
-      count,
-      simulation,
-      header: <FilmSimulationHeader {...{
-        simulation,
-        photos,
-        count,
-        dateRange,
-      }} />,
-      animateOnFirstLoadOnly,
+    // <PhotoGridContainer media={[]} {...{
+    //   cacheKey: `simulation-${simulation}`,
+    //   photos,
+    //   count,
+    //   simulation,
+    //   header: <FilmSimulationHeader {...{
+    //     simulation,
+    //     photos,
+    //     count,
+    //     dateRange,
+    //   }} />,
+    //   animateOnFirstLoadOnly,
 
-    }} />
+    // }} />
+    <div></div>
   );
 }

@@ -1,15 +1,15 @@
 'use client';
 
-import { ReactNode, RefObject, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-import { clsx } from 'clsx/lite';
-import useClickInsideOutside from '@/utility/useClickInsideOutside';
-import { useRouter } from 'next/navigation';
-import AnimateItems from './AnimateItems';
 import { PATH_ROOT } from '@/app/paths';
-import usePrefersReducedMotion from '@/utility/usePrefersReducedMotion';
-import useMetaThemeColor from '@/utility/useMetaThemeColor';
+import useClickInsideOutside from '@/utility/useClickInsideOutside';
 import useEscapeHandler from '@/utility/useEscapeHandler';
+import useMetaThemeColor from '@/utility/useMetaThemeColor';
+import usePrefersReducedMotion from '@/utility/usePrefersReducedMotion';
+import { clsx } from 'clsx/lite';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { ReactNode, RefObject, useEffect, useRef, useState } from 'react';
+import AnimateItems from './AnimateItems';
 
 export default function Modal({
   onClosePath,
@@ -62,7 +62,7 @@ export default function Modal({
   return (
     <motion.div
       className={clsx(
-        'fixed inset-0 z-50 flex justify-center',
+        'fixed inset-0 z-[9999] flex justify-center',
         anchor === 'top'
           ? 'items-start pt-4 sm:pt-24'
           : 'items-center',
@@ -80,11 +80,12 @@ export default function Modal({
           ref={contentRef}
           key="modalContent"
           className={clsx(
-            'w-[calc(100vw-1.5rem)] sm:w-[min(540px,90vw)]',
+            'w-[calc(100vw-1.5rem)] sm:w-[min(1200px,98vw)]',
             'p-3 rounded-lg',
             'md:p-4 md:rounded-xl',
             'bg-white dark:bg-black',
             'dark:border dark:border-gray-800',
+            'relative z-[10000]',
             className,
           )}
         >

@@ -87,6 +87,10 @@ const getMediaType = (url: string, mediaType?: string) => {
     return 'photo';
   }
 
+  if (url.includes('lime-useful-snake-714.mypinata.cloud')) {
+    return 'photo';
+  }
+
   return 'photo';
 };
 

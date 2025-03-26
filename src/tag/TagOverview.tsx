@@ -1,6 +1,4 @@
 import { Photo, PhotoDateRange } from '@/photo';
-import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
-import TagHeader from './TagHeader';
 
 export default function TagOverview({
   tag,
@@ -16,18 +14,19 @@ export default function TagOverview({
   animateOnFirstLoadOnly?: boolean,
 }) {
   return (
-    <PhotoGridContainer media={[]} {...{
-      cacheKey: `tag-${tag}`,
-      photos,
-      count,
-      tag,
-      header: <TagHeader {...{
-        tag,
-        photos,
-        count,
-        dateRange,
-      }} />,
-      animateOnFirstLoadOnly,
-    }} />
+    // <PhotoGridContainer media={[]} {...{
+    //   cacheKey: `tag-${tag}`,
+    //   photos,
+    //   count,
+    //   tag,
+    //   header: <TagHeader {...{
+    //     tag,
+    //     photos,
+    //     count,
+    //     dateRange,
+    //   }} />,
+    //   animateOnFirstLoadOnly,
+    // }} />
+    <div></div>
   );
 }

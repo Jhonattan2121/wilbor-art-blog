@@ -50,7 +50,8 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'ipfs.skatehive.app',
-      'lime-useful-snake-714.mypinata.cloud'
+      'lime-useful-snake-714.mypinata.cloud',
+      'images.hive.blog'
     ],
     unoptimized: true,
     formats: ['image/avif', 'image/webp'],
@@ -64,6 +65,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'lime-useful-snake-714.mypinata.cloud',
         pathname: '/ipfs/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.hive.blog',
+        pathname: '/**',
       }
     ],
   },

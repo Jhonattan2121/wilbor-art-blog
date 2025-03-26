@@ -5,7 +5,6 @@ import { FilmSimulations } from '@/simulation';
 import { useAppState } from '@/state/AppState';
 import { Tags } from '@/tag';
 import { useEffect } from 'react';
-import PhotoGridContainer from './PhotoProjectsContainer';
 import { Photo } from './components/types';
 
 const PATH_GRID_INFERRED = 'projects';
@@ -37,7 +36,7 @@ export default function PhotoGridPage({
   return (
     <>
       <div >
-        <PhotoGridContainer
+        {/* <PhotoGridContainer
           cacheKey={`page-${PATH_GRID_INFERRED}`}
           media={photos.map(photo => ({
             ...photo,
@@ -47,7 +46,7 @@ export default function PhotoGridPage({
           }))}
           sidebar={undefined}
           canSelect
-        />
+        /> */}
       </div>
       {Object.keys(tags).length > 0 ? (
         <CollapsibleFooterTags tags={tags.map(tag => tag.tag)} />

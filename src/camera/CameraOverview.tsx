@@ -1,7 +1,5 @@
 import { Photo, PhotoDateRange } from '@/photo';
-import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
-import { Camera, createCameraKey } from '.';
-import CameraHeader from './CameraHeader';
+import { Camera } from '.';
 
 export default function CameraOverview({
   camera,
@@ -17,20 +15,21 @@ export default function CameraOverview({
   animateOnFirstLoadOnly?: boolean,
 }) {
   return (
-    <PhotoGridContainer {...{
-      cacheKey: `camera-${createCameraKey(camera)}`,
-      photos,
-      count,
-      camera,
-      animateOnFirstLoadOnly,
-      media: [],
-      sidebar: <div></div>,
-      header: <CameraHeader {...{
-        camera,
-        photos,
-        count,
-        dateRange,
-      }} />,
-    }} />
+    // <PhotoGridContainer {...{
+    //   cacheKey: `camera-${createCameraKey(camera)}`,
+    //   photos,
+    //   count,
+    //   camera,
+    //   animateOnFirstLoadOnly,
+    //   media: [],
+    //   sidebar: <div></div>,
+    //   header: <CameraHeader {...{
+    //     camera,
+    //     photos,
+    //     count,
+    //     dateRange,
+    //   }} />,
+    // }} />
+    <div></div>
   );
 }
