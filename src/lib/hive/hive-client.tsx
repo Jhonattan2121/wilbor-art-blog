@@ -1,6 +1,12 @@
+import { Photo } from '@/photo/components/types';
 import { Client, Discussion, PrivateKey } from '@hiveio/dhive';
 
 const client = new Client(['https://api.hive.blog']);
+
+interface PostsResponse {
+  formattedPosts: Photo[];
+  originalPosts: Discussion[];
+}
 
 interface HiveUser {
   id: string;
@@ -99,22 +105,71 @@ export class HiveAuth {
   }
 }
 
-
-export async function getPostsByAuthor(author: string, permlink?: string): Promise<Discussion[]> {
+export async function getPostsByAuthor(username: string, permlink?: string): Promise<PostsResponse> {
   try {
+    let posts: Discussion[];
+    
     if (permlink) {
-      const post = await client.database.call('get_content', [author, permlink]);
-      return [post as Discussion];
+      const post = await client.database.call('get_content', [username, permlink]);
+      posts = [post as Discussion];
+    } else {
+      posts = await client.database.getDiscussions('blog', {
+        tag: username,
+        limit: 20
+      });
     }
 
-    const posts = await client.database.getDiscussions('blog', {
-      tag: author,
-      limit: 20
+    const formattedPosts = posts.flatMap(post => {
+      try {
+        const metadata = JSON.parse(post.json_metadata || '{}');
+        const postTags = metadata.tags || [];
+        
+        if (postTags.includes('hidden')) {
+          return [];
+        }
+
+        const mediaItems = extractMedia(post.body);
+        
+        return [...mediaItems.images, ...mediaItems.videos].map(url => ({
+          id: `${post.author}/${post.permlink}/${url}`,
+          title: post.title,
+          url: `/p/${post.author}/${post.permlink}`,
+          type: getMediaType(url),
+          src: url,
+          blurData: '',
+          takenAt: new Date(post.created),
+          takenAtNaive: post.created,
+          takenAtNaiveFormatted: new Date(post.created).toLocaleDateString(),
+          updatedAt: new Date(post.last_update),
+          createdAt: new Date(post.created),
+          aspectRatio: 1.5,
+          priority: false,
+          tags: postTags,
+          cameraKey: 'hive',
+          camera: null,
+          simulation: null,
+          width: 0,
+          height: 0,
+          extension: url.split('.').pop() || '',
+          author: post.author,
+          permlink: post.permlink,
+        } as Photo));
+      } catch (error) {
+        console.error('Error processing post:', error);
+        return [];
+      }
     });
-    return posts as Discussion[];
+
+    return {
+      formattedPosts,
+      originalPosts: posts
+    };
   } catch (error) {
     console.error('Erro ao buscar posts do Hive:', error);
-    return [];
+    return {
+      formattedPosts: [],
+      originalPosts: []
+    };
   }
 }
 
@@ -253,4 +308,15 @@ function extractVideos(body: string): string[] {
   });
 
   return Array.from(videoIds);
+}
+
+function getMediaType(url: string): string {
+  if (url.includes('ipfs.skatehive.app/ipfs/')) {
+    return 'iframe';
+  }
+
+  const isVideo = url.toLowerCase().match(/\.(mp4|webm|ogg|mov|m4v)$/);
+  if (isVideo) return 'video';
+
+  return 'photo';
 }

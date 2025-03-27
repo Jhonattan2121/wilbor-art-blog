@@ -1,41 +1,14 @@
 'use client';
 
-type HiveKeychainResponse = {
-    success: boolean;
-    message?: string;
-    result?: any;
-};
-
-interface HiveKeychainInterface {
-    requestHandshake: (callback: () => void) => void;
-    requestSignBuffer: (
-        username: string,
-        message: string,
-        key: string,
-        callback: (response: HiveKeychainResponse) => void
-    ) => void;
-    requestBroadcast: (
-        username: string,
-        operations: any[],
-        key: string,
-        callback: (response: HiveKeychainResponse) => void
-    ) => void;
-}
-
-declare global {
-    interface Window {
-        hive_keychain?: HiveKeychainInterface;
-    }
-}
-
 import Modal from '@/components/Modal';
 import { uploadFileToIPFS } from '@/utils/ipfs';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import MDEditor from '@uiw/react-md-editor';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { BiHive, BiImage, BiPencil, BiShow, BiX } from 'react-icons/bi';
+import { BiImage, BiPencil, BiShow, BiX } from 'react-icons/bi';
 import { useDebounce } from 'use-debounce';
+import { HiveKeychainResponse } from '../types/hive-keychain'; // Adjust the path based on your project structure
 
 interface Media {
     src: string;
@@ -46,12 +19,29 @@ interface Media {
 interface HivePostModalProps {
     isOpen: boolean;
     onClose: () => void;
+    editPost?: {
+        author: string;
+        permlink: string;
+        title: string;
+        body: string;
+        json_metadata: string;
+    };
 }
 
-export default function HivePostModal({ isOpen, onClose }: HivePostModalProps) {
-    const [value, setValue] = useState('');
-    const [title, setTitle] = useState('');
-    const [tags, setTags] = useState<string[]>([]);
+export default function HivePostModal({ isOpen, onClose, editPost }: HivePostModalProps) {
+    const [value, setValue] = useState(editPost?.body || '');
+    const [title, setTitle] = useState(editPost?.title || '');
+    const [tags, setTags] = useState<string[]>(() => {
+        if (editPost) {
+            try {
+                const metadata = JSON.parse(editPost.json_metadata);
+                return metadata.tags || [];
+            } catch (e) {
+                return [];
+            }
+        }
+        return [];
+    });
     const [currentTag, setCurrentTag] = useState('');
     const [debouncedValue] = useDebounce(value, 300);
     const [isUploading, setIsUploading] = useState(false);
@@ -62,6 +52,15 @@ export default function HivePostModal({ isOpen, onClose }: HivePostModalProps) {
     const [inputUsername, setInputUsername] = useState('');
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
+
+    useEffect(() => {
+        // Check if user is already logged in
+        const storedUsername = localStorage.getItem('hive_username');
+        if (storedUsername) {
+            setIsLoggedIn(true);
+            setUsername(storedUsername);
+        }
+    }, []);
 
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
@@ -179,6 +178,13 @@ export default function HivePostModal({ isOpen, onClose }: HivePostModalProps) {
                     if (response.success) {
                         setUsername(inputUsername);
                         setIsLoggedIn(true);
+                        // Store username in both localStorage and cookie with a long expiration
+                        localStorage.setItem('hive_username', inputUsername);
+                        const expirationDate = new Date();
+                        expirationDate.setDate(expirationDate.getDate() + 30); // 30 days expiration
+                        document.cookie = `hive_username=${inputUsername}; path=/; expires=${expirationDate.toUTCString()}`;
+                        // Refresh the page to update the grid
+                        window.location.reload();
                     } else {
                         console.error('Hive Keychain login failed:', response);
                         alert('Failed to login with Hive Keychain. Please try again.');
@@ -202,40 +208,52 @@ export default function HivePostModal({ isOpen, onClose }: HivePostModalProps) {
             return;
         }
 
-        // Prepare the post data
-        const permlink = title
-            .toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-');
+        const operations = [];
+        const metadata = {
+            tags: tags,
+            app: 'wilbor-art-blog',
+            image: thumbnailUrl ? [thumbnailUrl] : []
+        };
 
-        const operations = [
-            ["comment",
-                {
-                    "parent_author": "",
-                    "parent_permlink": tags[0], // First tag as parent permlink
-                    "author": username,
-                    "permlink": permlink,
-                    "title": title,
-                    "body": value,
-                    "json_metadata": JSON.stringify({
-                        tags: tags,
-                        app: 'wilbor-art-blog',
-                        image: thumbnailUrl ? [thumbnailUrl] : []
-                    })
-                }
-            ]
-        ];
+        if (editPost) {
+            // Edit existing post
+            operations.push(["comment", {
+                "parent_author": "",
+                "parent_permlink": tags[0],
+                "author": editPost.author,
+                "permlink": editPost.permlink,
+                "title": title,
+                "body": value,
+                "json_metadata": JSON.stringify(metadata)
+            }]);
+        } else {
+            // Create new post
+            const permlink = title
+                .toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+
+            operations.push(["comment", {
+                "parent_author": "",
+                "parent_permlink": tags[0],
+                "author": username,
+                "permlink": permlink,
+                "title": title,
+                "body": value,
+                "json_metadata": JSON.stringify(metadata)
+            }]);
+        }
 
         const keychain = window.hive_keychain;
         if (keychain) {
             (keychain as any).requestBroadcast(
-                username,
+                editPost?.author || username,
                 operations,
                 'posting',
                 (response: any) => {
                     if (response.success) {
-                        alert('Post published successfully!');
+                        alert(editPost ? 'Post updated successfully!' : 'Post published successfully!');
                         onClose();
                     } else {
                         alert('Error publishing post: ' + response.message);
@@ -263,34 +281,7 @@ export default function HivePostModal({ isOpen, onClose }: HivePostModalProps) {
                 >
                     <BiX size={20} />
                 </button>
-                {!isLoggedIn ? (
-                    <div className="flex flex-col items-center justify-center space-y-4 h-full">
-                        <BiHive size={48} className="text-[#E31337]" />
-                        <h2 className="text-2xl font-bold">Login with Hive</h2>
-                        <div className="w-full max-w-xs space-y-2">
-                            <div className="flex flex-col space-y-1">
-                                <label htmlFor="username" className="text-sm text-gray-600 dark:text-gray-400">
-                                    Hive Username
-                                </label>
-                                <input
-                                    id="username"
-                                    type="text"
-                                    value={inputUsername}
-                                    onChange={(e) => setInputUsername(e.target.value.toLowerCase())}
-                                    placeholder="Enter your username"
-                                    className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-black focus:outline-none focus:ring-2 focus:ring-[#E31337] focus:border-transparent"
-                                />
-                            </div>
-                            <button
-                                onClick={handleHiveLogin}
-                                disabled={isLoggingIn}
-                                className="w-full button primary"
-                            >
-                                {isLoggingIn ? 'Logging in...' : 'Login'}
-                            </button>
-                        </div>
-                    </div>
-                ) : (
+               
                     <div className="h-full flex flex-col space-y-4 overflow-hidden">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold">Create Post</h2>
@@ -540,7 +531,7 @@ export default function HivePostModal({ isOpen, onClose }: HivePostModalProps) {
                             </button>
                         </div>
                     </div>
-                )}
+                
             </div>
         </Modal>
     );

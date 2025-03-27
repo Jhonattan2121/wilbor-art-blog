@@ -1,10 +1,10 @@
-type HiveKeychainResponse = {
+export interface HiveKeychainResponse {
   success: boolean;
   message?: string;
   result?: any;
-};
+}
 
-interface HiveKeychain {
+export interface HiveKeychainInterface {
   requestHandshake: (callback: () => void) => void;
   getCurrentAccount: () => string | null;
   requestSignBuffer: (
@@ -23,6 +23,6 @@ interface HiveKeychain {
 
 declare global {
   interface Window {
-    hive_keychain?: HiveKeychain;
+    hive_keychain?: HiveKeychainInterface;
   }
-} 
+}
