@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { BiImage, BiX } from 'react-icons/bi';
 import { useDebounce } from 'use-debounce';
-import { HiveKeychainResponse } from '../types/hive-keychain'; // Adjust the path based on your project structure
+import { HiveKeychainResponse } from '../types/hive-keychain';
 
 interface Media {
     src: string;
@@ -44,13 +44,14 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
     const [debouncedValue] = useDebounce(value, 300);
     const [isUploading, setIsUploading] = useState(false);
     const [thumbnailUrl, setThumbnailUrl] = useState('');
-    const [uploadedImages, setUploadedImages] = useState<{ url: string, hash: string }[]>([]);
+    const [uploadedImages, setUploadedImages] = useState<{ url: string, pinataUrl: string, hash: string }[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [inputUsername, setInputUsername] = useState('');
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
     const [isPublishing, setIsPublishing] = useState(false);
+    const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
     useEffect(() => {
         // Check if user is already logged in
@@ -83,6 +84,7 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
             // Initialize uploadedImages with existing images
             const initialImages = imageUrls.map(url => ({
                 url: url,
+                pinataUrl: url,
                 hash: url // Use URL as hash for external images
             }));
 
@@ -137,7 +139,7 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
             .filter((url): url is string => !!url);
 
         // Filter uploadedImages to only keep those that are still in the editor
-        const updatedImages = uploadedImages.filter(img => 
+        const updatedImages = uploadedImages.filter(img =>
             imageUrls.some(url => url === img.url)
         );
 
@@ -146,6 +148,7 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
             if (!updatedImages.some(img => img.url === url)) {
                 updatedImages.push({
                     url: url,
+                    pinataUrl: url,
                     hash: url // Use URL as hash for external images
                 });
             }
@@ -164,13 +167,35 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
             alert("Invalid file type. Only images and videos are allowed. To use .mov files upload in Feed");
             return;
         }
-        
-        const ipfsData = await uploadFileToIPFS(file);
-        if (ipfsData !== undefined) {
-            const ipfsUrl = `https://lime-useful-snake-714.mypinata.cloud/ipfs/${ipfsData.IpfsHash}`;
+
+        try {
+            const ipfsData = await uploadFileToIPFS(file);
+            if (!ipfsData || !ipfsData.IpfsHash) {
+                throw new Error('Failed to upload file to IPFS');
+            }
+
+            // Use Pinata URL for storage (what gets saved to Hive)
+            const pinataUrl = `https://lime-useful-snake-714.mypinata.cloud/ipfs/${ipfsData.IpfsHash}`;
+            // Use public IPFS gateway for preview and display
+            const publicUrl = `https://ipfs.io/ipfs/${ipfsData.IpfsHash}`;
+
+            // Try to pre-load the image to verify it's accessible
+            if (!file.type.startsWith("video/")) {
+                const img = new Image();
+                const imageLoadPromise = new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = () => reject(new Error('Failed to load image from IPFS'));
+                });
+                img.src = publicUrl;
+                await imageLoadPromise;
+            }
+
+            // Replace the publicUrl with pinataUrl in the final markdown that gets saved
             const markdownLink = file.type.startsWith("video/")
-                ? `<iframe src="${ipfsUrl}" allowFullScreen={true}></iframe>`
-                : `![Image](${ipfsUrl})`;
+                ? `<div class="static-video-placeholder" data-video-url="${publicUrl}" data-pinata-url="${pinataUrl}">[Vídeo - Clique para reproduzir]</div>`
+                : `<img src="${publicUrl}" data-pinata-url="${pinataUrl}" alt="Image" style="max-width:100%; display:block; background:none; margin:10px 0;" />`;
+
+            // Store the markdown with public URL for preview but replace with Pinata URL on publish
             setValue(prevMarkdown => `${prevMarkdown}\n${markdownLink}\n`);
 
             // Add to uploadedImages only if it's an image and not already present
@@ -181,16 +206,20 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                         return prev;
                     }
                     return [...prev, {
-                        url: ipfsUrl,
+                        url: publicUrl, // Use public URL for thumbnails
+                        pinataUrl: pinataUrl, // Store Pinata URL for publishing
                         hash: ipfsData.IpfsHash
                     }];
                 });
 
                 // Set as thumbnail if none is set
                 if (thumbnailUrl === '') {
-                    setThumbnailUrl(ipfsUrl);
+                    setThumbnailUrl(publicUrl);
                 }
             }
+        } catch (error: any) {
+            console.error('Error uploading file:', error);
+            alert(`Failed to upload file: ${error?.message || 'Unknown error'}. Please try again.`);
         }
     };
 
@@ -343,12 +372,25 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
 
         setIsPublishing(true);
 
+        // Convert all public URLs to Pinata URLs in the final content
+        let finalContent = value;
+
+        // Replace all image and video URLs with Pinata URLs
+        const imgRegex = /<img src="(https:\/\/ipfs\.io\/ipfs\/[^"]+)" data-pinata-url="([^"]+)"/g;
+        finalContent = finalContent.replace(imgRegex, '<img src="$2"');
+
+        const videoRegex = /data-video-url="(https:\/\/ipfs\.io\/ipfs\/[^"]+)" data-pinata-url="([^"]+)"/g;
+        finalContent = finalContent.replace(videoRegex, 'data-video-url="$2"');
+
+        // Get Pinata URL for the thumbnail if it exists
+        const thumbnailPinataUrl = uploadedImages.find(img => img.url === thumbnailUrl)?.pinataUrl || thumbnailUrl;
+
         const operations = [];
         const metadata = {
             ...(editPost ? JSON.parse(editPost.json_metadata) : {}),
             tags: tags,
             app: 'wilbor-art-blog',
-            image: thumbnailUrl ? [thumbnailUrl] : []
+            image: thumbnailPinataUrl ? [thumbnailPinataUrl] : []
         };
 
         if (editPost) {
@@ -359,7 +401,7 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                 "author": editPost.author,
                 "permlink": editPost.permlink,
                 "title": title,
-                "body": value,
+                "body": finalContent,
                 "json_metadata": JSON.stringify(metadata)
             }]);
         } else {
@@ -376,7 +418,7 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                 "author": username,
                 "permlink": permlink,
                 "title": title,
-                "body": value,
+                "body": finalContent,
                 "json_metadata": JSON.stringify(metadata)
             }]);
         }
@@ -401,6 +443,45 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
             alert('Hive Keychain is not installed!');
             setIsPublishing(false);
         }
+    };
+
+    // Add useEffect to handle click on video placeholders
+    useEffect(() => {
+        const handleVideoPlaceholderClick = (e: MouseEvent) => {
+            const placeholder = e.currentTarget as HTMLElement;
+            const videoUrl = placeholder.getAttribute('data-video-url');
+            if (videoUrl) {
+                // Set active video to trigger the modal
+                setActiveVideo(videoUrl);
+            }
+        };
+
+        // Attach click handlers to video placeholders
+        const attachPlaceholderHandlers = () => {
+            const placeholders = document.querySelectorAll('.static-video-placeholder');
+            placeholders.forEach(placeholder => {
+                placeholder.removeEventListener('click', handleVideoPlaceholderClick as EventListener);
+                placeholder.addEventListener('click', handleVideoPlaceholderClick as EventListener);
+            });
+        };
+
+        // Attach handlers when in preview mode
+        if (activeTab === 'preview') {
+            setTimeout(attachPlaceholderHandlers, 100);
+        }
+
+        // Clean up
+        return () => {
+            const placeholders = document.querySelectorAll('.static-video-placeholder');
+            placeholders.forEach(placeholder => {
+                placeholder.removeEventListener('click', handleVideoPlaceholderClick as EventListener);
+            });
+        };
+    }, [activeTab, value]);
+
+    // Function to close video player
+    const closeVideoPlayer = () => {
+        setActiveVideo(null);
     };
 
     if (!isOpen) return null;
@@ -454,21 +535,19 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                         <div className="flex-1 flex">
                                             <button
                                                 onClick={() => setActiveTab('write')}
-                                                className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-sm font-medium ${
-                                                    activeTab === 'write'
+                                                className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-sm font-medium ${activeTab === 'write'
                                                         ? 'text-[#E31337] border-b-2 border-[#E31337]'
                                                         : ' dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                                                }`}
+                                                    }`}
                                             >
                                                 Write
                                             </button>
                                             <button
                                                 onClick={() => setActiveTab('preview')}
-                                                className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-sm font-medium ${
-                                                    activeTab === 'preview'
+                                                className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-sm font-medium ${activeTab === 'preview'
                                                         ? 'text-[#E31337] border-b-2 border-[#E31337]'
                                                         : ' dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                                                }`}
+                                                    }`}
                                             >
                                                 Preview
                                             </button>
@@ -518,14 +597,111 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                                 ) : (
                                                     <div className="h-full overflow-y-auto overflow-x-hidden prose prose-sm md:prose dark:prose-invert max-w-none p-3 md:p-4 border border-gray-300 dark:border-gray-700 rounded-lg bg-transparent text-gray-900 dark:text-white">
                                                         <div className="w-full max-w-full break-words">
-                                                            <MarkdownPreview 
+                                                            <MarkdownPreview
                                                                 source={value}
                                                                 style={{
                                                                     backgroundColor: 'transparent',
                                                                     color: 'inherit'
                                                                 }}
-                                                                className="[&>*]:!text-sm md:[&>*]:!text-base [&_*]:!break-words [&_pre]:!overflow-x-auto [&_pre]:!whitespace-pre-wrap [&_img]:!w-full [&_img]:!max-w-full [&_img]:!max-h-[300px] [&_img]:!object-contain [&_h1]:!text-xl md:[&_h1]:!text-2xl [&_h2]:!text-lg md:[&_h2]:!text-xl [&_h3]:!text-base md:[&_h3]:!text-lg [&_p]:!text-sm md:[&_p]:!text-base [&_ul]:!text-sm md:[&_ul]:!text-base [&_ol]:!text-sm md:[&_ol]:!text-base [&_li]:!my-1 [&_p]:!my-2 [&_pre]:!p-2 md:[&_pre]:!p-4 [&_pre]:!text-xs md:[&_pre]:!text-sm [&_code]:!text-xs md:[&_code]:!text-sm [&_blockquote]:!text-sm md:[&_blockquote]:!text-base [&_blockquote]:!py-1 [&_blockquote]:!px-2 md:[&_blockquote]:!py-2 md:[&_blockquote]:!px-4 [&_table]:!text-xs md:[&_table]:!text-sm [&_th]:!py-1 [&_th]:!px-2 md:[&_th]:!py-2 md:[&_th]:!px-4 [&_td]:!py-1 [&_td]:!px-2 md:[&_td]:!py-2 md:[&_td]:!px-4 [&>*]:!text-white [&_a]:!text-[#E31337] [&_a]:!no-underline hover:[&_a]:!underline [&_hr]:!border-gray-700 [&_table]:!w-full [&_table]:!table-auto [&_pre_code]:!whitespace-pre-wrap [&_pre]:!w-full [&_pre]:!max-w-full [&_iframe]:!w-full [&_iframe]:!max-w-full"
+                                                                rehypePlugins={[]}
+                                                                className="markdown-preview-custom"
+                                                                wrapperElement={{
+                                                                    'data-color-mode': 'dark'
+                                                                }}
                                                             />
+                                                            <style jsx global>{`
+                                                                .markdown-preview-custom {
+                                                                    color: white;
+                                                                    background-color: transparent !important;
+                                                                }
+                                                                
+                                                                /* Fix for all images */
+                                                                .markdown-preview-custom img {
+                                                                    width: 100% !important;
+                                                                    max-width: 100% !important;
+                                                                    max-height: 400px !important;
+                                                                    object-fit: contain !important;
+                                                                    margin: 10px 0 !important;
+                                                                    padding: 0 !important;
+                                                                    background: none !important;
+                                                                    display: block !important;
+                                                                    border: none !important;
+                                                                    box-shadow: none !important;
+                                                                }
+                                                                
+                                                                /* Static video placeholder */
+                                                                .static-video-placeholder {
+                                                                    background-color: #161616 !important;
+                                                                    color: white !important;
+                                                                    padding: 15px !important;
+                                                                    margin: 10px 0 !important;
+                                                                    border-radius: 8px !important;
+                                                                    text-align: center !important;
+                                                                    font-size: 14px !important;
+                                                                    cursor: pointer !important;
+                                                                    border-left: 4px solid #E31337 !important;
+                                                                    transition: background-color 0.2s !important;
+                                                                }
+                                                                
+                                                                .static-video-placeholder:hover {
+                                                                    background-color: #1f1f1f !important;
+                                                                }
+                                                                
+                                                                .static-video-placeholder::before {
+                                                                    content: "▶️" !important;
+                                                                    display: inline-block !important;
+                                                                    margin-right: 8px !important;
+                                                                    font-size: 18px !important;
+                                                                }
+                                                                
+                                                                /* Add this to ensure proper iframe display */
+                                                                .markdown-preview-custom iframe {
+                                                                    width: 100% !important;
+                                                                    max-width: 100% !important;
+                                                                    height: 250px !important;
+                                                                    border: none !important;
+                                                                    padding: 0 !important;
+                                                                    margin: 10px 0 !important;
+                                                                    background: none !important;
+                                                                    display: block !important;
+                                                                }
+                                                                
+                                                                /* Override any wrapper spacing */
+                                                                .markdown-preview-custom p {
+                                                                    margin: 1em 0 !important;
+                                                                }
+                                                                
+                                                                /* Remove any strange backgrounds from media containers */
+                                                                .markdown-preview-custom p:has(img),
+                                                                .markdown-preview-custom p:has(.static-video-placeholder),
+                                                                .markdown-preview-custom p:has(iframe) {
+                                                                    background: none !important;
+                                                                    padding: 0 !important;
+                                                                    margin: 0 !important;
+                                                                }
+                                                                
+                                                                .markdown-preview-custom h1 { font-size: 1.5rem; }
+                                                                .markdown-preview-custom h2 { font-size: 1.25rem; }
+                                                                .markdown-preview-custom h3 { font-size: 1.125rem; }
+                                                                .markdown-preview-custom ul, 
+                                                                .markdown-preview-custom ol { 
+                                                                    font-size: 0.875rem;
+                                                                    margin: 0.5rem 0;
+                                                                }
+                                                                .markdown-preview-custom a {
+                                                                    color: #E31337;
+                                                                    text-decoration: none;
+                                                                }
+                                                                .markdown-preview-custom a:hover {
+                                                                    text-decoration: underline;
+                                                                }
+                                                                .markdown-preview-custom pre, 
+                                                                .markdown-preview-custom code {
+                                                                    font-size: 0.75rem;
+                                                                    white-space: pre-wrap;
+                                                                    overflow-x: auto;
+                                                                }
+                                                            `}</style>
                                                         </div>
                                                     </div>
                                                 )}
@@ -567,11 +743,10 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                                             <button
                                                                 onClick={handleAddTag}
                                                                 disabled={!currentTag || tags.length >= 5}
-                                                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                                                    !currentTag || tags.length >= 5
+                                                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${!currentTag || tags.length >= 5
                                                                         ? 'bg-gray-400 dark:bg-gray-600 text-gray-300 cursor-not-allowed'
                                                                         : 'bg-[#E31337] text-white hover:bg-[#c11230]'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 Add
                                                             </button>
@@ -594,11 +769,10 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                                                             <button
                                                                                 key={image.hash}
                                                                                 onClick={() => handleThumbnailSelect(image.url)}
-                                                                                className={`relative flex-none w-[200px] aspect-video overflow-hidden rounded-lg transition-all snap-center ${
-                                                                                    thumbnailUrl === image.url 
-                                                                                        ? 'ring-2 ring-[#E31337] scale-[1.02]' 
+                                                                                className={`relative flex-none w-[200px] aspect-video overflow-hidden rounded-lg transition-all snap-center ${thumbnailUrl === image.url
+                                                                                        ? 'ring-2 ring-[#E31337] scale-[1.02]'
                                                                                         : 'ring-1 ring-gray-300 dark:ring-gray-700 hover:ring-[#E31337] hover:scale-[1.02]'
-                                                                                }`}
+                                                                                    }`}
                                                                                 title={thumbnailUrl === image.url ? 'Imagem de capa selecionada' : 'Clique para selecionar como capa'}
                                                                             >
                                                                                 <img
@@ -626,11 +800,10 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                                                     <button
                                                                         key={image.hash}
                                                                         onClick={() => handleThumbnailSelect(image.url)}
-                                                                        className={`relative aspect-video overflow-hidden rounded-lg transition-all ${
-                                                                            thumbnailUrl === image.url 
-                                                                                ? 'ring-2 ring-[#E31337] scale-[1.02]' 
+                                                                        className={`relative aspect-video overflow-hidden rounded-lg transition-all ${thumbnailUrl === image.url
+                                                                                ? 'ring-2 ring-[#E31337] scale-[1.02]'
                                                                                 : 'ring-1 ring-gray-300 dark:ring-gray-700 hover:ring-[#E31337] hover:scale-[1.02]'
-                                                                        }`}
+                                                                            }`}
                                                                         title={thumbnailUrl === image.url ? 'Imagem de capa selecionada' : 'Clique para selecionar como capa'}
                                                                     >
                                                                         <img
@@ -668,6 +841,26 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                         </div>
                     </main>
 
+                    {/* Video Player Modal */}
+                    {activeVideo && (
+                        <div className="fixed inset-0 z-[10000] bg-black/90 flex items-center justify-center" onClick={closeVideoPlayer}>
+                            <div className="w-full max-w-[90%] max-h-[90%] relative" onClick={(e) => e.stopPropagation()}>
+                                <video
+                                    src={activeVideo}
+                                    controls
+                                    autoPlay
+                                    className="w-full h-auto max-h-[80vh]"
+                                />
+                                <button
+                                    className="absolute top-2 right-2 bg-white/20 text-white p-2 rounded-full hover:bg-white/30 transition-colors"
+                                    onClick={closeVideoPlayer}
+                                >
+                                    <BiX size={24} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Action Buttons */}
                     <footer className="flex-none border-t border-gray-800 bg-[#1E2028]">
                         <div className="px-3 md:px-4 py-3">
@@ -681,11 +874,10 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                 <button
                                     onClick={handlePublish}
                                     disabled={isPublishing}
-                                    className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
-                                        isPublishing
+                                    className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors ${isPublishing
                                             ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
                                             : 'bg-[#E31337] hover:bg-[#c11230]'
-                                    }`}
+                                        }`}
                                 >
                                     {isPublishing ? (
                                         <div className="flex items-center justify-center">
