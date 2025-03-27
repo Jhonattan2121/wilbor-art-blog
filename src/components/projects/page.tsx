@@ -115,6 +115,7 @@ async function getHivePosts(username: string) {
             author: post.author,
             permlink: post.permlink,
             body: post.body,
+            json_metadata: post.json_metadata
           },
           author: post.author,
           permlink: post.permlink,
@@ -244,7 +245,7 @@ export default async function GridPage() {
         <PhotoGridPage
           photos={posts}
           photosCount={photosCount}
-          tags={sidebarData.tags}
+          tags={[]}
           cameras={[] as Cameras}
           simulations={[] as FilmSimulations}
          

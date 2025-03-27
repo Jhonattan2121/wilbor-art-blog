@@ -15,7 +15,6 @@ export class MarkdownRenderer {
     const result: MediaContent[] = [];
 
     // Add debug logs
-    console.log('Processing post:', post.author, post.permlink);
 
     // New flexible regex pattern for IPFS skatehive iframes
     const skatehivePatterns = [
@@ -28,7 +27,6 @@ export class MarkdownRenderer {
       const matches = post.body.match(pattern);
       if (matches) {
         const url = matches[1];
-        console.log('IPFS URL found:', url);
         
         if (!mediaItems.has(url)) {
           mediaItems.add(url);
@@ -115,12 +113,7 @@ export class MarkdownRenderer {
       console.warn('Error parsing json_metadata:', e);
     }
 
-    console.log('Total media found:', {
-      videos: result.filter(item => item.type === 'iframe').length,
-      images: result.filter(item => item.type === 'image').length
-    });
-
-    console.log('Final result:', result);
+   
     return result;
   }
 }

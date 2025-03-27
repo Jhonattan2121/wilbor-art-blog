@@ -4,6 +4,7 @@ export interface HiveMetadata {
   author: string;
   permlink: string;
   body: string;
+  json_metadata?: string;
 }
 
 export  interface Photo {
@@ -53,12 +54,7 @@ export interface Media {
   height?: number;
   iframeHtml?: string;
   tags?: string[];
-  // Adicionando hiveMetadata
-  hiveMetadata?: {
-    author: string;
-    permlink: string;
-    body: string;
-  };
+  hiveMetadata?: HiveMetadata;
 }
 
 export interface PhotoGridContainerProps {

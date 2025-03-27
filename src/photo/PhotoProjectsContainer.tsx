@@ -1,5 +1,6 @@
 'use client';
 
+import HivePostModal from '@/components/HivePostModal';
 import SiteGrid from '@/components/SiteGrid';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
@@ -12,6 +13,7 @@ import rehypeRaw from 'rehype-raw';
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import { Media, PhotoGridContainerProps } from './components/types';
+
 const formatPinataUrl = (url: string): string => {
   if (url.includes('pinataGatewayToken')) {
     return url.split('?')[0];
@@ -27,6 +29,7 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
   // First, let's group by permlink
   media.forEach(item => {
     if (item.hiveMetadata) {
+     
       const permlink = item.hiveMetadata.permlink;
 
       if (!groupedMedia.has(permlink)) {
@@ -45,13 +48,14 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
   groupedMedia.forEach((group, permlink) => {
     if (group.length > 0) {
       const mainItem = group[0];
+     
 
       // Process the post's markdown content only once per group
       const extractedMedia = MarkdownRenderer.extractMediaFromHive({
         body: mainItem.hiveMetadata?.body || '',
         author: mainItem.hiveMetadata?.author || '',
         permlink: permlink,
-        json_metadata: JSON.stringify({ image: [mainItem.src] })
+        json_metadata: mainItem.hiveMetadata?.json_metadata || JSON.stringify({ image: [mainItem.src] })
       });
 
       // Add only raw media to the group
@@ -65,7 +69,12 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
             title: mainItem.title,
             type: mediaContent.type === 'iframe' ? 'video' : 'photo',
             iframeHtml: mediaContent.iframeHtml,
-            hiveMetadata: mainItem.hiveMetadata
+            hiveMetadata: mainItem.hiveMetadata ? {
+              author: mainItem.hiveMetadata.author,
+              permlink: mainItem.hiveMetadata.permlink,
+              body: mainItem.hiveMetadata.body,
+              json_metadata: mainItem.hiveMetadata.json_metadata
+            } : undefined
           });
         }
       });
@@ -84,14 +93,51 @@ const PEAKD_URL = 'files.peakd.com/file/peakd-hive';
 const MediaItem = ({
   items,
   isExpanded,
-  onExpand
+  onExpand,
+  onOpenModal
 }: {
   items: Media[];
   isExpanded: boolean;
   onExpand: () => void;
+  onOpenModal: () => void;
 }) => {
   const mainItem = items[0];
   const [isCarousel, setIsCarousel] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const loggedUser = typeof window !== 'undefined' ? localStorage.getItem('hive_username') : null;
+  const isAuthor = loggedUser && mainItem.hiveMetadata?.author === loggedUser;
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+   
+    onOpenModal();
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.hive_keychain || !mainItem.hiveMetadata) return;
+
+    const operations = [
+      ["delete_comment", {
+        author: mainItem.hiveMetadata.author,
+        permlink: mainItem.hiveMetadata.permlink
+      }]
+    ];
+
+    window.hive_keychain.requestBroadcast(
+      mainItem.hiveMetadata.author,
+      operations,
+      'posting',
+      (response: any) => {
+        if (response.success) {
+          alert('Post deleted successfully!');
+          window.location.reload();
+        } else {
+          alert('Error deleting post: ' + response.message);
+        }
+      }
+    );
+  };
 
   const formatPostContent = (content: string): string => {
     if (!content) return '';
@@ -222,17 +268,41 @@ const MediaItem = ({
           <div className="sm:p-6 p-4">
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-2xl font-bold text-white">{mainItem.title}</h2>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onExpand();
-                }}
-                className="text-white bg-black/30 rounded-full p-2 hover:bg-black/50 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-2">
+                {isAuthor && (
+                  <>
+                    <button
+                      onClick={handleEdit}
+                      className="text-white bg-blue-600 rounded-full p-2 hover:bg-blue-700 transition-colors"
+                      title="Edit post"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="text-white bg-red-600 rounded-full p-2 hover:bg-red-700 transition-colors"
+                      title="Delete post"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onExpand();
+                  }}
+                  className="text-white bg-black/30 rounded-full p-2 hover:bg-black/50 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {mainItem.hiveMetadata?.body && (
@@ -388,6 +458,7 @@ export default function PhotoGridContainer({
   ...props
 }: PhotoGridContainerProps) {
   const [expandedPermlink, setExpandedPermlink] = useState<string | null>(null);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const groupedMedia = groupMediaByPermlink(media);
 
   const mediaGroups = Array.from(groupedMedia.entries())
@@ -399,29 +470,64 @@ export default function PhotoGridContainer({
     }));
 
   return (
-    <SiteGrid
-      contentMain={
-        <div className={clsx(
-          'max-w-5xl mx-auto',
-          header ? 'mb-8' : 'mb-4'
-        )}>
-          {header}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-            {mediaGroups.map(({ permlink, group }) => (
-              <MediaItem
-                key={permlink}
-                items={group}
-                isExpanded={expandedPermlink === permlink}
-                onExpand={() => {
-                  setExpandedPermlink(expandedPermlink === permlink ? null : permlink);
-                }}
-              />
-            ))}
+    <>
+      <SiteGrid
+        contentMain={
+          <div className={clsx(
+            'max-w-5xl mx-auto',
+            header ? 'mb-8' : 'mb-4'
+          )}>
+            {header}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+              {mediaGroups.map(({ permlink, group }) => (
+                <MediaItem
+                  key={permlink}
+                  items={group}
+                  isExpanded={expandedPermlink === permlink}
+                  onExpand={() => {
+                    setExpandedPermlink(expandedPermlink === permlink ? null : permlink);
+                  }}
+                  onOpenModal={() => {
+                    setExpandedPermlink(permlink);
+                    setIsPostModalOpen(true);
+                  }}
+                />
+              ))}
+            </div>
           </div>
+        }
+        contentSide={sidebar}
+        sideHiddenOnMobile
+      />
+
+      {/* Modal Portal */}
+      {isPostModalOpen && expandedPermlink && (
+        <div className="fixed inset-0 z-[9999]">
+          {mediaGroups.map(({ permlink, group }) => {
+            const mainItem = group[0];
+            if (mainItem.hiveMetadata && permlink === expandedPermlink) {
+              return (
+                <HivePostModal
+                  key={`modal-${permlink}`}
+                  isOpen={true}
+                  onClose={() => {
+                    setIsPostModalOpen(false);
+                    setExpandedPermlink(null);
+                  }}
+                  editPost={{
+                    author: mainItem.hiveMetadata.author,
+                    permlink: mainItem.hiveMetadata.permlink,
+                    title: mainItem.title || '',
+                    body: mainItem.hiveMetadata.body,
+                    json_metadata: mainItem.hiveMetadata.json_metadata || JSON.stringify({ tags: [], app: 'wilbor-art-blog' })
+                  }}
+                />
+              );
+            }
+            return null;
+          })}
         </div>
-      }
-      contentSide={sidebar}
-      sideHiddenOnMobile
-    />
+      )}
+    </>
   );
 }
