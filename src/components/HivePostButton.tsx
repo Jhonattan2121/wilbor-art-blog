@@ -19,6 +19,7 @@ export default function HivePostButton() {
       <HivePostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        initialCommunity=""
       />
     </>
   );

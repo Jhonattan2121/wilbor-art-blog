@@ -30,15 +30,24 @@ export const createHiveOperations = (
     tags: string[],
     thumbnailUrl: string | null,
     username: string,
-    editPost?: HivePostData
+    editPost?: HivePostData,
+    selectedCommunity?: string | null,
+    metadata?: any
 ) => {
     const operations = [];
-    const metadata = {
+    
+    // If metadata is not provided, create default metadata
+    const postMetadata = metadata || {
         ...(editPost ? JSON.parse(editPost.json_metadata) : {}),
         tags: tags,
         app: 'wilbor-art-blog',
         image: thumbnailUrl ? [thumbnailUrl] : []
     };
+
+    // Add community to metadata if selected and not already included
+    if (selectedCommunity && !postMetadata.community) {
+        postMetadata.community = selectedCommunity;
+    }
 
     if (editPost) {
         // Edit existing post
@@ -49,7 +58,7 @@ export const createHiveOperations = (
             "permlink": editPost.permlink,
             "title": title,
             "body": content,
-            "json_metadata": JSON.stringify(metadata)
+            "json_metadata": JSON.stringify(postMetadata)
         }]);
     } else {
         // Create new post
@@ -59,15 +68,22 @@ export const createHiveOperations = (
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-');
 
-        operations.push(["comment", {
+        const postData: any = {
             "parent_author": "",
             "parent_permlink": tags[0],
             "author": username,
             "permlink": permlink,
             "title": title,
             "body": content,
-            "json_metadata": JSON.stringify(metadata)
-        }]);
+            "json_metadata": JSON.stringify(postMetadata)
+        };
+
+        // If posting to a community, add the community as parent_permlink
+        if (selectedCommunity) {
+            postData.parent_permlink = selectedCommunity;
+        }
+
+        operations.push(["comment", postData]);
     }
 
     return operations;

@@ -27,9 +27,10 @@ interface HivePostModalProps {
     isOpen: boolean;
     onClose: () => void;
     editPost?: HivePostData;
+    initialCommunity?: string | null;
 }
 
-export default function HivePostModal({ isOpen, onClose, editPost }: HivePostModalProps) {
+export default function HivePostModal({ isOpen, onClose, editPost, initialCommunity }: HivePostModalProps) {
     const [value, setValue] = useState(editPost?.body || '');
     const [title, setTitle] = useState(editPost?.title || '');
     const [tags, setTags] = useState<string[]>(() => {
@@ -55,6 +56,10 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
     const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
     const [isPublishing, setIsPublishing] = useState(false);
     const [activeVideo, setActiveVideo] = useState<string | null>(null);
+    const [selectedCommunity, setSelectedCommunity] = useState<string | null>(initialCommunity || null);
+    const [communityTitle, setCommunityTitle] = useState<string | null>(null);
+    const [showCommunitySelector, setShowCommunitySelector] = useState(false);
+    const [isLoadingCommunity, setIsLoadingCommunity] = useState(!!editPost);
 
     useEffect(() => {
         // Check if user is already logged in
@@ -97,8 +102,84 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
             if (thumbnailUrl === '' && initialImages.length > 0) {
                 setThumbnailUrl(initialImages[0].url);
             }
+            
+            // When editing a post, we check the metadata to detect the community
+            if (editPost.json_metadata) {
+                try {
+                    console.log('Processing existing post:', editPost);
+                    console.log('Permlink:', editPost.permlink);
+                    
+                    const metadata = JSON.parse(editPost.json_metadata);
+                    console.log('Complete post metadata:', metadata);
+                    
+                    // First check the 'community' field in metadata
+                    if (metadata.community) {
+                        console.log('Community found in metadata:', metadata.community);
+                        setSelectedCommunity(metadata.community);
+                        fetchCommunityDetails(metadata.community); // Fetch the friendly name of the community
+                    } 
+                    // If not found in metadata, check if it was posted in a community by parent_permlink
+                    else if (typeof window !== 'undefined' && window.hive_keychain) {
+                        console.log('Checking community information via API...');
+                        
+                        // Make a call to Hive API to get complete post information
+                        fetch('https://api.hive.blog', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'condenser_api.get_content',
+                                params: [editPost.author, editPost.permlink],
+                                id: 1
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.result) {
+                                console.log('Complete post information:', data.result);
+                                
+                                // Check if the post belongs to a community (parent_permlink starts with 'hive-')
+                                if (data.result.parent_permlink && data.result.parent_permlink.startsWith('hive-')) {
+                                    console.log('Community found via parent_permlink:', data.result.parent_permlink);
+                                    setSelectedCommunity(data.result.parent_permlink);
+                                    fetchCommunityDetails(data.result.parent_permlink); // Fetch the friendly name of the community
+                                } else {
+                                    console.log('Post does not belong to a community (verified via API)');
+                                    setSelectedCommunity(null);
+                                    setCommunityTitle(null);
+                                    setIsLoadingCommunity(false);
+                                }
+                            }
+                            setIsLoadingCommunity(false); // Finished loading, with or without community
+                        })
+                        .catch(error => {
+                            console.error('Error fetching complete post information:', error);
+                            setIsLoadingCommunity(false); // Finished loading, even with error
+                        });
+                    } else {
+                        console.log('Keychain not available, could not verify parent_permlink');
+                        setSelectedCommunity(null);
+                        setIsLoadingCommunity(false); // Finished loading
+                    }
+                } catch (e) {
+                    console.error('Error parsing metadata from post:', e);
+                    setSelectedCommunity(null);
+                    setIsLoadingCommunity(false); // Finished loading, even with error
+                }
+            }
+        } else if (initialCommunity) {
+            // If there's an initial community specified, use it
+            setSelectedCommunity(initialCommunity);
+            if (initialCommunity.startsWith('hive-')) {
+                fetchCommunityDetails(initialCommunity); // Fetch the friendly name of the community
+            } else {
+                setCommunityTitle(initialCommunity);
+                setIsLoadingCommunity(false);
+            }
+        } else {
+            setIsLoadingCommunity(false); // Not editing, no need to load
         }
-    }, [editPost]);
+    }, [editPost, initialCommunity]);
 
     const { getRootProps, getInputProps } = useDropzone({
         noClick: true,
@@ -192,13 +273,28 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                 thumbnailUrl
             );
 
+            // Create metadata
+            const metadata = {
+                ...(editPost ? JSON.parse(editPost.json_metadata) : {}),
+                tags: tags,
+                app: 'wilbor-art-blog',
+                image: thumbnailPinataUrl ? [thumbnailPinataUrl] : []
+            };
+            
+            // Add community to metadata if selected
+            if (selectedCommunity) {
+                metadata.community = selectedCommunity;
+            }
+
             const operations = createHiveOperations(
                 title,
                 finalContent,
                 tags,
                 thumbnailPinataUrl,
                 username,
-                editPost
+                editPost,
+                selectedCommunity,
+                metadata
             );
 
             const result = await publishToHive(operations, username, editPost);
@@ -265,6 +361,18 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
         setActiveVideo(null);
     };
 
+    const handleSelectCommunity = (communityName: string | null) => {
+        setSelectedCommunity(communityName);
+        
+        if (communityName && communityName.startsWith('hive-')) {
+            fetchCommunityDetails(communityName);
+        } else if (communityName) {
+            setCommunityTitle(communityName);
+        } else {
+            setCommunityTitle(null);
+        }
+    };
+
     // Add useEffect to handle click on video placeholders
     useEffect(() => {
         const handleVideoPlaceholderClick = (e: MouseEvent) => {
@@ -299,6 +407,42 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
         };
     }, [activeTab, value]);
 
+    // Function to fetch community details by ID
+    const fetchCommunityDetails = (communityId: string) => {
+        if (!communityId.startsWith('hive-')) return;
+        
+        console.log('Fetching community details:', communityId);
+        setIsLoadingCommunity(true);
+        
+        fetch('https://api.hive.blog', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'bridge.get_community',
+                params: { name: communityId, observer: '' },
+                id: 1
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.result) {
+                console.log('Community details:', data.result);
+                const communityData = data.result;
+                setCommunityTitle(communityData.title || communityId);
+            } else {
+                console.log('Could not get community name');
+                setCommunityTitle(null);
+            }
+            setIsLoadingCommunity(false);
+        })
+        .catch(error => {
+            console.error('Error fetching community details:', error);
+            setCommunityTitle(null);
+            setIsLoadingCommunity(false);
+        });
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -326,6 +470,47 @@ export default function HivePostModal({ isOpen, onClose, editPost }: HivePostMod
                                         placeholder="Enter your post title"
                                         className="w-full px-3 md:px-4 py-2 text-sm md:text-base border text-white border-gray-300 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-[#E31337] focus:border-transparent"
                                     />
+                                </div>
+
+                                {/* Community Info - always shows, regardless of whether there is a community or not */}
+                                <div className="flex-none mb-3">
+                                    <div className="flex flex-col">
+                                        <label className="text-sm font-medium text-white mb-2">
+                                            Posting in
+                                        </label>
+                                        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gray-800 text-white border border-gray-700">
+                                            {isLoadingCommunity ? (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="animate-spin h-4 w-4 border-b-2 border-[#E31337] rounded-full"></div>
+                                                    <span className="text-gray-400">Loading information...</span>
+                                                </div>
+                                            ) : selectedCommunity ? (
+                                                <>
+                                                    <span className="text-[#E31337] font-medium">
+                                                        {communityTitle || selectedCommunity}
+                                                    </span>
+                                                    <span className="text-gray-400">(Community)</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span className="font-medium">Personal Blog</span>
+                                                    <span className="text-xs bg-gray-700 px-1.5 py-0.5 rounded-full text-gray-300">Default</span>
+                                                </>
+                                            )}
+                                            {editPost && (
+                                                <span className="ml-auto px-2 py-0.5 rounded bg-blue-500/30 text-blue-200 text-xs">
+                                                    Editing Post
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            {isLoadingCommunity ? (
+                                                'Verifying publication information...'
+                                            ) : selectedCommunity 
+                                                ? `Your post will appear in the &quot;${communityTitle || selectedCommunity}&quot; community feed.` 
+                                                : 'Your post will be published on your personal blog.'}
+                                        </p>
+                                    </div>
                                 </div>
 
                                 {/* Editor Tabs */}
