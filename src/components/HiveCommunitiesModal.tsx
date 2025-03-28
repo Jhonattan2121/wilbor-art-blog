@@ -633,7 +633,7 @@ export default function HiveCommunitiesModal({
                         <div className="w-full px-3 md:px-4">
                             <div className="flex justify-between items-center h-14">
                                 <h1 className="text-xl font-bold text-white dark:text-white">
-                                    Hive Communities
+                                    Categorias
                                 </h1>
                                 <button
                                     onClick={onClose}
@@ -657,7 +657,7 @@ export default function HiveCommunitiesModal({
                                         : 'text-gray-400 dark:text-gray-400 hover:text-white dark:hover:text-white hover:bg-gray-800/30 dark:hover:bg-gray-800/30'
                                 }`}
                             >
-                                My Communities
+                                Minhas Categorias
                             </button>
                             <button
                                 onClick={() => setActiveTab('discover')}
@@ -667,7 +667,7 @@ export default function HiveCommunitiesModal({
                                         : 'text-gray-400 dark:text-gray-400 hover:text-white dark:hover:text-white hover:bg-gray-800/30 dark:hover:bg-gray-800/30'
                                 }`}
                             >
-                                Discover Communities
+                                Descobrir Categorias
                             </button>
                         </div>
                     </div>
@@ -684,7 +684,7 @@ export default function HiveCommunitiesModal({
                                 className="button primary flex items-center gap-2"
                             >
                                 <BiEdit size={20} />
-                                Create Post in Personal Blog
+                                Criar Post Sem Categoria
                             </button>
                         </div>
 
@@ -693,7 +693,7 @@ export default function HiveCommunitiesModal({
                             isLoading ? (
                                 <div className="flex items-center justify-center p-8">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E31337] dark:border-[#E31337]"></div>
-                                    <span className="ml-3 text-gray-400 dark:text-gray-400">Loading your communities...</span>
+                                    <span className="ml-3 text-gray-400 dark:text-gray-400">Carregando suas categorias...</span>
                                 </div>
                             ) : (
                                 <>
@@ -717,14 +717,11 @@ export default function HiveCommunitiesModal({
                                                         >
                                                             <span className="flex items-center gap-1 text-xs font-medium">
                                                                 <BiX size={16} className="text-red-400 dark:text-red-400" />
-                                                                Leave
+                                                                Sair
                                                             </span>
                                                         </button>
                                                     </div>
-                                                    <p className="text-sm text-gray-400 dark:text-gray-400 mb-4">
-                                                        {community.name}
-                                                    </p>
-                                                    <button 
+                                                    <button
                                                         onClick={() => {
                                                             console.log('Create post button clicked for (from subscribed list):', community.name);
                                                             handleCreatePost(community.name);
@@ -732,7 +729,7 @@ export default function HiveCommunitiesModal({
                                                         className="w-full bg-[#E31337] dark:bg-[#E31337] hover:bg-[#c11230] dark:hover:bg-[#c11230] text-white dark:text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
                                                     >
                                                         <BiEdit size={18} />
-                                                        Create Post in This Community
+                                                        Criar Post Nesta Categoria
                                                     </button>
                                                 </div>
                                             ))}
@@ -740,16 +737,16 @@ export default function HiveCommunitiesModal({
                                     ) : (
                                         <div className="text-center p-8 bg-gray-800 dark:bg-gray-800 rounded-lg">
                                             <p className="text-gray-400 dark:text-gray-400 mb-4">
-                                                You haven&apos;t subscribed to any communities yet.
+                                                Você ainda não se inscreveu em nenhuma categoria.
                                             </p>
                                             <p className="text-sm text-gray-500 dark:text-gray-500">
-                                                Communities you subscribe to will appear here.
+                                                Categorias que você se inscrever aparecerão aqui.
                                             </p>
                                             <button
                                                 onClick={() => setActiveTab('discover')}
                                                 className="mt-4 bg-gray-700 dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-600 text-white dark:text-white px-4 py-2 rounded-lg transition-colors"
                                             >
-                                                Discover Communities
+                                                Descobrir Categorias
                                             </button>
                                         </div>
                                     )}
@@ -767,7 +764,7 @@ export default function HiveCommunitiesModal({
                                             type="text"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder="Search communities..."
+                                            placeholder="Buscar categorias..."
                                             className="w-full bg-gray-800 dark:bg-gray-800 text-white dark:text-white border border-gray-700 dark:border-gray-700 rounded-l-lg py-2 px-4 pl-10 focus:outline-none focus:ring-1 focus:ring-[#E31337] dark:focus:ring-[#E31337] focus:border-[#E31337] dark:focus:border-[#E31337]"
                                             onKeyDown={(e) => e.key === 'Enter' && searchCommunities()}
                                         />
@@ -778,14 +775,14 @@ export default function HiveCommunitiesModal({
                                         className="bg-[#E31337] dark:bg-[#E31337] hover:bg-[#c11230] dark:hover:bg-[#c11230] text-white dark:text-white px-4 py-2 rounded-r-lg font-medium transition-colors"
                                         disabled={isSearching}
                                     >
-                                        Search
+                                        Buscar
                                     </button>
                                 </div>
 
                                 {isSearching ? (
                                     <div className="flex items-center justify-center p-8">
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E31337] dark:border-[#E31337]"></div>
-                                        <span className="ml-3 text-gray-400 dark:text-gray-400">Searching communities...</span>
+                                        <span className="ml-3 text-gray-400 dark:text-gray-400">Buscando categorias...</span>
                                     </div>
                                 ) : (
                                     <>
@@ -810,7 +807,7 @@ export default function HiveCommunitiesModal({
                                                                 >
                                                                     <span className="flex items-center gap-1 text-xs font-medium">
                                                                         <BiX size={16} className="text-red-400 dark:text-red-400" />
-                                                                        Leave
+                                                                        Sair
                                                                     </span>
                                                                 </button>
                                                             ) : (
@@ -825,14 +822,13 @@ export default function HiveCommunitiesModal({
                                                                 >
                                                                     <span className="flex items-center gap-1 text-xs font-medium">
                                                                         <BiPlus size={16} className="text-green-400 dark:text-green-400" />
-                                                                        Join
+                                                                        Entrar
                                                                     </span>
                                                                 </button>
                                                             )}
                                                         </div>
-                                                        <p className="text-sm text-gray-400 dark:text-gray-400 mb-1">
-                                                            {community.name}
-                                                        </p>
+                                                        <div>
+                                                        </div>
                                                         {community.subscribers && (
                                                             <p className="text-xs text-gray-500 dark:text-gray-500 mb-3">
                                                                 {community.subscribers} {community.subscribers === 1 ? 'member' : 'members'}
@@ -852,7 +848,7 @@ export default function HiveCommunitiesModal({
                                                                 className="w-full bg-[#E31337] dark:bg-[#E31337] hover:bg-[#c11230] dark:hover:bg-[#c11230] text-white dark:text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
                                                             >
                                                                 <BiEdit size={18} />
-                                                                Create Post in This Community
+                                                                Criar Post Nesta Categoria
                                                             </button>
                                                         )}
                                                     </div>
@@ -861,13 +857,13 @@ export default function HiveCommunitiesModal({
                                         ) : searchQuery ? (
                                             <div className="text-center p-8 bg-gray-800 dark:bg-gray-800 rounded-lg">
                                                 <p className="text-gray-400 dark:text-gray-400">
-                                                    No communities found for &quot;{searchQuery}&quot;.
+                                                    Nenhuma categoria encontrada para &quot;{searchQuery}&quot;.
                                                 </p>
                                             </div>
                                         ) : (
                                             <div className="text-center p-8 bg-gray-800 dark:bg-gray-800 rounded-lg">
                                                 <p className="text-gray-400 dark:text-gray-400">
-                                                    Use the search above to find communities.
+                                                    Use a busca acima para encontrar categorias.
                                                 </p>
                                             </div>
                                         )}
