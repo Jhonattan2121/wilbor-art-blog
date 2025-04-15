@@ -92,6 +92,7 @@ const MediaItem = ({
 }) => {
   const mainItem = items[0];
   const [isCarousel, setIsCarousel] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const formatPostContent = (content: string): string => {
     if (!content) return '';
@@ -127,16 +128,27 @@ const MediaItem = ({
     // If it's a Skatehive IPFS video
     if (media.src?.includes(SKATEHIVE_URL)) {
       return (
-        <div>
+        <div 
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <video
             src={media.src}
             className="absolute inset-0 w-full h-full object-cover"
-            autoPlay={!isMainVideo}
+            autoPlay={isHovered || (!isMainVideo && isExpanded)}
             loop={!isMainVideo}
             muted={!isMainVideo}
             controls={isMainVideo}
             playsInline
             style={{ backgroundColor: 'black' }}
+            onMouseEnter={(e) => {
+              const video = e.target as HTMLVideoElement;
+              video.play();
+            }}
+            onMouseLeave={(e) => {
+              const video = e.target as HTMLVideoElement;
+              video.pause();
+            }}
           />
           {!isMainVideo && media.title && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
@@ -173,24 +185,23 @@ const MediaItem = ({
 
   return (
     <div className={clsx(
-      'rounded-lg overflow-hidden transition-all duration-300',
+      'rounded-lg overflow-hidden transition-all duration-300 h-full',
       isExpanded
-        ? 'col-span-full w-full mx-auto sm:px-4 px-0'
+        ? 'w-full'
         : 'cursor-pointer hover:opacity-90'
     )}
       onClick={() => !isExpanded && onExpand()}
     >
       <div className={clsx(
-        'w-full transition-all duration-300',
-        isExpanded ? 'sm:max-w-2xl mx-auto' : ''
+        'w-full h-full transition-all duration-300',
+        isExpanded ? 'max-w-2xl mx-auto flex flex-col h-[500px]' : ''
       )}>
         {!isExpanded && (
           <>
-            <div className="relative w-full h-0 pb-[100%]">
+            <div className="relative w-full h-full">
               {mainItem.hiveMetadata?.body ? (
                 <>
                   {extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0] ? (
-                    // If you find an image in the post, show it
                     <>
                       <Image
                         src={extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0]}
@@ -206,12 +217,10 @@ const MediaItem = ({
                       </div>
                     </>
                   ) : (
-                    // If you can't find an image, use renderMedia which can show video
                     renderMedia(mainItem)
                   )}
                 </>
               ) : (
-                // Fallback to original renderMedia
                 renderMedia(mainItem)
               )}
             </div>
@@ -219,9 +228,9 @@ const MediaItem = ({
         )}
 
         {isExpanded && (
-          <div className="sm:p-6 p-4">
-            <div className="flex items-start justify-between mb-4">
-              <h2 className="text-2xl font-bold text-white">{mainItem.title}</h2>
+          <div className="flex flex-col h-full">
+            <div className="flex items-start justify-between p-4 sticky top-0 z-10">
+              <h2 className="text-2xl font-bold">{mainItem.title}</h2>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -235,131 +244,132 @@ const MediaItem = ({
               </button>
             </div>
 
-            {mainItem.hiveMetadata?.body && (
-              <div className="prose prose-invert prose-lg max-w-none mb-8">
-                <div className="leading-relaxed markdown-content space-y-4">
-                  <ReactMarkdown
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      img: ({ src, alt }) => {
-                        const formattedSrc = formatPinataUrl(src || '');
-                        return (
-                          <Image
-                            src={formattedSrc}
-                            alt={alt || ''}
-                            width={800}
-                            height={600}
-                            className="rounded-lg w-full h-auto"
-                            unoptimized={true}
-                          />
-                        );
-                      }
-                    }}
-                  >
+            <div className="flex-1 overflow-y-auto custom-scrollbar overscroll-contain">
+              {mainItem.hiveMetadata?.body && (
+                <div className="prose prose-invert prose-lg max-w-none p-4">
+                  <div className="leading-relaxed markdown-content space-y-4">
+                    <ReactMarkdown
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        img: ({ src, alt }) => {
+                          const formattedSrc = formatPinataUrl(src || '');
+                          return (
+                            <Image
+                              src={formattedSrc}
+                              alt={alt || ''}
+                              width={800}
+                              height={600}
+                              className="rounded-lg w-full h-auto"
+                              unoptimized={true}
+                            />
+                          );
+                        }
+                      }}
+                    >
+                      {formatPostContent(mainItem.hiveMetadata.body.split('![')[0])}
+                    </ReactMarkdown>
 
-                    {formatPostContent(mainItem.hiveMetadata.body.split('![')[0])}
-                  </ReactMarkdown>
-
-                  <div className="mt-4">
-                    {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 1 && (
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="border-t border-gray-800 flex-grow"></div>
-                        <button
-                          onClick={() => setIsCarousel(!isCarousel)}
-                          className="ml-4 px-3 py-1 text-sm rounded-full bg-gray-800 dark:bg-gray-700 text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-                        >
-                          {isCarousel ? 'Modo Vertical' : 'Modo Carrossel'}
-                        </button>
-                      </div>
-                    )}
-
-                    {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0 && (
-                      isCarousel ? (
-                        <Slider
-                          dots={true}
-                          dotsClass="slick-dots"
-                          infinite={true}
-                          speed={500}
-                          slidesToShow={1}
-                          slidesToScroll={1}
-                          className="carousel-container"
-                          adaptiveHeight={true}
-                          responsive={[
-                            {
-                              breakpoint: 1024,
-                              settings: {
-                                slidesToShow: 2,
-                                slidesToScroll: 1,
-                                dots: false
-                              }
-                            },
-                            {
-                              breakpoint: 600,
-                              settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1,
-                                dots: false
-                              }
-                            }
-                          ]}
-                        >
-                          {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
-                            <div key={index} className="px-2">
-                              <div className="relative w-full" style={{ minHeight: '300px' }}>
-                                <Image
-                                  src={imgSrc}
-                                  alt=""
-                                  layout="responsive"
-                                  width={16}
-                                  height={9}
-                                  className="object-contain"
-                                  unoptimized={true}
-                                  style={{
-                                    maxHeight: '80vh',
-                                    margin: '0 auto'
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </Slider>
-                      ) : (
-                        <div className="space-y-4">
-                          {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
-                            <div key={index} className="my-4">
-                              <div className="relative w-full">
-                                <Image
-                                  src={imgSrc}
-                                  alt=""
-                                  width={0}
-                                  height={0}
-                                  sizes="(max-width: 640px) 100vw, 50vw"
-                                  className="w-full h-auto object-contain"
-                                  unoptimized={true}
-                                  style={{
-                                    maxHeight: '80vh',
-                                    margin: '0 auto'
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          ))}
+                    <div className="mt-4">
+                      {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 1 && (
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="border-t border-gray-800 flex-grow"></div>
+                          <button
+                            onClick={() => setIsCarousel(!isCarousel)}
+                            className="ml-4 px-3 py-1 text-sm rounded-full bg-gray-800 dark:bg-gray-700 text-gray-100 hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            {isCarousel ? 'Modo Vertical' : 'Modo Carrossel'}
+                          </button>
                         </div>
-                      )
-                    )}
-                  </div>
+                      )}
 
-                  <ReactMarkdown
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      img: () => null
-                    }}
-                  >
-                    {formatPostContent(mainItem.hiveMetadata.body.split('![').slice(-1)[0]?.split(')')[1] || '')}
-                  </ReactMarkdown>
+                      {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0 && (
+                        isCarousel ? (
+                          <Slider
+                            dots={true}
+                            dotsClass="slick-dots"
+                            infinite={true}
+                            speed={500}
+                            slidesToShow={1}
+                            slidesToScroll={1}
+                            className="carousel-container"
+                            adaptiveHeight={true}
+                            responsive={[
+                              {
+                                breakpoint: 1024,
+                                settings: {
+                                  slidesToShow: 2,
+                                  slidesToScroll: 1,
+                                  dots: false
+                                }
+                              },
+                              {
+                                breakpoint: 600,
+                                settings: {
+                                  slidesToShow: 1,
+                                  slidesToScroll: 1,
+                                  dots: false
+                                }
+                              }
+                            ]}
+                          >
+                            {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
+                              <div key={index} className="px-2">
+                                <div className="relative w-full" style={{ minHeight: '300px' }}>
+                                  <Image
+                                    src={imgSrc}
+                                    alt=""
+                                    layout="responsive"
+                                    width={16}
+                                    height={9}
+                                    className="object-contain"
+                                    unoptimized={true}
+                                    style={{
+                                      maxHeight: '80vh',
+                                      margin: '0 auto'
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </Slider>
+                        ) : (
+                          <div className="space-y-4">
+                            {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
+                              <div key={index} className="my-4">
+                                <div className="relative w-full">
+                                  <Image
+                                    src={imgSrc}
+                                    alt=""
+                                    width={0}
+                                    height={0}
+                                    sizes="(max-width: 640px) 100vw, 50vw"
+                                    className="w-full h-auto object-contain"
+                                    unoptimized={true}
+                                    style={{
+                                      maxHeight: '80vh',
+                                      margin: '0 auto'
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    <ReactMarkdown
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        img: () => null
+                      }}
+                    >
+                      {formatPostContent(mainItem.hiveMetadata.body.split('![').slice(-1)[0]?.split(')')[1] || '')}
+                    </ReactMarkdown>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -406,17 +416,32 @@ export default function PhotoGridContainer({
           header ? 'mb-8' : 'mb-4'
         )}>
           {header}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-            {mediaGroups.map(({ permlink, group }) => (
-              <MediaItem
-                key={permlink}
-                items={group}
-                isExpanded={expandedPermlink === permlink}
-                onExpand={() => {
-                  setExpandedPermlink(expandedPermlink === permlink ? null : permlink);
-                }}
-              />
-            ))}
+          <div className={clsx(
+            'grid gap-4',
+            'grid-cols-2 sm:grid-cols-3 md:grid-cols-4',
+            'auto-rows-[250px]'
+          )}>
+            {mediaGroups.map(({ permlink, group }, idx) => {
+              const isExpanded = expandedPermlink === permlink;
+              
+              return (
+                <div
+                  key={permlink}
+                  className={clsx(
+                    'relative overflow-hidden rounded-lg transition-all duration-300',
+                    isExpanded ? 'col-span-2 row-span-2' : 'col-span-1'
+                  )}
+                >
+                  <MediaItem
+                    items={group}
+                    isExpanded={isExpanded}
+                    onExpand={() => {
+                      setExpandedPermlink(expandedPermlink === permlink ? null : permlink);
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       }
