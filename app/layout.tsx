@@ -13,7 +13,6 @@ import SwrConfigClient from '@/state/SwrConfigClient';
 import ToasterWithThemes from '@/toast/ToasterWithThemes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { clsx } from 'clsx/lite';
 import { ThemeProvider } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -53,7 +52,6 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      // Suppress hydration errors due to next-themes behavior
       suppressHydrationWarning
     >
       <head>
@@ -65,7 +63,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
               <div className="w-full bg-white dark:bg-black px-3 py-3">
-                <div className="w-full max-w-[1280px] mx-auto flex justify-center">
+                <div className="w-full max-w-[1280px] ml-2 sm:ml-8 flex justify-start">
                   <Link href="/projects">
                     <Image
                       src={BannerWilbor}
@@ -75,17 +73,11 @@ export default function RootLayout({
                   </Link>
                 </div>
               </div>
-              <main className={clsx(
-                'mx-auto max-w-[1280px] px-3 mb-3',
-                'lg:px-6 lg:mb-6',
-              )}>
+              <main >
                 <div className="flex flex-col items-center">
                 </div>
                 <Nav siteDomainOrTitle="" />
-                <div className={clsx(
-                  'min-h-[16rem] sm:min-h-[30rem]',
-                  'mb-12 w-full',
-                )}>
+                <div >
                   <ShareModals />
                   {children}
                 </div>

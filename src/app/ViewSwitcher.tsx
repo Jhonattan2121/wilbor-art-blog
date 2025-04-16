@@ -1,20 +1,11 @@
-import IconFeed from '@/app/IconFeed';
-import IconGrid from '@/app/IconGrid';
 import {
   PATH_FEED_INFERRED,
   PATH_GRID_INFERRED
 } from '@/app/paths';
-import Switcher from '@/components/Switcher';
-import SwitcherItem from '@/components/SwitcherItem';
 import { useState } from 'react';
-import { GRID_HOMEPAGE_ENABLED } from './config';
-import IconEmail from './IconEmail';
-import IconInstagram from './IconInstagram';
 import IconMenu from './IconMenu';
-import IconOdysee from './iconOdysee';
-import IconShop from './IconShop';
-import IconVimeo from './IconVimeo';
-import IconWhatsapp from './IconWhatsapp';
+import SocialLink from './SocialLink';
+import SwitcherItem from './SwitcherItem';
 
 export type SwitcherSelection = 'projects' | 'about';
 
@@ -27,25 +18,18 @@ export default function ViewSwitcher({
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const renderItemGrid = () =>
-    <SwitcherItem
-      icon={<IconGrid />}
-      href={PATH_GRID_INFERRED}
-      active={currentSelection === 'projects'}
-      noPadding
-    />;
-
-  const renderItemFeed = () =>
-    <SwitcherItem
-      icon={<IconFeed />}
-      href={PATH_FEED_INFERRED}
-      active={currentSelection === 'about'}
-      noPadding
-    />;
+  const socialLinks = [
+    { text: "Instagram", href: "https://instagram.com/wilbor_domina" },
+    { text: "Vimeo", href: "https://vimeo.com/wilbor" },
+    { text: "Odysee", href: "https://odysee.com/@wilbor" },
+    { text: "Shop", href: "https://web.marcelforart.com/wilson_domingues/collections" },
+    { text: "WhatsApp", href: "https://wa.me/5521986351316" },
+    { text: "Email", href: "mailto:wilsondomingues@gmail.com" },
+  ];
 
   return (
-    <div className="flex flex-col gap-1 sm:gap-2">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between relative">
+    <div className="flex flex-col pl-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         {/* Menu mobile */}
         <div className="sm:hidden relative">
           <SwitcherItem
@@ -55,102 +39,52 @@ export default function ViewSwitcher({
           />
 
           {/* Menu mobile dropdown */}
-          <Switcher className={`
-            ${!isMenuOpen ? 'hidden' : 'flex'} 
-            absolute 
-            left-5 
-            ml-2
-            top-3 
-            -translate-y-1/2 
-            bg-white 
-
-          `}>
-            <SwitcherItem
-              icon={<IconInstagram />}
-              href="https://instagram.com/wilbor_domina"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-            <SwitcherItem
-              icon={<IconVimeo />}
-              href="https://vimeo.com/wilbor"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-            <SwitcherItem
-              icon={<IconOdysee />}
-              href="https://odysee.com/@wilbor"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-            <SwitcherItem
-              icon={<IconShop />}
-              href="https://web.marcelforart.com/wilson_domingues/collections"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-            <SwitcherItem
-              icon={<IconWhatsapp />}
-              href="https://wa.me/5521986351316"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-            <SwitcherItem
-              icon={<IconEmail />}
-              href="mailto:wilsondomingues@gmail.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-          </Switcher>
+          {isMenuOpen && (
+            <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)}>
+              <div 
+                className="absolute left-0 top-10 z-50 w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex flex-row items-center overflow-x-auto py-1 pl-2 gap-1">
+                  {socialLinks.map((link) => (
+                    <SocialLink
+                      key={link.href}
+                      {...link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Main navigation */}
-        <div className="flex gap-1 sm:gap-2">
-          <Switcher>
-            {GRID_HOMEPAGE_ENABLED ? renderItemGrid() : renderItemFeed()}
-            {GRID_HOMEPAGE_ENABLED ? renderItemFeed() : renderItemGrid()}
-          </Switcher>
+        <div className="flex gap-6">
+          <SwitcherItem
+            text="Projetos"
+            href={PATH_GRID_INFERRED}
+            active={currentSelection === 'projects'}
+          />
+          <SwitcherItem
+            text="Sobre"
+            href={PATH_FEED_INFERRED}
+            active={currentSelection === 'about'}
+          />
         </div>
 
         {/* Social media links */}
-        <Switcher className="hidden sm:flex">
-          <SwitcherItem
-            icon={<IconInstagram />}
-            href="https://instagram.com/wilbor_domina"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-          <SwitcherItem
-            icon={<IconVimeo />}
-            href="https://vimeo.com/wilbor"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-          <SwitcherItem
-            icon={<IconOdysee />}
-            href="https://odysee.com/@wilbor"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-          <SwitcherItem
-            icon={<IconShop />}
-            href="https://web.marcelforart.com/wilson_domingues/collections"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-          <SwitcherItem
-            icon={<IconWhatsapp />}
-            href="https://wa.me/5521986351316"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-          <SwitcherItem
-            icon={<IconEmail />}
-            href="mailto:wilsondomingues@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-        </Switcher>
+        <div className="hidden sm:flex sm:ml-6 items-center">
+          {socialLinks.map((link) => (
+            <SocialLink
+              key={link.href}
+              {...link}
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

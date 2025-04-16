@@ -13,7 +13,6 @@ import { clsx } from 'clsx/lite';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import AnimateItems from '../components/AnimateItems';
-import SiteGrid from '../components/SiteGrid';
 import {
   GRID_HOMEPAGE_ENABLED,
   HAS_DEFINED_SITE_DESCRIPTION,
@@ -30,9 +29,7 @@ export default function Nav({
   siteDomainOrTitle: string;
 }) {
   const pathname = usePathname();
-
   const { isUserSignedIn } = useAppState();
-
   const showNav = !isPathSignIn(pathname);
 
   const renderLink = (
@@ -50,13 +47,12 @@ export default function Nav({
       return 'projects';
     } else if (isPathFeed(pathname)) {
       return 'about';
-
     }
   };
 
   return (
-    <SiteGrid
-      contentMain={
+    <div className="w-full px-4">
+      <div className="max-w-[2000px] mx-auto">
         <AnimateItems
           animateOnFirstLoadOnly
           type={!isPathAdmin(pathname) ? 'bottom' : 'none'}
@@ -65,7 +61,7 @@ export default function Nav({
             ? [<div
               key="nav"
               className={clsx(
-                'flex items-center w-full',
+                'flex items-center justify-between w-full',
                 NAV_HEIGHT_CLASS,
               )}>
               <ViewSwitcher
@@ -73,7 +69,7 @@ export default function Nav({
                 showAdmin={isUserSignedIn}
               />
               <div className={clsx(
-                'grow text-right min-w-0',
+                'flex-none',
                 'hidden xs:block',
                 'translate-y-[-1px]',
               )}>
@@ -94,18 +90,7 @@ export default function Nav({
             </div>]
             : []}
         />
-      }
-      contentSide={isUserSignedIn && !isPathAdmin(pathname)
-        ? <div
-          className={clsx(
-            'flex items-center translate-x-[-6px] w-full',
-            NAV_HEIGHT_CLASS,
-          )}
-        >
-
-        </div>
-        : undefined}
-      sideHiddenOnMobile
-    />
+      </div>
+    </div>
   );
-};
+}
