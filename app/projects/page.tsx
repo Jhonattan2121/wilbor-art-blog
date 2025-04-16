@@ -1,4 +1,5 @@
 import { Cameras } from '@/camera';
+import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { Photo } from '@/photo/components/types';
 import PhotoGridPage from '@/photo/PhotoGridPage';
@@ -6,7 +7,6 @@ import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';
 import { Discussion } from '@hiveio/dhive';
-import { getPostsByAuthor } from '@/lib/hive/hive-client';
 
 export const dynamic = 'force-dynamic';
 
@@ -244,7 +244,7 @@ export default async function GridPage(props: any) {
         <PhotoGridPage
           photos={posts as Photo[]}
           photosCount={photosCount}
-          tags={sidebarData.tags}
+          tags={[]}
           cameras={[] as Cameras}
           simulations={[] as FilmSimulations}
         />
