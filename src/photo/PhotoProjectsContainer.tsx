@@ -209,8 +209,8 @@ const MediaItem = ({
     <div className={clsx(
       'rounded-lg overflow-hidden transition-all duration-300 h-full',
       isExpanded
-        ? 'w-full'
-        : 'cursor-pointer hover:opacity-90'
+        ? 'w-full border-2 border-solid dark:border-white border-black'
+        : 'cursor-pointer hover:opacity-90 border-2 border-solid border-gray-700'
     )}
       onClick={() => !isExpanded && onExpand()}
     >
@@ -458,9 +458,9 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden rounded-lg transition-all duration-300 w-full',
                   isExpanded 
                     ? hasLargeContent 
-                      ? 'col-span-2 row-span-4 sm:col-span-2 md:col-span-2 lg:col-span-2' 
-                      : 'col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-2'
-                    : 'col-span-1'
+                      ? 'col-span-2 row-span-4 sm:col-span-2 md:col-span-2 lg:col-span-2 border-2 border-solid dark:border-white border-black' 
+                      : 'col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-2 border-2 border-solid dark:border-white border-black'
+                    : 'col-span-1 border-2 border-solid border-gray-700'
                 )}
               >
                 <MediaItem
