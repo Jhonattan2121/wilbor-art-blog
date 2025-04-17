@@ -85,13 +85,15 @@ const MediaItem = ({
   isExpanded,
   onExpand,
   onContentSizeChange,
-  onTagClick
+  onTagClick,
+  hasLargeContent = false
 }: {
   items: Media[];
   isExpanded: boolean;
   onExpand: () => void;
   onContentSizeChange: (isLarge: boolean) => void;
   onTagClick: (tag: string) => void;
+  hasLargeContent?: boolean;
 }) => {
   const mainItem = items[0];
   const [isHovered, setIsHovered] = useState(false);
@@ -101,9 +103,14 @@ const MediaItem = ({
     if (isExpanded && mainItem.hiveMetadata?.body) {
       const imageCount = extractImagesFromMarkdown(mainItem.hiveMetadata.body).length;
       const textLength = mainItem.hiveMetadata.body.length;
-      onContentSizeChange(imageCount > 3 || textLength > 1000);
+            const hasComplexContent = imageCount > 1 || textLength > 300 || (imageCount > 0 && textLength > 200);
+      onContentSizeChange(hasComplexContent);
+    } else if (isExpanded && mainItem.src?.includes(SKATEHIVE_URL)) {
+      onContentSizeChange(true);
+    } else {
+      onContentSizeChange(false);
     }
-  }, [isExpanded, mainItem.hiveMetadata?.body, onContentSizeChange]);
+  }, [isExpanded, mainItem.hiveMetadata?.body, mainItem.src, onContentSizeChange]);
 
   const formatPostContent = (content: string): string => {
     if (!content) return '';
@@ -122,16 +129,25 @@ const MediaItem = ({
           onMouseLeave={() => setIsHovered(false)}
           className="flex flex-col h-full"
         >
-          <div className="flex-1 relative">
+          <div className="flex-1 relative" style={isMainVideo ? { paddingTop: '56.25%' } : {}}>
             <video
               src={media.src}
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-300 filter grayscale hover:grayscale-0"
+              className={clsx(
+                "transition-all duration-300 filter grayscale hover:grayscale-0",
+                isMainVideo ? "absolute top-0 left-0 w-full h-full object-contain" : "absolute inset-0 w-full h-full object-cover"
+              )}
               autoPlay={isHovered || (!isMainVideo && isExpanded)}
               loop={!isMainVideo}
               muted={!isMainVideo}
               controls={isMainVideo}
               playsInline
               style={{ backgroundColor: 'black' }}
+              onLoadedMetadata={(e) => {
+                const video = e.target as HTMLVideoElement;
+                if (isMainVideo) {
+                  video.volume = 0.2; 
+                }
+              }}
               onMouseEnter={(e) => {
                 const video = e.target as HTMLVideoElement;
                 video.play();
@@ -209,14 +225,18 @@ const MediaItem = ({
     <div className={clsx(
       'rounded-lg overflow-hidden transition-all duration-300 h-full',
       isExpanded
-        ? 'w-full border-2 border-solid dark:border-white border-black'
-        : 'cursor-pointer hover:opacity-90 border-2 border-solid border-gray-700'
+        ? 'w-full border-4 border-solid border-black bg-black text-white'
+        : 'cursor-pointer hover:opacity-90 border-2 border-solid border-black'
     )}
       onClick={() => !isExpanded && onExpand()}
     >
       <div className={clsx(
         'w-full h-full transition-all duration-300',
-        isExpanded ? 'flex flex-col h-[520px]' : ''
+        isExpanded 
+          ? hasLargeContent 
+            ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]' 
+            : 'flex flex-col h-auto min-h-[450px] sm:min-h-[450px]'
+          : ''
       )}>
         {!isExpanded && (
           <>
@@ -271,14 +291,14 @@ const MediaItem = ({
 
         {isExpanded && (
           <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
-            <div className="flex items-center px-4 py-3 sticky top-0 z-10">
-              <h2 className="text-base font-medium truncate flex-1">{mainItem.title}</h2>
+            <div className="flex items-center px-4 py-3 sticky top-0 z-10 bg-black border-b border-gray-700">
+              <h2 className="text-base font-medium truncate flex-1 text-white">{mainItem.title}</h2>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onExpand();
                 }}
-                className="ml-2 text-gray-400 hover:text-white rounded-full hover:bg-black/20 transition-colors p-1.5"
+                className="ml-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1.5"
                 aria-label="Close"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -288,47 +308,82 @@ const MediaItem = ({
             </div>
 
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain">
+              {/* If it's a Skatehive video, show it prominently in a large container */}
+              {mainItem.src?.includes(SKATEHIVE_URL) && (
+                <div className="w-full max-w-4xl mx-auto relative px-1 sm:px-2 md:px-6 my-4 sm:my-6">
+                  <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-video">
+                    <video
+                      src={mainItem.src}
+                      className="absolute top-0 left-0 w-full h-full object-contain bg-black rounded border-2 border-black"
+                      controls
+                      autoPlay={false}
+                      playsInline
+                      muted={false}
+                      onLoadedMetadata={(e) => {
+                        const video = e.target as HTMLVideoElement;
+                        video.volume = 0.2; 
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
               {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-sm w-full p-0.5 max-w-full">
-                  <div className="leading-tight markdown-content text-sm w-full break-words">
+                <div className="prose prose-sm w-full p-4 max-w-full">
+                  <div className="leading-relaxed markdown-content text-base w-full break-words">
                     <ReactMarkdown
                       rehypePlugins={[rehypeRaw]}
                       components={{
-                        img: ({ src, alt }) => {
-                          const formattedSrc = formatPinataUrl(src || '');
-                          return (
-                            <div className="w-full overflow-hidden">
-                              <Image
-                                src={formattedSrc}
-                                alt={alt || ''}
-                                width={800}
-                                height={600}
-                                className="rounded w-full h-auto max-w-full"
-                                unoptimized={true}
-                              />
-                            </div>
-                          );
-                        }
+                        img: () => null,
+                        video: () => null,
+                        iframe: () => null,
+                        p: ({node, children, ...props}) => (
+                          <p className="mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</p>
+                        ),
+                        h1: ({node, children, ...props}) => (
+                          <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white" {...props}>{children}</h1>
+                        ),
+                        h2: ({node, children, ...props}) => (
+                          <h2 className="text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-white" {...props}>{children}</h2>
+                        ),
+                        h3: ({node, children, ...props}) => (
+                          <h3 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white" {...props}>{children}</h3>
+                        ),
+                        a: ({node, children, ...props}) => (
+                          <a className="text-blue-600 dark:text-blue-400 hover:underline" {...props}>{children}</a>
+                        ),
+                        ul: ({node, children, ...props}) => (
+                          <ul className="list-disc pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ul>
+                        ),
+                        ol: ({node, children, ...props}) => (
+                          <ol className="list-decimal pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ol>
+                        ),
+                        li: ({node, children, ...props}) => (
+                          <li className="mb-1" {...props}>{children}</li>
+                        ),
+                        blockquote: ({node, children, ...props}) => (
+                          <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300" {...props}>{children}</blockquote>
+                        ),
                       }}
                     >
                       {formatPostContent(mainItem.hiveMetadata.body.split('![')[0])}
                     </ReactMarkdown>
 
-                    <div className="mt-1">
+                    <div className="mt-6 mb-6">
                       {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 1 && (
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="border-t border-gray-800 flex-grow"></div>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="border-t border-gray-300 dark:border-gray-700 flex-grow"></div>
                         </div>
                       )}
 
                       {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0 && (
                         <Slider
-                          dots={false}
+                          dots={true}
                           infinite={true}
                           speed={500}
                           slidesToShow={1}
                           slidesToScroll={1}
-                          className="carousel-container overflow-hidden"
+                          className="carousel-container overflow-hidden px-1 sm:px-2 md:px-6"
                           adaptiveHeight={false}
                           responsive={[
                             {
@@ -336,7 +391,7 @@ const MediaItem = ({
                               settings: {
                                 slidesToShow: 1,
                                 slidesToScroll: 1,
-                                dots: false
+                                dots: true
                               }
                             },
                             {
@@ -344,19 +399,19 @@ const MediaItem = ({
                               settings: {
                                 slidesToShow: 1,
                                 slidesToScroll: 1,
-                                dots: false
+                                dots: true
                               }
                             }
                           ]}
                         >
                           {extractImagesFromMarkdown(mainItem.hiveMetadata.body).map((imgSrc, index) => (
-                            <div key={index}>
-                              <div className="relative w-full h-[320px]">
+                            <div key={index} className="px-0 sm:px-1 md:px-2">
+                              <div className="relative w-full max-w-4xl mx-auto aspect-[1/1] sm:aspect-[4/3] md:aspect-[16/8]">
                                 <Image
                                   src={imgSrc}
                                   alt=""
                                   fill
-                                  className="object-contain"
+                                  className="object-contain absolute top-0 left-0 rounded border-2 border-black"
                                   unoptimized={true}
                                 />
                               </div>
@@ -369,7 +424,36 @@ const MediaItem = ({
                     <ReactMarkdown
                       rehypePlugins={[rehypeRaw]}
                       components={{
-                        img: () => null
+                        img: () => null,
+                        video: () => null,
+                        iframe: () => null,
+                        p: ({node, children, ...props}) => (
+                          <p className="mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</p>
+                        ),
+                        h1: ({node, children, ...props}) => (
+                          <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white" {...props}>{children}</h1>
+                        ),
+                        h2: ({node, children, ...props}) => (
+                          <h2 className="text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-white" {...props}>{children}</h2>
+                        ),
+                        h3: ({node, children, ...props}) => (
+                          <h3 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white" {...props}>{children}</h3>
+                        ),
+                        a: ({node, children, ...props}) => (
+                          <a className="text-blue-600 dark:text-blue-400 hover:underline" {...props}>{children}</a>
+                        ),
+                        ul: ({node, children, ...props}) => (
+                          <ul className="list-disc pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ul>
+                        ),
+                        ol: ({node, children, ...props}) => (
+                          <ol className="list-decimal pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ol>
+                        ),
+                        li: ({node, children, ...props}) => (
+                          <li className="mb-1" {...props}>{children}</li>
+                        ),
+                        blockquote: ({node, children, ...props}) => (
+                          <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300" {...props}>{children}</blockquote>
+                        ),
                       }}
                     >
                       {formatPostContent(mainItem.hiveMetadata.body.split('![').slice(-1)[0]?.split(')')[1] || '')}
@@ -429,7 +513,7 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        'max-w-[2000px] mx-auto px-8',
+        'max-w-[2000px] mx-auto px-3 sm:px-6 md:px-8',
         header ? 'mb-5' : 'mb-2'
       )}>
         {header}
@@ -447,7 +531,7 @@ export default function PhotoGridContainer({
             </button>
           </div>
         )}
-        <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-[290px]">
+        <div className="grid gap-y-6 gap-x-4 sm:gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(290px, auto)' }}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlink === permlink;
 
@@ -458,9 +542,9 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden rounded-lg transition-all duration-300 w-full',
                   isExpanded 
                     ? hasLargeContent 
-                      ? 'col-span-2 row-span-4 sm:col-span-2 md:col-span-2 lg:col-span-2 border-2 border-solid dark:border-white border-black' 
-                      : 'col-span-2 row-span-2 sm:col-span-2 md:col-span-2 lg:col-span-2 border-2 border-solid dark:border-white border-black'
-                    : 'col-span-1 border-2 border-solid border-gray-700'
+                      ? 'col-span-full sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto' 
+                      : 'col-span-full sm:col-span-2 md:col-span-2 lg:col-span-3 row-span-2 h-auto'
+                    : 'col-span-1'
                 )}
               >
                 <MediaItem
@@ -476,6 +560,7 @@ export default function PhotoGridContainer({
                   }}
                   onContentSizeChange={setHasLargeContent}
                   onTagClick={handleTagClick}
+                  hasLargeContent={hasLargeContent}
                 />
               </div>
             );
