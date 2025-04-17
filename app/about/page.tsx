@@ -1,37 +1,19 @@
 import About from '@/app/about/page';
-import {
-  INFINITE_SCROLL_FEED_INITIAL,
-  generateOgImageMetaForPhotos,
-} from '@/photo';
-import { getPhotos, getPhotosMeta } from '@/photo/db/query';
+import { createMetadata } from '@/utility/metadata';
 import { Metadata } from 'next/types';
-import { cache } from 'react';
 
 export const dynamic = 'force-static';
 export const maxDuration = 60;
 
-const getPhotosCached = cache(() => getPhotos({
-  limit: INFINITE_SCROLL_FEED_INITIAL,
-}));
-
 export async function generateMetadata(): Promise<Metadata> {
-  const photos = await getPhotosCached()
-    .catch(() => []);
-  return generateOgImageMetaForPhotos(photos);
+  return createMetadata({
+    title: 'Sobre',
+    description: 'Wilson Domingues, conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual.',
+    path: '/about'
+  });
 }
 
-export default async function FeedPage() {
-  const [
-    photos,
-    photosCount,
-  ] = await Promise.all([
-    getPhotosCached()
-      .catch(() => []),
-    getPhotosMeta()
-      .then(({ count }) => count)
-      .catch(() => 0),
-  ]);
-
+export default async function AboutPage() {
   return (
     <About />
   );

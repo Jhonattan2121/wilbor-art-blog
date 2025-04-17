@@ -1,8 +1,7 @@
 import { GRID_HOMEPAGE_ENABLED } from '@/app/config';
 import {
-  INFINITE_SCROLL_FEED_INITIAL,
-  INFINITE_SCROLL_GRID_INITIAL,
-  generateOgImageMetaForPhotos,
+    INFINITE_SCROLL_FEED_INITIAL,
+    INFINITE_SCROLL_GRID_INITIAL,
 } from '@/photo';
 import { Photo } from '@/photo/components/types';
 import { getPhotoSidebarData } from '@/photo/data';
@@ -10,6 +9,7 @@ import { getPhotos, getPhotosMeta } from '@/photo/db/query';
 import PhotoFeedPage from '@/photo/PhotoFeedPage';
 import PhotoGridPage from '@/photo/PhotoGridPage';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
+import { createMetadata } from '@/utility/metadata';
 import { Metadata } from 'next/types';
 import { cache } from 'react';
 
@@ -23,9 +23,11 @@ const getPhotosCached = cache(() => getPhotos({
 }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const photos = await getPhotosCached()
-    .catch(() => []);
-  return generateOgImageMetaForPhotos(photos);
+  return createMetadata({
+    title: 'Início',
+    description: 'Wilbor Art - Wilson Domingues é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual, com exposições e projetos inovadores em xilogravura e produção cultural.',
+    path: '/'
+  });
 }
 
 export default async function HomePage() {

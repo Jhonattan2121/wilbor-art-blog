@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import JsonLd from '../../../app/components/JsonLd';
 import { SITE_TITLE } from '../config';
 
 const images = [
@@ -29,6 +30,15 @@ export default function About() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      <JsonLd type="person" />
+      <JsonLd 
+        type="breadcrumb" 
+        data={{
+          path: '/about',
+          currentPage: 'Sobre'
+        }}
+      />
+      
       <h1 className="text-4xl font-bold mb-8 text-center">{SITE_TITLE}</h1>
 
       <div className="mb-8">

@@ -6,9 +6,19 @@ import PhotoGridPage from '@/photo/PhotoGridPage';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
 import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';
+import { createMetadata } from '@/utility/metadata';
 import { Discussion } from '@hiveio/dhive';
+import { Metadata } from 'next/types';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return createMetadata({
+    title: 'Projetos',
+    description: 'Explore as exposições e exibições de Wilson Domingues "Wilbor", artista multifacetado que une skate, arte e audiovisual.',
+    path: '/projects'
+  });
+}
 
 const getMediaType = (url: string, mediaType?: string) => {
   if (url.includes('ipfs.skatehive.app/ipfs/')) {

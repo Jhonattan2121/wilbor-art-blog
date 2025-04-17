@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { Metadata } from 'next/types';
 import BannerWilbor from "../public/wilborPhotos/bannerWilbor.png";
 import '../tailwind.css';
+import JsonLd from './components/JsonLd';
 
 export const metadata: Metadata = {
   title: SITE_TITLE,
@@ -27,11 +28,43 @@ export const metadata: Metadata = {
   openGraph: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
+    type: 'website',
+    locale: 'pt_BR',
+    url: BASE_URL,
+    siteName: SITE_TITLE,
+    images: [
+      {
+        url: `${BASE_URL}/wilborPhotos/bannerWilbor.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Wilbor Art'
+      }
+    ]
   },
   twitter: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
+    card: 'summary_large_image',
+    images: [`${BASE_URL}/wilborPhotos/bannerWilbor.png`],
+    creator: '@wilborart'
   },
+  alternates: {
+    canonical: BASE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  keywords: ['Wilbor Art', 'Arte', 'Fotografia', 'Design', 'Projetos Artísticos', 'Portfolio'],
+  authors: [{ name: 'Wilbor Art' }],
+  creator: 'Wilbor Art',
+  publisher: 'Wilbor Art',
   icons: [{
     rel: 'icon',
     url: '/favicons/icon.png',
@@ -89,6 +122,7 @@ export default function RootLayout({
             <SpeedInsights debug={false} />
             <PhotoEscapeHandler />
             <ToasterWithThemes />
+            <JsonLd type="website" />
           </ThemeProvider>
         </AppStateProvider>
       </body>
