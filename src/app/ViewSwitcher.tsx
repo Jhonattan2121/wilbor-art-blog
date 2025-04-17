@@ -1,11 +1,13 @@
 import {
-  PATH_FEED_INFERRED
+  Path_Exhibitions,
+  PATH_FEED_INFERRED,
+  Path_Partners,
+  Path_Social_Media
 } from '@/app/paths';
 import { useEffect, useRef, useState } from 'react';
-import SocialLink from './SocialLink';
 import SwitcherItem from './SwitcherItem';
 
-export type SwitcherSelection = 'projects' | 'about' | 'exhibitions';
+export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'social-media' | 'partners';
 
 export default function ViewSwitcher({
   currentSelection,
@@ -27,25 +29,17 @@ export default function ViewSwitcher({
     if (isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
 
-  const socialLinks = [
-    { text: "Instagram", href: "https://instagram.com/wilbor_domina" },
-    { text: "Vimeo", href: "https://vimeo.com/wilbor" },
-    { text: "Odysee", href: "https://odysee.com/@wilbor" },
-    { text: "Shop", href: "https://web.marcelforart.com/wilson_domingues/collections" },
-    { text: "WhatsApp", href: "https://wa.me/5521986351316" },
-    { text: "Email", href: "mailto:wilsondomingues@gmail.com" },
-  ];
 
   return (
     <div className="flex flex-col w-full">
       <div className="sm:hidden" ref={menuRef}>
-        <button 
+        <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="p-2 mb-2 rounded-full text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none flex items-center"
           aria-label="Menu"
@@ -59,7 +53,7 @@ export default function ViewSwitcher({
           </svg>
           <span className="ml-2 text-sm font-medium">Menu</span>
         </button>
-        
+
         {isMenuOpen && (
           <div className="mb-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md overflow-hidden">
             <div className="p-3">
@@ -72,42 +66,39 @@ export default function ViewSwitcher({
                 >
                  Projetos
                 </a> */}
-                <a 
-                  href="/exhibitions" 
+                <a
+                  href={Path_Exhibitions}
                   className={`px-3 py-2 rounded-md ${currentSelection === 'exhibitions' ? 'bg-red-50 text-red-600 dark:text-red-400 font-medium' : 'text-red-500 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400'} hover:bg-gray-100 dark:hover:bg-gray-800`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   exposições/exibições
                 </a>
-                <a 
-                  href={PATH_FEED_INFERRED} 
+
+                <a
+                  href={PATH_FEED_INFERRED}
                   className={`px-3 py-2 rounded-md ${currentSelection === 'about' ? 'bg-red-50 text-red-600 dark:text-red-400 font-medium' : 'text-red-500 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400'} hover:bg-gray-100 dark:hover:bg-gray-800`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Sobre
                 </a>
+                <a
+                  href={Path_Social_Media}
+                  className={`px-3 py-2 rounded-md ${currentSelection === 'social-media' ? 'bg-red-50 text-red-600 dark:text-red-400 font-medium' : 'text-red-500 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400'} hover:bg-gray-100 dark:hover:bg-gray-800`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Mídia Social
+                </a>
+                <a
+                  href={Path_Partners}
+                  className={`px-3 py-2 rounded-md ${currentSelection === 'partners' ? 'bg-red-50 text-red-600 dark:text-red-400 font-medium' : 'text-red-500 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400'} hover:bg-gray-100 dark:hover:bg-gray-800`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  parceiros
+                </a>
               </nav>
             </div>
-            
-            <div className="h-px bg-gray-200 dark:bg-gray-700 mx-3"></div>
-            
-            <div className="p-3">
-              <h3 className="text-xs uppercase font-bold text-gray-500 dark:text-gray-400 mb-2">Redes Sociais</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {socialLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-2 text-red-500 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 rounded-md text-sm truncate hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.text}
-                  </a>
-                ))}
-              </div>
-            </div>
+
+
           </div>
         )}
       </div>
@@ -121,7 +112,7 @@ export default function ViewSwitcher({
           /> */}
           <SwitcherItem
             text="exposições/exibições"
-            href="/exhibitions"
+            href={Path_Exhibitions}
             active={currentSelection === 'exhibitions'}
           />
           <SwitcherItem
@@ -129,20 +120,20 @@ export default function ViewSwitcher({
             href={PATH_FEED_INFERRED}
             active={currentSelection === 'about'}
           />
+          <SwitcherItem
+            text="mídia social"
+            href={Path_Social_Media}
+            active={currentSelection === 'social-media'}
+          />
+          <SwitcherItem
+            text="Parceiros"
+            href={Path_Partners}
+            active={currentSelection === 'partners'}
+          />
         </div>
 
-        <div className="h-4 w-px bg-gray-300 dark:bg-gray-700 mx-1"></div>
 
-        <div className="flex ml-1 items-center">
-          {socialLinks.map((link) => (
-            <SocialLink
-              key={link.href}
-              {...link}
-              target="_blank"
-              rel="noopener noreferrer"
-            />
-          ))}
-        </div>
+
       </div>
     </div>
   );

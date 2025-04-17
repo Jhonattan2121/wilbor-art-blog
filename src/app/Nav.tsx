@@ -49,6 +49,10 @@ export default function Nav({
       return 'about';
     } else if (pathname === '/exhibitions') {
       return 'exhibitions';
+    } else if (pathname === '/social-media') {
+      return 'social-media';
+    } else if (pathname === '/partners') {
+      return 'partners'
     }
   };
 
