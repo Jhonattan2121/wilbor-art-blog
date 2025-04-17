@@ -95,7 +95,7 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-              <div className="w-full bg-white dark:bg-black px-3 py-3">
+              <div className="w-full   px-3 py-3">
                 <div className="w-full max-w-[1280px] ml-2 sm:ml-8 flex justify-start">
                   <Link href="/projects">
                     <Image
