@@ -9,6 +9,9 @@ import { BASE_URL, GRID_HOMEPAGE_ENABLED } from './config';
 export const PATH_ROOT = '/';
 export const PATH_GRID = '/projects';
 export const Path_Contact = '/contact';
+export const Path_Social_Media = '/social-media';
+export const Path_Exhibitions = 'exhibitions'
+export const Path_Partners = 'partners'
 export const PATH_FEED = '/about';
 export const PATH_ADMIN = '/admin';
 export const PATH_API = '/api';
@@ -69,6 +72,9 @@ export const PATHS_TO_CACHE = [
   PATH_ROOT,
   PATH_GRID,
   Path_Contact,
+  Path_Social_Media,
+  Path_Exhibitions,
+  Path_Partners,
   PATH_FEED,
   PATH_OG,
   PATH_PHOTO_DYNAMIC,
@@ -205,6 +211,15 @@ export const isPathGrid = (pathname?: string) =>
 
 export const isPathContact = (pathname?: string) =>
   checkPathPrefix(pathname, Path_Contact);
+
+export const isPatchSocial_Media = (pathname?: string) => 
+  checkPathPrefix(pathname,Path_Social_Media)
+ 
+export const isPathExhibitions = (pathname?: string) => 
+  checkPathPrefix(pathname, Path_Exhibitions)
+
+export const isPathPartners = (pathname?: string) => 
+  checkPathPrefix(pathname, Path_Partners)
 
 export const isPathFeed = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_FEED);
