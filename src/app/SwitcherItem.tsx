@@ -11,6 +11,7 @@ interface SwitcherItemProps {
   target?: string;
   rel?: string;
   noPadding?: boolean;
+  fullWidth?: boolean;
 }
 
 export default function SwitcherItem({
@@ -22,17 +23,22 @@ export default function SwitcherItem({
   target,
   rel,
   noPadding,
+  fullWidth,
 }: SwitcherItemProps) {
   const className = clsx(
     'flex items-center justify-center',
-    'w-10 h-10 rounded-full',
+    icon ? 'w-10 h-10 rounded-full' : 'px-2.5 py-1.5 rounded-md whitespace-nowrap',
     'text-red-500 hover:text-red-300 transition-colors',
-    active && 'text-red-400',
-    !noPadding && 'p-2'
+    'hover:bg-gray-100 dark:hover:bg-gray-800',
+    active && 'text-red-400 font-medium bg-gray-50 dark:bg-gray-900',
+    fullWidth && 'w-full justify-start',
+    !noPadding && (icon ? 'p-2' : 'p-0.5')
   );
 
   const content = text ? (
-    <span className="text-sm">{text}</span>
+    <span className={icon ? "text-sm" : "text-sm sm:text-base"}>
+      {text}
+    </span>
   ) : icon;
 
   if (href) {

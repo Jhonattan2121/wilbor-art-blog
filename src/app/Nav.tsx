@@ -47,11 +47,13 @@ export default function Nav({
       return 'projects';
     } else if (isPathFeed(pathname)) {
       return 'about';
+    } else if (pathname === '/exhibitions') {
+      return 'exhibitions';
     }
   };
 
   return (
-    <div className="w-full px-4">
+    <div className="w-full px-4 md:px-6">
       <div className="max-w-[2000px] mx-auto">
         <AnimateItems
           animateOnFirstLoadOnly
@@ -63,11 +65,14 @@ export default function Nav({
               className={clsx(
                 'flex items-center justify-between w-full',
                 NAV_HEIGHT_CLASS,
+                'px-2 md:px-4'
               )}>
-              <ViewSwitcher
-                currentSelection={switcherSelectionForPath()}
-                showAdmin={isUserSignedIn}
-              />
+              <div className="flex-1">
+                <ViewSwitcher
+                  currentSelection={switcherSelectionForPath()}
+                  showAdmin={isUserSignedIn}
+                />
+              </div>
               <div className={clsx(
                 'flex-none',
                 'hidden xs:block',
