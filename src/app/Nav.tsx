@@ -53,6 +53,8 @@ export default function Nav({
       return 'social-media';
     } else if (pathname === '/partners') {
       return 'partners'
+    } else if (pathname === '/contact') {
+      return 'contact'
     }
   };
 
