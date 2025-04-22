@@ -4,6 +4,7 @@ export interface HiveMetadata {
   author: string;
   permlink: string;
   body: string;
+  json_metadata?: string;
 }
 
 export  interface Photo {

@@ -36,11 +36,9 @@ export class HiveAuth {
         const postingPubKey = account.posting.key_auths[0][0];
 
         if (publicKey.toString() !== postingPubKey) {
-          console.warn('Invalid posting key for user:', username);
           return null;
         }
       } catch (e) {
-        console.warn('Invalid posting key format:', e);
         return null;
       }
 
@@ -49,7 +47,6 @@ export class HiveAuth {
         const metadata = JSON.parse(account.posting_json_metadata);
         profile = metadata.profile || {};
       } catch (e) {
-        console.warn('Error parsing user metadata:', e);
       }
 
       return {
@@ -60,15 +57,12 @@ export class HiveAuth {
       };
 
     } catch (error) {
-      console.error('Hive authentication error:', error);
       return null;
     }
   }
 
   async getUserPosts(username: string, limit = 20): Promise<any[]> {
     try {
-      console.log(`Fetching posts for user: ${username}`);
-
       const startPermlink = '';
       const beforeDate = new Date().toISOString().split('.')[0];
 
@@ -77,23 +71,18 @@ export class HiveAuth {
         [username, startPermlink, beforeDate, limit]
       );
 
-      console.log(`Posts found: ${posts.length}`);
-
       const validPosts = posts.filter((post: any) => {
         try {
           const metadata = JSON.parse(post.json_metadata);
           return metadata && (metadata.image || metadata.images);
         } catch (e) {
-          console.warn('Invalid post metadata:', post.id);
           return false;
         }
       });
 
-      console.log(`Valid posts with images: ${validPosts.length}`);
       return validPosts;
 
     } catch (error) {
-      console.error('Detailed error when fetching posts:', error);
       return [];
     }
   }
@@ -113,7 +102,6 @@ export async function getPostsByAuthor(author: string, permlink?: string): Promi
     });
     return posts as Discussion[];
   } catch (error) {
-    console.error('Erro ao buscar posts do Hive:', error);
     return [];
   }
 }
@@ -134,16 +122,12 @@ export async function getPostsByPermlink(author: string, permlink: string) {
     const data = await response.json();
     const post = data.result;
 
-    console.log('Post do Hive:', post);
-
     if (!post?.body) return [];
 
     let jsonMetadata;
     try {
       jsonMetadata = JSON.parse(post.json_metadata);
-      console.log('JSON Metadata:', jsonMetadata); // Debug
     } catch (e) {
-      console.warn('Erro ao parsear json_metadata');
     }
 
     const imageUrls = new Set<string>();
@@ -178,13 +162,9 @@ export async function getPostsByPermlink(author: string, permlink: string) {
       };
     });
 
-    // Debug
-    console.log('Imagens encontradas:', medias);
-
     return medias;
 
   } catch (error) {
-    console.error('Erro ao buscar post:', error);
     return [];
   }
 }
@@ -199,7 +179,6 @@ export async function getPost(author: string, permlink: string): Promise<Discuss
 
     return post as Discussion;
   } catch (error) {
-    console.error('Erro ao buscar post do Hive:', error);
     return null;
   }
 }
@@ -228,7 +207,6 @@ function extractImages(body: string): string[] {
           images.add(url);
         }
       } catch (e) {
-        console.error('Erro ao processar URL de imagem:', e);
       }
     }
   });
