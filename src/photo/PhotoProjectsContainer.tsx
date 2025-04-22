@@ -46,13 +46,14 @@ function enhanceMediaWithMetadata(media: Media[]): Media[] {
 
     // Step 1: Extract metadata from JSON if available
     try {
-      if ((item.hiveMetadata as any).json_metadata) {
-        const metadataStr = (item.hiveMetadata as any).json_metadata;
-        const metadata = typeof metadataStr === 'string' ? JSON.parse(metadataStr) : metadataStr;
+      const metadata = item.hiveMetadata as any; // Type assertion para acessar json_metadata
+      if (metadata.json_metadata) {
+        const metadataStr = metadata.json_metadata;
+        const parsedMetadata = typeof metadataStr === 'string' ? JSON.parse(metadataStr) : metadataStr;
 
         // Get thumbnail from metadata.image if available
-        if (metadata?.image && Array.isArray(metadata.image) && metadata.image.length > 0) {
-          enhancedItem.thumbnailSrc = formatPinataUrl(metadata.image[0]);
+        if (parsedMetadata?.image && Array.isArray(parsedMetadata.image) && parsedMetadata.image.length > 0) {
+          enhancedItem.thumbnailSrc = formatPinataUrl(parsedMetadata.image[0]);
         }
       }
     } catch (error) {
@@ -177,15 +178,20 @@ const MediaItem = ({
   function getThumbnailUrl(item: Media): string | null {
     try {
       // Check if there's a thumbnail in json_metadata
-      if (item.hiveMetadata && item.hiveMetadata.json_metadata) {
-        try {
-          const metadata = JSON.parse(item.hiveMetadata.json_metadata);
-          
-          if (metadata.image && metadata.image.length > 0) {
-            return metadata.image[0]; // Use the first image from metadata as thumbnail
+      if (item.hiveMetadata) {
+        const metadata = item.hiveMetadata as any; // Type assertion para acessar json_metadata
+        if (metadata.json_metadata) {
+          try {
+            const parsedMetadata = typeof metadata.json_metadata === 'string' 
+              ? JSON.parse(metadata.json_metadata) 
+              : metadata.json_metadata;
+            
+            if (parsedMetadata.image && parsedMetadata.image.length > 0) {
+              return parsedMetadata.image[0]; // Use the first image from metadata as thumbnail
+            }
+          } catch (parseError) {
+            console.error("Error parsing JSON metadata:", parseError);
           }
-        } catch (parseError) {
-          console.error("Error parsing JSON metadata:", parseError);
         }
       }
       
@@ -243,7 +249,9 @@ const MediaItem = ({
       fetchPostFromHive(author, permlink).then(post => {
         if (post && post.json_metadata) {
           try {
-            const metadata = JSON.parse(post.json_metadata);
+            const metadata = typeof post.json_metadata === 'string'
+              ? JSON.parse(post.json_metadata)
+              : post.json_metadata;
             if (metadata.image && metadata.image.length > 0) {
               // Atualiza o estado com a thumbnail mais recente
               setUpdatedThumbnail(metadata.image[0]);
