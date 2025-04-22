@@ -572,14 +572,12 @@ const MediaItem = ({
                       {formatPostContent(mainItem.hiveMetadata.body.split('![')[0])}
                     </ReactMarkdown>
 
-                    <div className="mt-6 mb-6">
-                      {(updatedThumbnail || extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0) && (
+                    {extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0 && (
+                      <div className="mt-6 mb-6">
                         <div className="flex items-center justify-between mb-4">
                           <div className="border-t border-gray-300 dark:border-gray-700 flex-grow"></div>
                         </div>
-                      )}
 
-                      {(updatedThumbnail || extractImagesFromMarkdown(mainItem.hiveMetadata.body).length > 0) && (
                         <Slider
                           dots={true}
                           infinite={true}
@@ -607,30 +605,7 @@ const MediaItem = ({
                             }
                           ]}
                         >
-                          {updatedThumbnail && (
-                            <div className="px-0 sm:px-1 md:px-2">
-                              <div className="relative w-full max-w-4xl mx-auto aspect-[1/1] sm:aspect-[4/3] md:aspect-[16/8]">
-                                <Image
-                                  src={updatedThumbnail}
-                                  alt={mainItem.title || "Thumbnail"}
-                                  fill
-                                  className="object-contain absolute top-0 left-0 rounded border-2 border-black"
-                                  unoptimized={true}
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    if (extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '').length > 0) {
-                                      target.src = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '')[0];
-                                    } else {
-                                      target.src = 'https://placehold.co/600x400?text=No+Image';
-                                    }
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          )}
-                          
                           {extractImagesFromMarkdown(mainItem.hiveMetadata.body)
-                            .filter(imgSrc => imgSrc !== updatedThumbnail)
                             .map((imgSrc, index) => (
                               <div key={index} className="px-0 sm:px-1 md:px-2">
                                 <div className="relative w-full max-w-4xl mx-auto aspect-[1/1] sm:aspect-[4/3] md:aspect-[16/8]">
@@ -649,8 +624,8 @@ const MediaItem = ({
                               </div>
                             ))}
                         </Slider>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     <ReactMarkdown
                       rehypePlugins={[rehypeRaw]}
