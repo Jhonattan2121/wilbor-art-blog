@@ -6,7 +6,7 @@ import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Slider from "react-slick";
 import rehypeRaw from 'rehype-raw';
@@ -84,10 +84,78 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
   return groupedMedia;
 }
 
+// Function to get thumbnail URL from metadata or first image in content
+function getThumbnailUrl(item: Media): string | null {
+  try {
+    console.log("Trying to get thumbnail for post:", item.title);
+    
+    if (item.hiveMetadata?.json_metadata) {
+      console.log("JSON Metadata available, parsing...");
+      
+      try {
+        const metadata = JSON.parse(item.hiveMetadata.json_metadata);
+        console.log("Parsed metadata:", metadata);
+        
+        if (metadata.image && metadata.image.length > 0) {
+          console.log("Found thumbnail in metadata:", metadata.image[0]);
+          return metadata.image[0]; 
+        } else {
+          console.log("No image field found in metadata or it's empty");
+        }
+      } catch (parseError) {
+        console.error("Error parsing JSON metadata:", parseError);
+      }
+    } else {
+      console.log("No JSON metadata available for this post");
+    }
+    
+    const images = extractImagesFromMarkdown(item.hiveMetadata?.body || '');
+    console.log("Images found in markdown:", images.length > 0 ? images : "None");
+    
+    if (images.length > 0) {
+      console.log("Using first image from post content:", images[0]);
+      return images[0];
+    }
+    
+    console.log("No suitable thumbnail found, using src:", item.src);
+    return item.src;
+  } catch (e) {
+    console.error('Error getting thumbnail:', e);
+    return item.src;
+  }
+}
+
 // Constants for service URLs
 const SKATEHIVE_URL = 'ipfs.skatehive.app/ipfs';
 const PINATA_URL = 'lime-useful-snake-714.mypinata.cloud/ipfs';
 const PEAKD_URL = 'files.peakd.com/file/peakd-hive';
+
+// Debug function to fetch a specific post from Hive
+async function fetchPostFromHive(author: string, permlink: string): Promise<any> {
+  try {
+    const response = await fetch('https://api.hive.blog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'condenser_api.get_content',
+        params: [author, permlink],
+        id: 1
+      })
+    });
+    
+    const data = await response.json();
+    if (data && data.result) {
+      console.log("Post data fetched directly from Hive:", data.result);
+      console.log("JSON Metadata:", data.result.json_metadata);
+      return data.result;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching post data:", error);
+    return null;
+  }
+}
 
 // Modify MediaItem to work with media groups
 const MediaItem = ({
@@ -106,6 +174,29 @@ const MediaItem = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const loggedUser = typeof window !== 'undefined' ? localStorage.getItem('hive_username') : null;
   const isAuthor = loggedUser && mainItem.hiveMetadata?.author === loggedUser;
+  
+  const thumbnailUrl = getThumbnailUrl(mainItem);
+
+  const [updatedThumbnail, setUpdatedThumbnail] = useState<string | null>(thumbnailUrl);
+
+  useEffect(() => {
+    if (mainItem.hiveMetadata) {
+      const { author, permlink } = mainItem.hiveMetadata;
+      fetchPostFromHive(author, permlink).then(post => {
+        if (post) {
+          try {
+            const metadata = JSON.parse(post.json_metadata);
+            if (metadata.image && metadata.image.length > 0) {
+              console.log("Thumbnail atualizada da API:", metadata.image[0]);
+              setUpdatedThumbnail(metadata.image[0]);
+            }
+          } catch (e) {
+            console.error("Erro ao analisar o JSON metadata:", e);
+          }
+        }
+      });
+    }
+  }, [mainItem.hiveMetadata]);
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -233,31 +324,22 @@ const MediaItem = ({
         {!isExpanded && (
           <>
             <div className="relative w-full h-0 pb-[100%]">
-              {mainItem.hiveMetadata?.body ? (
+              {updatedThumbnail ? (
                 <>
-                  {extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0] ? (
-                    // If you find an image in the post, show it
-                    <>
-                      <Image
-                        src={extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0]}
-                        alt={mainItem.title || ''}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                        quality={85}
-                        unoptimized={true}
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                        <p className="text-white text-sm line-clamp-2">{mainItem.title}</p>
-                      </div>
-                    </>
-                  ) : (
-                    // If you can't find an image, use renderMedia which can show video
-                    renderMedia(mainItem)
-                  )}
+                  <Image
+                    src={updatedThumbnail}
+                    alt={mainItem.title || ''}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                    quality={85}
+                    unoptimized={true}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                    <p className="text-white text-sm line-clamp-2">{mainItem.title}</p>
+                  </div>
                 </>
               ) : (
-                // Fallback to original renderMedia
                 renderMedia(mainItem)
               )}
             </div>
@@ -459,7 +541,54 @@ export default function PhotoGridContainer({
 }: PhotoGridContainerProps) {
   const [expandedPermlink, setExpandedPermlink] = useState<string | null>(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-  const groupedMedia = groupMediaByPermlink(media);
+  const [postData, setPostData] = useState(media);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const groupedMedia = groupMediaByPermlink(postData);
+
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  useEffect(() => {
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      
+      if (media.length > 0) {
+        const updatedPosts: Media[] = [...media];
+        let updatedCount = 0;
+        
+        media.forEach((item, index) => {
+          if (item.hiveMetadata) {
+            const { author, permlink } = item.hiveMetadata;
+            
+            fetchPostFromHive(author, permlink).then(post => {
+              if (post && item.hiveMetadata) {
+                updatedPosts[index] = {
+                  ...item,
+                  hiveMetadata: {
+                    author: item.hiveMetadata.author,
+                    permlink: item.hiveMetadata.permlink,
+                    body: post.body,
+                    json_metadata: post.json_metadata
+                  }
+                };
+                
+                updatedCount++;
+                
+                if (updatedCount === media.length) {
+                  console.log("Todos os posts foram atualizados com dados frescos da API");
+                  setPostData(updatedPosts);
+                  setRefreshKey(prev => prev + 1);
+                }
+              }
+            });
+          }
+        });
+      }
+    }
+  }, [isFirstRender, media]);
+
+  useEffect(() => {
+    setPostData(media);
+  }, [media]);
 
   const mediaGroups = Array.from(groupedMedia.entries())
     .filter(([_, group]) => group.length > 0)
@@ -468,6 +597,17 @@ export default function PhotoGridContainer({
       group,
       mainItem: group[0]
     }));
+
+  const handleCloseModal = () => {
+    setIsPostModalOpen(false);
+    setExpandedPermlink(null);
+    
+    setRefreshKey(prevKey => prevKey + 1);
+    
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  };
 
   return (
     <>
@@ -481,7 +621,7 @@ export default function PhotoGridContainer({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
               {mediaGroups.map(({ permlink, group }) => (
                 <MediaItem
-                  key={permlink}
+                  key={`${permlink}-${refreshKey}`}
                   items={group}
                   isExpanded={expandedPermlink === permlink}
                   onExpand={() => {
@@ -508,12 +648,9 @@ export default function PhotoGridContainer({
             if (mainItem.hiveMetadata && permlink === expandedPermlink) {
               return (
                 <HivePostModal
-                  key={`modal-${permlink}`}
+                  key={`modal-${permlink}-${refreshKey}`}
                   isOpen={true}
-                  onClose={() => {
-                    setIsPostModalOpen(false);
-                    setExpandedPermlink(null);
-                  }}
+                  onClose={handleCloseModal}
                   editPost={{
                     author: mainItem.hiveMetadata.author,
                     permlink: mainItem.hiveMetadata.permlink,

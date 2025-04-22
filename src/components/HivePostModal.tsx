@@ -273,12 +273,14 @@ export default function HivePostModal({ isOpen, onClose, editPost, initialCommun
                 thumbnailUrl
             );
 
+            const thumbnailToUse = thumbnailUrl || (uploadedImages.length > 0 ? uploadedImages[0].pinataUrl : null);
+
             // Create metadata
             const metadata = {
                 ...(editPost ? JSON.parse(editPost.json_metadata) : {}),
                 tags: tags,
                 app: 'wilbor-art-blog',
-                image: thumbnailPinataUrl ? [thumbnailPinataUrl] : []
+                image: thumbnailToUse ? [thumbnailToUse] : []
             };
             
             // Add community to metadata if selected
@@ -290,7 +292,7 @@ export default function HivePostModal({ isOpen, onClose, editPost, initialCommun
                 title,
                 finalContent,
                 tags,
-                thumbnailPinataUrl,
+                thumbnailToUse,
                 username,
                 editPost,
                 selectedCommunity,
@@ -554,6 +556,150 @@ export default function HivePostModal({ isOpen, onClose, editPost, initialCommun
                                                     thumbnailUrl={thumbnailUrl}
                                                     handleThumbnailSelect={handleThumbnailSelect}
                                                 />
+
+                                                {/* Custom Thumbnail Upload Button */}
+                                                <div className="flex-none">
+                                                    <label className="block text-sm font-medium text-white mb-2">
+                                                        {uploadedImages.length === 0 ? "Upload Thumbnail" : "Or upload a new thumbnail"}
+                                                    </label>
+                                                    <button
+                                                        onClick={() => {
+                                                            const input = document.createElement('input');
+                                                            input.type = 'file';
+                                                            input.accept = 'image/*';
+                                                            input.onchange = async (e) => {
+                                                                const file = (e.target as HTMLInputElement).files?.[0];
+                                                                if (file) {
+                                                                    setIsUploading(true);
+                                                                    try {
+                                                                        const formData = new FormData();
+                                                                        formData.append('image', file);
+                                                                    
+                                                                        const fileReader = new FileReader();
+                                                                        fileReader.onloadend = () => {
+                                                                            try {
+                                                                                const uniqueFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                                                                               
+                                                                                const directImageUrl = `https://steemitimages.com/0x0/https://example.com/${uniqueFileName}`;
+                                                                                
+                                                                                alert("Para usar uma imagem como thumbnail sem fazer upload para IPFS, use a opção 'Ou use uma URL de imagem diretamente' logo abaixo, onde você pode colar a URL de qualquer imagem já hospedada na web.");
+                                                                                
+                                                                                setIsUploading(false);
+                                                                            } catch (error) {
+                                                                                console.error('Error processing file', error);
+                                                                                setIsUploading(false);
+                                                                            }
+                                                                        };
+                                                                        
+                                                                        fileReader.readAsDataURL(file);
+                                                                        
+                                                                    } catch (error: any) {
+                                                                        console.error('Error uploading thumbnail:', error);
+                                                                        alert(`Para usar imagens como thumbnail, utilize a opção "Ou use uma URL de imagem diretamente" abaixo. Faça upload da sua imagem em um serviço como Imgur, ImgBB ou similar e cole a URL aqui.`);
+                                                                        setIsUploading(false);
+                                                                    }
+                                                                }
+                                                            };
+                                                            input.click();
+                                                        }}
+                                                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#E31337]/10 hover:bg-[#E31337]/20 text-[#E31337] border border-[#E31337]/30 rounded-lg transition-colors"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                        Escolher arquivo (veja nota)
+                                                    </button>
+                                                    <p className="text-xs text-gray-400 mt-1">
+                                                        <b>Nota:</b> O upload direto de arquivos está com problemas. Por favor, <u>use a opção abaixo para adicionar URL de imagem</u>.
+                                                    </p>
+                                                    
+                                                    {thumbnailUrl && (
+                                                        <div className="mt-3 relative aspect-video rounded-lg overflow-hidden border border-gray-700">
+                                                            <img 
+                                                                src={thumbnailUrl} 
+                                                                alt="Current thumbnail" 
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                            <div className="absolute top-2 right-2">
+                                                                <span className="bg-[#E31337] text-white px-2 py-1 text-xs rounded-full">
+                                                                    Current Thumbnail
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="mt-4">
+                                                        <label className="block text-sm font-medium text-white mb-2">
+                                                            Ou use uma URL de imagem diretamente
+                                                        </label>
+                                                        <div className="flex gap-2">
+                                                            <input 
+                                                                type="text"
+                                                                placeholder="https://exemplo.com/imagem.jpg"
+                                                                className="flex-1 px-3 py-2 text-sm md:text-base border text-white border-gray-700 rounded-lg bg-gray-800/50 focus:outline-none focus:ring-1 focus:ring-[#E31337]"
+                                                                id="external-image-url"
+                                                            />
+                                                            <button
+                                                                onClick={() => {
+                                                                    const input = document.getElementById('external-image-url') as HTMLInputElement;
+                                                                    const imageUrl = input.value.trim();
+                                                                    
+                                                                    if (!imageUrl) {
+                                                                        alert('Por favor, insira uma URL de imagem válida');
+                                                                        return;
+                                                                    }
+                                                                    
+                                                                    setUploadedImages(prev => {
+                                                                        if (prev.some(img => img.url === imageUrl)) {
+                                                                            return prev;
+                                                                        }
+                                                                        return [...prev, {
+                                                                            url: imageUrl,
+                                                                            pinataUrl: imageUrl,
+                                                                            hash: Date.now().toString() 
+                                                                        }];
+                                                                    });
+                                                                    
+                                                                    setThumbnailUrl(imageUrl);
+                                                                    
+                                                                    input.value = '';
+                                                                }}
+                                                                className="px-3 py-2 bg-[#E31337] text-white rounded-lg hover:bg-[#E31337]/80 transition-colors"
+                                                            >
+                                                                Usar
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <div className="mt-2 flex flex-wrap gap-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    const input = document.getElementById('external-image-url') as HTMLInputElement;
+                                                                    const rawUrl = input.value.trim();
+                                                                    if (rawUrl) {
+                                                                        input.value = `https://steemitimages.com/0x0/${rawUrl}`;
+                                                                    }
+                                                                }}
+                                                                className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded"
+                                                                title="Usar Steemitimages como proxy"
+                                                            >
+                                                                Steemitimages
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const input = document.getElementById('external-image-url') as HTMLInputElement;
+                                                                    const rawUrl = input.value.trim();
+                                                                    if (rawUrl) {
+                                                                        input.value = `https://images.hive.blog/0x0/${rawUrl}`;
+                                                                    }
+                                                                }}
+                                                                className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded"
+                                                                title="Usar Hive Images como proxy"
+                                                            >
+                                                                Hive Images
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 {/* Upload Indicator */}
                                                 <UploadIndicator isUploading={isUploading} />
