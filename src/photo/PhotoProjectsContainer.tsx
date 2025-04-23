@@ -378,8 +378,8 @@ const MediaItem = ({
         'w-full h-full transition-all duration-300',
         isExpanded 
           ? hasLargeContent 
-            ? 'flex flex-col h-auto min-h-[300px] xs:min-h-[450px] sm:min-h-[550px]' 
-            : 'flex flex-col h-auto min-h-[250px] xs:min-h-[350px] sm:min-h-[450px]'
+            ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]' 
+            : 'flex flex-col h-auto min-h-[450px] sm:min-h-[450px]'
           : ''
       )}>
         {!isExpanded && (
@@ -401,11 +401,11 @@ const MediaItem = ({
                             unoptimized={true}
                           />
                         </div>
-                        <div className="bg-black flex flex-col justify-center px-4 py-3">
-                          <div className="text-white text-base font-medium line-clamp-1">
+                        <div className="bg-black flex flex-col justify-center px-3 sm:px-4 py-2 sm:py-3">
+                          <div className="text-white text-sm sm:text-base font-medium line-clamp-1">
                             {mainItem.title}
                           </div>
-                          <div className="flex items-center gap-2 mt-2">
+                          <div className="flex items-center gap-2 mt-1 sm:mt-2">
                             {mainItem.tags?.slice(0, 2).map((tag, index) => (
                               <button
                                 key={index}
@@ -413,42 +413,7 @@ const MediaItem = ({
                                   e.stopPropagation();
                                   onTagClick(tag);
                                 }}
-                                className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal"
-                              >
-                                {tag}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ) : extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0] ? (
-                    <>
-                      <div className="flex flex-col h-full">
-                        <div className="flex-1 relative group">
-                          <Image
-                            src={extractImagesFromMarkdown(mainItem.hiveMetadata.body)[0]}
-                            alt={mainItem.title || ''}
-                            fill
-                            className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
-                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                            quality={85}
-                            unoptimized={true}
-                          />
-                        </div>
-                        <div className="bg-black flex flex-col justify-center px-4 py-3">
-                          <div className="text-white text-base font-medium line-clamp-1">
-                            {mainItem.title}
-                          </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            {mainItem.tags?.slice(0, 2).map((tag, index) => (
-                              <button
-                                key={index}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onTagClick(tag);
-                                }}
-                                className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal"
+                                className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal"
                               >
                                 {tag}
                               </button>
@@ -470,8 +435,8 @@ const MediaItem = ({
 
         {isExpanded && (
           <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
-            <div className="flex items-center px-2 xs:px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-10 bg-black border-b border-gray-700">
-              <h2 className="text-sm xs:text-base font-medium truncate flex-1 text-white">{mainItem.title}</h2>
+            <div className="flex items-center px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-10 bg-black border-b border-gray-700">
+              <h2 className="text-sm sm:text-base font-medium truncate flex-1 text-white">{mainItem.title}</h2>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -488,8 +453,8 @@ const MediaItem = ({
 
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain">
               {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-4xl mx-auto relative px-2 xs:px-3 sm:px-4 my-2 sm:my-4">
-                  <div className="relative w-full aspect-[4/3] sm:aspect-[1/1]">
+                <div className="w-full max-w-4xl mx-auto relative px-2 sm:px-4 my-2 sm:my-4">
+                  <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-video">
                     <video
                       src={mainItem.src}
                       className="absolute top-0 left-0 w-full h-full object-contain bg-black rounded border-2 border-black"
@@ -507,8 +472,8 @@ const MediaItem = ({
               )}
 
               {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-sm w-full p-2 xs:p-3 sm:p-4 max-w-full">
-                  <div className="leading-relaxed markdown-content text-sm xs:text-base w-full break-words">
+                <div className="prose prose-sm w-full p-3 sm:p-4 max-w-full">
+                  <div className="leading-relaxed markdown-content text-sm sm:text-base w-full break-words">
                     <ReactMarkdown
                       rehypePlugins={[rehypeRaw]}
                       components={{
@@ -559,7 +524,7 @@ const MediaItem = ({
                           speed={500}
                           slidesToShow={1}
                           slidesToScroll={1}
-                          className="carousel-container overflow-hidden px-2 xs:px-3 sm:px-4"
+                          className="carousel-container overflow-hidden px-2 sm:px-4"
                           adaptiveHeight={false}
                           responsive={[
                             {
@@ -697,25 +662,25 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        'max-w-[2000px] mx-auto px-2 xs:px-3 sm:px-6 md:px-8',
-        header ? 'mb-2 xs:mb-3 sm:mb-5' : 'mb-2'
+        'max-w-[2000px] mx-auto px-2 sm:px-6 md:px-8',
+        header ? 'mb-3 sm:mb-5' : 'mb-2'
       )}>
         {header}
         {selectedTag && (
-          <div className="mb-2 xs:mb-3 sm:mb-4 flex items-center gap-1 xs:gap-2">
-            <span className="text-xs xs:text-sm text-gray-400">Filtrando por:</span>
+          <div className="mb-3 sm:mb-4 flex items-center gap-2">
+            <span className="text-xs sm:text-sm text-gray-400">Filtrando por:</span>
             <button
               onClick={() => handleTagClick(selectedTag)}
-              className="inline-flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-xs xs:text-sm"
+              className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-xs sm:text-sm"
             >
               #{selectedTag}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
         )}
-        <div className="grid gap-y-3 xs:gap-y-4 sm:gap-y-6 gap-x-2 xs:gap-x-3 sm:gap-x-4 md:gap-5 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(200px, auto) xs:minmax(250px, auto) sm:minmax(290px, auto)' }}>
+        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(290px, auto)' }}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlink === permlink;
 
