@@ -23,7 +23,6 @@ const formatPinataUrl = (url: string): string => {
 
   // Make sure Hive image URLs are properly formatted
   if (url.includes('images.hive.blog')) {
-    // Make sure the URL doesn't have any extra quotes or spaces
     return url.trim().replace(/['"]+/g, '');
   }
 
@@ -33,25 +32,21 @@ const formatPinataUrl = (url: string): string => {
 // First, let's enhance the media with metadata from Hive posts
 function enhanceMediaWithMetadata(media: Media[]): Media[] {
   return media.map(item => {
-    // Skip items already processed or without hiveMetadata
     if (!item.hiveMetadata) return item;
 
     const enhancedItem = { ...item };
 
-    // If thumbnailSrc is already explicitly provided and looks valid, use it
     if (item.thumbnailSrc && item.thumbnailSrc.startsWith('http')) {
       enhancedItem.thumbnailSrc = formatPinataUrl(item.thumbnailSrc);
       return enhancedItem;
     }
 
-    // Step 1: Extract metadata from JSON if available
     try {
-      const metadata = item.hiveMetadata as any; // Type assertion para acessar json_metadata
+      const metadata = item.hiveMetadata as any; 
       if (metadata.json_metadata) {
         const metadataStr = metadata.json_metadata;
         const parsedMetadata = typeof metadataStr === 'string' ? JSON.parse(metadataStr) : metadataStr;
 
-        // Get thumbnail from metadata.image if available
         if (parsedMetadata?.image && Array.isArray(parsedMetadata.image) && parsedMetadata.image.length > 0) {
           enhancedItem.thumbnailSrc = formatPinataUrl(parsedMetadata.image[0]);
         }
@@ -60,7 +55,6 @@ function enhanceMediaWithMetadata(media: Media[]): Media[] {
       console.error("Error processing JSON metadata:", error);
     }
 
-    // Step 2: If no thumbnail found yet, try to extract from markdown
     if (!enhancedItem.thumbnailSrc && item.hiveMetadata.body) {
       const images = extractImagesFromMarkdown(item.hiveMetadata.body);
       if (images.length > 0) {
@@ -68,12 +62,10 @@ function enhanceMediaWithMetadata(media: Media[]): Media[] {
       }
     }
 
-    // Step 3: If URL is specified directly in the URL for debugging or specific cases
     if (!enhancedItem.thumbnailSrc && item.url?.includes('images.hive.blog')) {
       enhancedItem.thumbnailSrc = formatPinataUrl(item.url);
     }
 
-    // Specifically check for the URL mentioned in user comments
     const specificHiveImageURL = 'https://images.hive.blog/DQmTgsmbnbqwmTCkRk54nu9bvkcNFVfa2v83rPQkzq9Mb7q/prt_1313385051.jpg';
     if (!enhancedItem.thumbnailSrc && (
       item.url?.includes('DQmTgsmbnbqwmTCkRk54nu9bvkcNFVfa2v83rPQkzq9Mb7q') ||
@@ -88,13 +80,11 @@ function enhanceMediaWithMetadata(media: Media[]): Media[] {
 
 // First, let's create a function to group the media by permlink
 function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
-  // First enhance the media with thumbnails
   const enhancedMedia = enhanceMediaWithMetadata(media);
 
   const mediaGroups = new Map<string, Media[]>();
   const processedUrls = new Set<string>();
 
-  // Group by permlink
   enhancedMedia.forEach(item => {
     if (item.hiveMetadata) {
       const permlink = item.hiveMetadata.permlink;
@@ -116,7 +106,6 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
     if (group.length > 0) {
       const mainItem = group[0];
 
-      // Process the post's markdown content only once per group
       const extractedMedia = MarkdownRenderer.extractMediaFromHive({
         body: mainItem.hiveMetadata?.body || '',
         author: mainItem.hiveMetadata?.author || '',
@@ -124,7 +113,6 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
         json_metadata: JSON.stringify({ image: [mainItem.src] })
       });
 
-      // Add only raw media to the group
       extractedMedia.forEach(mediaContent => {
         if (!processedUrls.has(mediaContent.url)) {
           processedUrls.add(mediaContent.url);
@@ -135,7 +123,7 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
             title: mainItem.title,
             type: mediaContent.type === 'iframe' ? 'video' : 'photo',
             iframeHtml: mediaContent.iframeHtml,
-            thumbnailSrc: mainItem.thumbnailSrc, // Pass the thumbnail from the main item
+            thumbnailSrc: mainItem.thumbnailSrc, 
             hiveMetadata: mainItem.hiveMetadata
           });
         }
@@ -148,11 +136,7 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
 
 // Constants for service URLs
 const SKATEHIVE_URL = 'ipfs.skatehive.app/ipfs';
-const PINATA_URL = 'lime-useful-snake-714.mypinata.cloud/ipfs';
-const PEAKD_URL = 'files.peakd.com/file/peakd-hive';
-const HIVE_IMAGES_URL = 'images.hive.blog';
 
-// Modify MediaItem to work with media groups
 // Modify MediaItem to work with media groups
 const MediaItem = ({
   items,
@@ -177,9 +161,8 @@ const MediaItem = ({
   // Function to get thumbnail URL from metadata or first image in content
   function getThumbnailUrl(item: Media): string | null {
     try {
-      // Check if there's a thumbnail in json_metadata
       if (item.hiveMetadata) {
-        const metadata = item.hiveMetadata as any; // Type assertion para acessar json_metadata
+        const metadata = item.hiveMetadata as any; 
         if (metadata.json_metadata) {
           try {
             const parsedMetadata = typeof metadata.json_metadata === 'string' 
@@ -187,7 +170,7 @@ const MediaItem = ({
               : metadata.json_metadata;
             
             if (parsedMetadata.image && parsedMetadata.image.length > 0) {
-              return parsedMetadata.image[0]; // Use the first image from metadata as thumbnail
+              return parsedMetadata.image[0]; 
             }
           } catch (parseError) {
             console.error("Error parsing JSON metadata:", parseError);
@@ -202,7 +185,6 @@ const MediaItem = ({
         return images[0];
       }
       
-      // Last resort, use the item's src
       return item.src;
     } catch (e) {
       console.error('Error getting thumbnail:', e);
@@ -238,14 +220,11 @@ const MediaItem = ({
   // Get the thumbnail URL for this post
   const thumbnailUrl = getThumbnailUrl(mainItem);
 
-  // Estado para armazenar a thumbnail atualizada após recebê-la da API
   const [updatedThumbnail, setUpdatedThumbnail] = useState<string | null>(thumbnailUrl);
 
-  // Efeito para verificar a thumbnail atual e atualizá-la se necessário
   useEffect(() => {
     if (mainItem.hiveMetadata) {
       const { author, permlink } = mainItem.hiveMetadata;
-      // Busca dados atualizados diretamente da API do Hive
       fetchPostFromHive(author, permlink).then(post => {
         if (post && post.json_metadata) {
           try {
@@ -253,7 +232,6 @@ const MediaItem = ({
               ? JSON.parse(post.json_metadata)
               : post.json_metadata;
             if (metadata.image && metadata.image.length > 0) {
-              // Atualiza o estado com a thumbnail mais recente
               setUpdatedThumbnail(metadata.image[0]);
             }
           } catch (e) {
@@ -286,7 +264,6 @@ const MediaItem = ({
   };
 
   const renderMedia = (media: Media, isMainVideo: boolean = false) => {
-    // If it's a Skatehive IPFS video
     if (media.src?.includes(SKATEHIVE_URL)) {
       return (
         <div
@@ -346,7 +323,6 @@ const MediaItem = ({
       );
     }
 
-    // Para imagens (Pinata ou qualquer outra)
     return (
       <div className="flex flex-col h-full">
         <div className="flex-1 relative group">
@@ -360,7 +336,6 @@ const MediaItem = ({
             unoptimized={true}
             onError={() => {
               setImageError(true);
-              // Se a imagem falhar, tente usar o src original
               if (imageError && media.src) {
                 return media.src;
               }
@@ -403,8 +378,8 @@ const MediaItem = ({
         'w-full h-full transition-all duration-300',
         isExpanded 
           ? hasLargeContent 
-            ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]' 
-            : 'flex flex-col h-auto min-h-[450px] sm:min-h-[450px]'
+            ? 'flex flex-col h-auto min-h-[300px] xs:min-h-[450px] sm:min-h-[550px]' 
+            : 'flex flex-col h-auto min-h-[250px] xs:min-h-[350px] sm:min-h-[450px]'
           : ''
       )}>
         {!isExpanded && (
@@ -495,17 +470,17 @@ const MediaItem = ({
 
         {isExpanded && (
           <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
-            <div className="flex items-center px-4 py-3 sticky top-0 z-10 bg-black border-b border-gray-700">
-              <h2 className="text-base font-medium truncate flex-1 text-white">{mainItem.title}</h2>
+            <div className="flex items-center px-2 xs:px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-10 bg-black border-b border-gray-700">
+              <h2 className="text-sm xs:text-base font-medium truncate flex-1 text-white">{mainItem.title}</h2>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onExpand();
                 }}
-                className="ml-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1.5"
+                className="ml-2 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-1.5"
                 aria-label="Close"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -513,8 +488,8 @@ const MediaItem = ({
 
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain">
               {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-4xl mx-auto relative px-1 sm:px-2 md:px-6 my-4 sm:my-6">
-                  <div className="relative w-full aspect-[1/1] sm:aspect-[4/3] md:aspect-video">
+                <div className="w-full max-w-4xl mx-auto relative px-2 xs:px-3 sm:px-4 my-2 sm:my-4">
+                  <div className="relative w-full aspect-[4/3] sm:aspect-[1/1]">
                     <video
                       src={mainItem.src}
                       className="absolute top-0 left-0 w-full h-full object-contain bg-black rounded border-2 border-black"
@@ -532,8 +507,8 @@ const MediaItem = ({
               )}
 
               {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-sm w-full p-4 max-w-full">
-                  <div className="leading-relaxed markdown-content text-base w-full break-words">
+                <div className="prose prose-sm w-full p-2 xs:p-3 sm:p-4 max-w-full">
+                  <div className="leading-relaxed markdown-content text-sm xs:text-base w-full break-words">
                     <ReactMarkdown
                       rehypePlugins={[rehypeRaw]}
                       components={{
@@ -584,7 +559,7 @@ const MediaItem = ({
                           speed={500}
                           slidesToShow={1}
                           slidesToScroll={1}
-                          className="carousel-container overflow-hidden px-1 sm:px-2 md:px-6"
+                          className="carousel-container overflow-hidden px-2 xs:px-3 sm:px-4"
                           adaptiveHeight={false}
                           responsive={[
                             {
@@ -600,7 +575,8 @@ const MediaItem = ({
                               settings: {
                                 slidesToShow: 1,
                                 slidesToScroll: 1,
-                                dots: true
+                                dots: true,
+                                arrows: false
                               }
                             }
                           ]}
@@ -721,25 +697,25 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        'max-w-[2000px] mx-auto px-3 sm:px-6 md:px-8',
-        header ? 'mb-5' : 'mb-2'
+        'max-w-[2000px] mx-auto px-2 xs:px-3 sm:px-6 md:px-8',
+        header ? 'mb-2 xs:mb-3 sm:mb-5' : 'mb-2'
       )}>
         {header}
         {selectedTag && (
-          <div className="mb-4 flex items-center gap-2">
-            <span className="text-sm text-gray-400">Filtrando por:</span>
+          <div className="mb-2 xs:mb-3 sm:mb-4 flex items-center gap-1 xs:gap-2">
+            <span className="text-xs xs:text-sm text-gray-400">Filtrando por:</span>
             <button
               onClick={() => handleTagClick(selectedTag)}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+              className="inline-flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-xs xs:text-sm"
             >
               #{selectedTag}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
         )}
-        <div className="grid gap-y-6 gap-x-4 sm:gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(290px, auto)' }}>
+        <div className="grid gap-y-3 xs:gap-y-4 sm:gap-y-6 gap-x-2 xs:gap-x-3 sm:gap-x-4 md:gap-5 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(200px, auto) xs:minmax(250px, auto) sm:minmax(290px, auto)' }}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlink === permlink;
 
