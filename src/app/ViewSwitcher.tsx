@@ -19,26 +19,31 @@ export default function ViewSwitcher({
   const menuItems = [
     {
       text: "exposições/exibições",
+      mobileText: "expo",
       href: Path_Exhibitions,
       active: currentSelection === 'exhibitions',
     },
     {
       text: "Sobre",
+      mobileText: "sobre",
       href: PATH_FEED_INFERRED,
       active: currentSelection === 'about',
     },
     {
       text: "Mídia Social",
+      mobileText: "mídia",
       href: Path_Social_Media,
       active: currentSelection === 'social-media',
     },
     {
       text: "Parceiros",
+      mobileText: "parceiros",
       href: Path_Partners,
       active: currentSelection === 'partners',
     },
     {
       text: "Contato",
+      mobileText: "contato",
       href: Path_Contact,
       active: currentSelection === 'contact',
     }
@@ -47,18 +52,18 @@ export default function ViewSwitcher({
   return (
     <div className="flex flex-col w-full">
       <div className="sm:hidden w-full mb-1">
-        <div className="flex justify-around px-0 py-0.5">
+        <div className="flex justify-between px-2 py-1">
           {menuItems.map((item, index) => (
             <a
               key={index}
               href={item.href}
-              className={`px-1 py-1 text-center text-base transition-colors text-red-500
+              className={`px-1 py-0.5 text-center text-sm whitespace-nowrap transition-colors text-red-500
                 ${item.active
                   ? 'font-semibold'
                   : 'font-sans'
                 }`}
             >
-              {item.text.replace('/exibições', '')}
+              {item.mobileText}
             </a>
           ))}
         </div>
