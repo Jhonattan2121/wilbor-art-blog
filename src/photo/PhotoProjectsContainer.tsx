@@ -662,7 +662,7 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        'max-w-[2000px] mx-auto px-2 sm:px-6 md:px-8',
+        'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
         header ? 'mb-3 sm:mb-5' : 'mb-2'
       )}>
         {header}
@@ -680,7 +680,7 @@ export default function PhotoGridContainer({
             </button>
           </div>
         )}
-        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(290px, auto)' }}>
+        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(290px, auto)' }}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlink === permlink;
 
