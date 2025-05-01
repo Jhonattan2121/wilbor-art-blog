@@ -42,7 +42,7 @@ function enhanceMediaWithMetadata(media: Media[]): Media[] {
     }
 
     try {
-      const metadata = item.hiveMetadata as any; 
+      const metadata = item.hiveMetadata as any;
       if (metadata.json_metadata) {
         const metadataStr = metadata.json_metadata;
         const parsedMetadata = typeof metadataStr === 'string' ? JSON.parse(metadataStr) : metadataStr;
@@ -123,7 +123,7 @@ function groupMediaByPermlink(media: Media[]): Map<string, Media[]> {
             title: mainItem.title,
             type: mediaContent.type === 'iframe' ? 'video' : 'photo',
             iframeHtml: mediaContent.iframeHtml,
-            thumbnailSrc: mainItem.thumbnailSrc, 
+            thumbnailSrc: mainItem.thumbnailSrc,
             hiveMetadata: mainItem.hiveMetadata
           });
         }
@@ -162,29 +162,29 @@ const MediaItem = ({
   function getThumbnailUrl(item: Media): string | null {
     try {
       if (item.hiveMetadata) {
-        const metadata = item.hiveMetadata as any; 
+        const metadata = item.hiveMetadata as any;
         if (metadata.json_metadata) {
           try {
-            const parsedMetadata = typeof metadata.json_metadata === 'string' 
-              ? JSON.parse(metadata.json_metadata) 
+            const parsedMetadata = typeof metadata.json_metadata === 'string'
+              ? JSON.parse(metadata.json_metadata)
               : metadata.json_metadata;
-            
+
             if (parsedMetadata.image && parsedMetadata.image.length > 0) {
-              return parsedMetadata.image[0]; 
+              return parsedMetadata.image[0];
             }
           } catch (parseError) {
             console.error("Error parsing JSON metadata:", parseError);
           }
         }
       }
-      
+
       // Fallback to first image in the post content
       const images = extractImagesFromMarkdown(item.hiveMetadata?.body || '');
-      
+
       if (images.length > 0) {
         return images[0];
       }
-      
+
       return item.src;
     } catch (e) {
       console.error('Error getting thumbnail:', e);
@@ -205,7 +205,7 @@ const MediaItem = ({
           id: 1
         })
       });
-      
+
       const data = await response.json();
       if (data && data.result) {
         return data.result;
@@ -246,7 +246,7 @@ const MediaItem = ({
     if (isExpanded && mainItem.hiveMetadata?.body) {
       const imageCount = extractImagesFromMarkdown(mainItem.hiveMetadata.body).length;
       const textLength = mainItem.hiveMetadata.body.length;
-            const hasComplexContent = imageCount > 1 || textLength > 300 || (imageCount > 0 && textLength > 200);
+      const hasComplexContent = imageCount > 1 || textLength > 300 || (imageCount > 0 && textLength > 200);
       onContentSizeChange(hasComplexContent);
     } else if (isExpanded && mainItem.src?.includes(SKATEHIVE_URL)) {
       onContentSizeChange(true);
@@ -287,7 +287,7 @@ const MediaItem = ({
               onLoadedMetadata={(e) => {
                 const video = e.target as HTMLVideoElement;
                 if (isMainVideo) {
-                  video.volume = 0.2; 
+                  video.volume = 0.2;
                 }
               }}
               onMouseEnter={(e) => {
@@ -376,9 +376,9 @@ const MediaItem = ({
     >
       <div className={clsx(
         'w-full h-full transition-all duration-300',
-        isExpanded 
-          ? hasLargeContent 
-            ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]' 
+        isExpanded
+          ? hasLargeContent
+            ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]'
             : 'flex flex-col h-auto min-h-[450px] sm:min-h-[450px]'
           : ''
       )}>
@@ -390,7 +390,7 @@ const MediaItem = ({
                   {updatedThumbnail ? (
                     <>
                       <div className="flex flex-col h-full">
-                        <div className="flex-1 relative group">
+                        <div className="flex-1 relative group" style={{ minHeight: '200px' }}>
                           <Image
                             src={updatedThumbnail}
                             alt={mainItem.title || ''}
@@ -401,19 +401,19 @@ const MediaItem = ({
                             unoptimized={true}
                           />
                         </div>
-                        <div className="bg-black flex flex-col justify-center px-3 sm:px-4 py-2 sm:py-3">
-                          <div className="text-white text-sm sm:text-base font-medium line-clamp-1">
+                        <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
+                          <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
                             {mainItem.title}
                           </div>
-                          <div className="flex items-center gap-2 mt-1 sm:mt-2">
-                            {mainItem.tags?.slice(0, 2).map((tag, index) => (
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
+                            {mainItem.tags?.map((tag, index) => (
                               <button
                                 key={index}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onTagClick(tag);
                                 }}
-                                className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal"
+                                className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
                               >
                                 {tag}
                               </button>
@@ -464,7 +464,7 @@ const MediaItem = ({
                       muted={false}
                       onLoadedMetadata={(e) => {
                         const video = e.target as HTMLVideoElement;
-                        video.volume = 0.2; 
+                        video.volume = 0.2;
                       }}
                     />
                   </div>
@@ -480,31 +480,31 @@ const MediaItem = ({
                         img: () => null,
                         video: () => null,
                         iframe: () => null,
-                        p: ({node, children, ...props}) => (
+                        p: ({ node, children, ...props }) => (
                           <p className="mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</p>
                         ),
-                        h1: ({node, children, ...props}) => (
+                        h1: ({ node, children, ...props }) => (
                           <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white" {...props}>{children}</h1>
                         ),
-                        h2: ({node, children, ...props}) => (
+                        h2: ({ node, children, ...props }) => (
                           <h2 className="text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-white" {...props}>{children}</h2>
                         ),
-                        h3: ({node, children, ...props}) => (
+                        h3: ({ node, children, ...props }) => (
                           <h3 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white" {...props}>{children}</h3>
                         ),
-                        a: ({node, children, ...props}) => (
+                        a: ({ node, children, ...props }) => (
                           <a className="text-blue-600 dark:text-blue-400 hover:underline" {...props}>{children}</a>
                         ),
-                        ul: ({node, children, ...props}) => (
+                        ul: ({ node, children, ...props }) => (
                           <ul className="list-disc pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ul>
                         ),
-                        ol: ({node, children, ...props}) => (
+                        ol: ({ node, children, ...props }) => (
                           <ol className="list-decimal pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ol>
                         ),
-                        li: ({node, children, ...props}) => (
+                        li: ({ node, children, ...props }) => (
                           <li className="mb-1" {...props}>{children}</li>
                         ),
-                        blockquote: ({node, children, ...props}) => (
+                        blockquote: ({ node, children, ...props }) => (
                           <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300" {...props}>{children}</blockquote>
                         ),
                       }}
@@ -574,31 +574,31 @@ const MediaItem = ({
                         img: () => null,
                         video: () => null,
                         iframe: () => null,
-                        p: ({node, children, ...props}) => (
+                        p: ({ node, children, ...props }) => (
                           <p className="mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</p>
                         ),
-                        h1: ({node, children, ...props}) => (
+                        h1: ({ node, children, ...props }) => (
                           <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white" {...props}>{children}</h1>
                         ),
-                        h2: ({node, children, ...props}) => (
+                        h2: ({ node, children, ...props }) => (
                           <h2 className="text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-white" {...props}>{children}</h2>
                         ),
-                        h3: ({node, children, ...props}) => (
+                        h3: ({ node, children, ...props }) => (
                           <h3 className="text-lg font-semibold mb-2 mt-4 text-gray-900 dark:text-white" {...props}>{children}</h3>
                         ),
-                        a: ({node, children, ...props}) => (
+                        a: ({ node, children, ...props }) => (
                           <a className="text-blue-600 dark:text-blue-400 hover:underline" {...props}>{children}</a>
                         ),
-                        ul: ({node, children, ...props}) => (
+                        ul: ({ node, children, ...props }) => (
                           <ul className="list-disc pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ul>
                         ),
-                        ol: ({node, children, ...props}) => (
+                        ol: ({ node, children, ...props }) => (
                           <ol className="list-decimal pl-5 mb-4 text-gray-800 dark:text-gray-200" {...props}>{children}</ol>
                         ),
-                        li: ({node, children, ...props}) => (
+                        li: ({ node, children, ...props }) => (
                           <li className="mb-1" {...props}>{children}</li>
                         ),
-                        blockquote: ({node, children, ...props}) => (
+                        blockquote: ({ node, children, ...props }) => (
                           <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300" {...props}>{children}</blockquote>
                         ),
                       }}
@@ -671,7 +671,7 @@ export default function PhotoGridContainer({
             <span className="text-xs sm:text-sm text-gray-400">Filtrando por:</span>
             <button
               onClick={() => handleTagClick(selectedTag)}
-              className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-xs sm:text-sm"
+              className="inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-[10px] sm:text-xs md:text-sm"
             >
               #{selectedTag}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -680,7 +680,7 @@ export default function PhotoGridContainer({
             </button>
           </div>
         )}
-        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(290px, auto)' }}>
+        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(250px, auto)' }}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlink === permlink;
 
