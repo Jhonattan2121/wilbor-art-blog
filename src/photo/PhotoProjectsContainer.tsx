@@ -144,7 +144,8 @@ const MediaItem = ({
   onExpand,
   onContentSizeChange,
   onTagClick,
-  hasLargeContent = false
+  hasLargeContent = false,
+  isReversedLayout = false
 }: {
   items: Media[];
   isExpanded: boolean;
@@ -152,6 +153,7 @@ const MediaItem = ({
   onContentSizeChange: (isLarge: boolean) => void;
   onTagClick: (tag: string) => void;
   hasLargeContent?: boolean;
+  isReversedLayout?: boolean;
 }) => {
   const mainItem = items[0];
   const [isHovered, setIsHovered] = useState(false);
@@ -384,50 +386,219 @@ const MediaItem = ({
       )}>
         {!isExpanded && (
           <>
-            <div className="flex flex-col h-full">
+            <div className="flex flex-row h-full">
               {mainItem.hiveMetadata?.body ? (
                 <>
                   {updatedThumbnail ? (
                     <>
-                      <div className="flex flex-col h-full">
-                        <div className="flex-1 relative group" style={{ minHeight: '200px' }}>
-                          <Image
-                            src={updatedThumbnail}
-                            alt={mainItem.title || ''}
-                            fill
-                            className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
-                            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                            quality={85}
-                            unoptimized={true}
-                          />
+                      <div className="flex flex-row h-full w-full">
+                        {!isReversedLayout && (
+                          <>
+                            <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
+                              <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-2">
+                                {mainItem.title}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
+                                {mainItem.tags?.map((tag, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTagClick(tag);
+                                    }}
+                                    className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                  >
+                                    {tag}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '140px' }}>
+                              <Image
+                                src={updatedThumbnail}
+                                alt={mainItem.title || ''}
+                                fill
+                                className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, 33vw"
+                                quality={85}
+                                unoptimized={true}
+                                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                              />
+                            </div>
+                          </>
+                        )}
+                        {isReversedLayout && (
+                          <>
+                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '140px' }}>
+                              <Image
+                                src={updatedThumbnail}
+                                alt={mainItem.title || ''}
+                                fill
+                                className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, 33vw"
+                                quality={85}
+                                unoptimized={true}
+                                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                              />
+                            </div>
+                            <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
+                              <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-2">
+                                {mainItem.title}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
+                                {mainItem.tags?.map((tag, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTagClick(tag);
+                                    }}
+                                    className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                  >
+                                    {tag}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {/* Layout original para telas maiores */}
+                        <div className="hidden sm:flex sm:flex-col h-full w-full">
+                          <div className="flex-1 relative group" style={{ minHeight: '200px' }}>
+                            <Image
+                              src={updatedThumbnail}
+                              alt={mainItem.title || ''}
+                              fill
+                              className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                              quality={85}
+                              unoptimized={true}
+                            />
+                          </div>
+                          <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
+                            <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
+                              {mainItem.title} 
+                            </div>
+                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
+                              {mainItem.tags?.map((tag, index) => (
+                                <button
+                                  key={index}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onTagClick(tag);
+                                  }}
+                                  className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                >
+                                  {tag}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                        <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
-                          <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex flex-row h-[140px] w-full sm:hidden">
+                        {/* Título e tags à esquerda */}
+                        <div className="bg-black flex flex-col justify-center px-2 py-2 w-1/2 h-full">
+                          <div className="text-xs font-medium line-clamp-2 mb-1">
                             {mainItem.title}
                           </div>
-                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
-                            {mainItem.tags?.map((tag, index) => (
+                          <div className="flex flex-wrap items-center gap-1 max-h-[80px] overflow-y-auto custom-scrollbar">
+                            {mainItem.tags?.slice(0, 3).map((tag, index) => (
                               <button
                                 key={index}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onTagClick(tag);
                                 }}
-                                className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                className="text-[10px]  transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px]"
                               >
                                 {tag}
                               </button>
                             ))}
                           </div>
+
                         </div>
+
+                        {isReversedLayout && (
+                          <>
+                            <div className="w-1/2 h-full relative">
+                              <Image
+                                src={updatedThumbnail || thumbnailUrl || mainItem.src || 'https://placehold.co/600x400?text=No+Image'}
+                                alt={mainItem.title || ''}
+                                fill
+                                className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                                sizes="(max-width: 640px) 50vw"
+                                quality={85}
+                                unoptimized={true}
+                              />
+                            </div>
+                            <div className="bg-black flex flex-col justify-center px-2 py-2 w-1/2 h-full">
+                              <div className=" text-xs font-medium line-clamp-2 mb-1">
+                                {mainItem.title}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1 max-h-[80px] overflow-y-auto custom-scrollbar">
+                                {mainItem.tags?.slice(0, 3).map((tag, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTagClick(tag);
+                                    }}
+                                    className="text-[10px] transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px]"
+                                  >
+                                    {tag}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Layout original para telas maiores */}
+                      <div className="hidden sm:block w-full h-full">
+                        {renderMedia(mainItem)}
                       </div>
                     </>
-                  ) : (
-                    renderMedia(mainItem)
                   )}
                 </>
               ) : (
-                renderMedia(mainItem)
+                <>
+                  <div className="flex flex-row h-full w-full sm:hidden">
+                    {/* Layout mobile: título à esquerda, imagem à direita */}
+                    <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2">
+                      <div className="text-white text-xs font-medium line-clamp-2">
+                        {mainItem.title}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 mt-1 max-h-[60px] overflow-y-auto custom-scrollbar">
+                        {mainItem.tags?.slice(0, 3).map((tag, index) => (
+                          <button
+                            key={index}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onTagClick(tag);
+                            }}
+                            className="text-[10px] text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px]"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex-1 relative group h-full">
+                      {renderMedia(mainItem)}
+                    </div>
+                  </div>
+
+                  {/* Layout original para telas maiores */}
+                  <div className="hidden sm:block w-full h-full">
+                    {renderMedia(mainItem)}
+                  </div>
+                </>
               )}
             </div>
           </>
@@ -680,10 +851,10 @@ export default function PhotoGridContainer({
             </button>
           </div>
         )}
-        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense" style={{ gridAutoRows: 'minmax(250px, auto)' }}>
+        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlink === permlink;
-
+            const isOdd = idx % 2 === 1;
             return (
               <div
                 key={permlink}
@@ -696,6 +867,7 @@ export default function PhotoGridContainer({
                     : 'col-span-1'
                 )}
               >
+
                 <MediaItem
                   items={group}
                   isExpanded={isExpanded}
@@ -710,7 +882,9 @@ export default function PhotoGridContainer({
                   onContentSizeChange={setHasLargeContent}
                   onTagClick={handleTagClick}
                   hasLargeContent={hasLargeContent}
+                  isReversedLayout={isOdd}
                 />
+
               </div>
             );
           })}
