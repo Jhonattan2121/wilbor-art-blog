@@ -387,11 +387,12 @@ const MediaItem = ({
         {!isExpanded && (
           <>
             <div className="flex flex-row h-full">
-              {mainItem.hiveMetadata?.body ? (
+              {mainItem.hiveMetadata?.body && (
                 <>
                   {updatedThumbnail ? (
                     <>
                       <div className="flex flex-row h-full w-full">
+                        {/*tela pequena texto e tags a esquerda */}
                         {!isReversedLayout && (
                           <>
                             <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
@@ -406,7 +407,7 @@ const MediaItem = ({
                                       e.stopPropagation();
                                       onTagClick(tag);
                                     }}
-                                    className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                    className="text-[11px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
                                   >
                                     {tag}
                                   </button>
@@ -427,6 +428,7 @@ const MediaItem = ({
                             </div>
                           </>
                         )}
+                        {/*tela pequena texto e tags a direita */}
                         {isReversedLayout && (
                           <>
                             <div className="flex-1 relative group h-full sm:hidden" style={{ height: '140px' }}>
@@ -453,7 +455,7 @@ const MediaItem = ({
                                       e.stopPropagation();
                                       onTagClick(tag);
                                     }}
-                                    className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                    className="text-[15px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
                                   >
                                     {tag}
                                   </button>
@@ -478,7 +480,7 @@ const MediaItem = ({
                           </div>
                           <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
                             <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
-                              {mainItem.title} 
+                              {mainItem.title}
                             </div>
                             <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
                               {mainItem.tags?.map((tag, index) => (
@@ -488,7 +490,7 @@ const MediaItem = ({
                                     e.stopPropagation();
                                     onTagClick(tag);
                                   }}
-                                  className="text-[10px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
+                                  className="text-[15px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
                                 >
                                   {tag}
                                 </button>
@@ -499,106 +501,17 @@ const MediaItem = ({
                       </div>
                     </>
                   ) : (
-                    <>
-                      <div className="flex flex-row h-[140px] w-full sm:hidden">
-                        {/* Título e tags à esquerda */}
-                        <div className="bg-black flex flex-col justify-center px-2 py-2 w-1/2 h-full">
-                          <div className="text-xs font-medium line-clamp-2 mb-1">
-                            {mainItem.title}
-                          </div>
-                          <div className="flex flex-wrap items-center gap-1 max-h-[80px] overflow-y-auto custom-scrollbar">
-                            {mainItem.tags?.slice(0, 3).map((tag, index) => (
-                              <button
-                                key={index}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onTagClick(tag);
-                                }}
-                                className="text-[10px]  transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px]"
-                              >
-                                {tag}
-                              </button>
-                            ))}
-                          </div>
-
-                        </div>
-
-                        {isReversedLayout && (
-                          <>
-                            <div className="w-1/2 h-full relative">
-                              <Image
-                                src={updatedThumbnail || thumbnailUrl || mainItem.src || 'https://placehold.co/600x400?text=No+Image'}
-                                alt={mainItem.title || ''}
-                                fill
-                                className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
-                                sizes="(max-width: 640px) 50vw"
-                                quality={85}
-                                unoptimized={true}
-                              />
-                            </div>
-                            <div className="bg-black flex flex-col justify-center px-2 py-2 w-1/2 h-full">
-                              <div className=" text-xs font-medium line-clamp-2 mb-1">
-                                {mainItem.title}
-                              </div>
-                              <div className="flex flex-wrap items-center gap-1 max-h-[80px] overflow-y-auto custom-scrollbar">
-                                {mainItem.tags?.slice(0, 3).map((tag, index) => (
-                                  <button
-                                    key={index}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onTagClick(tag);
-                                    }}
-                                    className="text-[10px] transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px]"
-                                  >
-                                    {tag}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Layout original para telas maiores */}
-                      <div className="hidden sm:block w-full h-full">
-                        {renderMedia(mainItem)}
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="flex flex-row h-full w-full sm:hidden">
-                    {/* Layout mobile: título à esquerda, imagem à direita */}
-                    <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2">
-                      <div className="text-white text-xs font-medium line-clamp-2">
-                        {mainItem.title}
-                      </div>
-                      <div className="flex flex-wrap items-center gap-1 mt-1 max-h-[60px] overflow-y-auto custom-scrollbar">
-                        {mainItem.tags?.slice(0, 3).map((tag, index) => (
-                          <button
-                            key={index}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onTagClick(tag);
-                            }}
-                            className="text-[10px] text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px]"
-                          >
-                            {tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
                     <div className="flex-1 relative group h-full">
                       {renderMedia(mainItem)}
                     </div>
-                  </div>
-
-                  {/* Layout original para telas maiores */}
-                  <div className="hidden sm:block w-full h-full">
-                    {renderMedia(mainItem)}
-                  </div>
+                  )}
                 </>
+              )}
+
+              {!mainItem.hiveMetadata?.body && (
+                <div className="flex-1 relative group h-full">
+                  {renderMedia(mainItem)}
+                </div>
               )}
             </div>
           </>
@@ -834,19 +747,19 @@ export default function PhotoGridContainer({
     <div className="w-full">
       <div className={clsx(
         'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
-        header ? 'mb-3 sm:mb-5' : 'mb-2'
+        header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
         {selectedTag && (
           <div className="mb-3 sm:mb-4 flex items-center gap-2">
-            <span className="text-xs sm:text-sm text-gray-400">Filtrando por:</span>
+            <span className="text-2xl sm:text-2xl text-gray-400">Filtrando por:</span>
             <button
               onClick={() => handleTagClick(selectedTag)}
-              className="inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-[10px] sm:text-xs md:text-sm"
+              className="inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-[15px] sm:text-xs md:text-sm"
             >
-              #{selectedTag}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              {selectedTag}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 28 28" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
