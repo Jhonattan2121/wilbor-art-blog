@@ -381,8 +381,8 @@ const MediaItem = ({
         isExpanded
           ? hasLargeContent
             ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]'
-            : 'flex flex-col h-auto min-h-[450px] sm:min-h-[450px]'
-          : ''
+            : 'flex flex-col h-auto min-h-[200px] sm:min-h-[450px]'
+          : 'min-h-[200px]'
       )}>
         {!isExpanded && (
           <>
@@ -414,16 +414,16 @@ const MediaItem = ({
                                 ))}
                               </div>
                             </div>
-                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '140px' }}>
+                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '200px' }}>
                               <Image
                                 src={updatedThumbnail}
                                 alt={mainItem.title || ''}
                                 fill
-                                className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                                className="object-fill transition-all duration-300 filter grayscale group-hover:grayscale-0"
                                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, 33vw"
                                 quality={85}
                                 unoptimized={true}
-                                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                                style={{ objectFit: 'fill', objectPosition: 'center' }}
                               />
                             </div>
                           </>
@@ -431,16 +431,16 @@ const MediaItem = ({
                         {/*tela pequena texto e tags a direita */}
                         {isReversedLayout && (
                           <>
-                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '140px' }}>
+                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '200px' }}>
                               <Image
                                 src={updatedThumbnail}
                                 alt={mainItem.title || ''}
                                 fill
-                                className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                                className="object-fill transition-all duration-300 filter grayscale group-hover:grayscale-0"
                                 sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, 33vw"
                                 quality={85}
                                 unoptimized={true}
-                                style={{ objectFit: 'cover', objectPosition: 'center' }}
+                                style={{ objectFit: 'fill', objectPosition: 'center' }}
                               />
                             </div>
                             <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
