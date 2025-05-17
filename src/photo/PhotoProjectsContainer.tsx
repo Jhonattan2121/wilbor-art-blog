@@ -758,6 +758,32 @@ export default function PhotoGridContainer({
           )}
         </div>
       )}
+      {allTags.length > 0 && (
+        <nav className="hidden sm:flex flex-wrap gap-4 mb-6 items-center justify-center">
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => setSelectedTag(tag)}
+              className={clsx(
+                'bg-transparent border-0 px-0 py-0 text-base font-medium  hover:text-black transition-all duration-150',
+                selectedTag === tag && 'text-black underline underline-offset-4 decoration-2 decoration-gray-800'
+              )}
+              style={{ boxShadow: 'none' }}
+            >
+              {tag}
+            </button>
+          ))}
+          {selectedTag && (
+            <button
+              onClick={() => setSelectedTag(null)}
+              className="ml-4 text-sm  hover:text-black underline underline-offset-4 bg-transparent border-0 px-0 py-0 font-normal transition-all duration-150"
+              style={{ boxShadow: 'none' }}
+            >
+              Limpar filtro
+            </button>
+          )}
+        </nav>
+      )}
       <div className={clsx(
         'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
@@ -765,16 +791,7 @@ export default function PhotoGridContainer({
         {header}
         {selectedTag && (
           <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:flex hidden">
-            <span className="text-2xl sm:text-2xl text-gray-400">Filtrando por:</span>
-            <button
-              onClick={() => handleTagClick(selectedTag)}
-              className="inline-flex items-center gap-1 sm:gap-2 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-colors text-[15px] sm:text-xs md:text-sm"
-            >
-              {selectedTag}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 28 28" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            {/* Removido o aviso 'Filtrando por' e o botão de limpar tag no desktop */}
           </div>
         )}
         <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense">
