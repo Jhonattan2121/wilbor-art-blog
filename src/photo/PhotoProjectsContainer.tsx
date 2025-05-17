@@ -1,5 +1,6 @@
 'use client';
 
+import IconMenu from '@/app/IconMenu';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
@@ -159,6 +160,19 @@ const MediaItem = ({
   const [isHovered, setIsHovered] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [imageError, setImageError] = useState(false);
+  const [showTagsMenu, setShowTagsMenu] = useState(false);
+  const tagsMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showTagsMenu) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (tagsMenuRef.current && !tagsMenuRef.current.contains(event.target as Node)) {
+        setShowTagsMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showTagsMenu]);
 
   // Function to get thumbnail URL from metadata or first image in content
   function getThumbnailUrl(item: Media): string | null {
@@ -305,20 +319,6 @@ const MediaItem = ({
           {!isMainVideo && media.title && (
             <div className="bg-black flex flex-col justify-center px-4 py-3">
               <p className="text-white text-base font-medium">{media.title}</p>
-              <div className="flex items-center gap-2 mt-2">
-                {mainItem.tags?.slice(0, 2).map((tag, index) => (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onTagClick(tag);
-                    }}
-                    className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal"
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
             </div>
           )}
         </div>
@@ -347,20 +347,6 @@ const MediaItem = ({
         {media.title && (
           <div className="bg-black flex flex-col justify-center px-4 py-3">
             <p className="text-white text-base font-medium">{media.title}</p>
-            <div className="flex items-center gap-2 mt-2">
-              {mainItem.tags?.slice(0, 2).map((tag, index) => (
-                <button
-                  key={index}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onTagClick(tag);
-                  }}
-                  className="text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
           </div>
         )}
       </div>
@@ -399,20 +385,6 @@ const MediaItem = ({
                               <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-2">
                                 {mainItem.title}
                               </div>
-                              <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
-                                {mainItem.tags?.map((tag, index) => (
-                                  <button
-                                    key={index}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onTagClick(tag);
-                                    }}
-                                    className="text-[11px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
-                                  >
-                                    {tag}
-                                  </button>
-                                ))}
-                              </div>
                             </div>
                             <div className="flex-1 relative group h-full sm:hidden" style={{ height: '200px' }}>
                               <Image
@@ -447,20 +419,6 @@ const MediaItem = ({
                               <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-2">
                                 {mainItem.title}
                               </div>
-                              <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
-                                {mainItem.tags?.map((tag, index) => (
-                                  <button
-                                    key={index}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onTagClick(tag);
-                                    }}
-                                    className="text-[15px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
-                                  >
-                                    {tag}
-                                  </button>
-                                ))}
-                              </div>
                             </div>
                           </>
                         )}
@@ -481,20 +439,6 @@ const MediaItem = ({
                           <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
                             <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
                               {mainItem.title}
-                            </div>
-                            <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
-                              {mainItem.tags?.map((tag, index) => (
-                                <button
-                                  key={index}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onTagClick(tag);
-                                  }}
-                                  className="text-[15px] sm:text-xs md:text-sm text-gray-300 hover:text-white transition-colors cursor-pointer appearance-none bg-transparent border-0 p-0 font-normal truncate max-w-[60px] sm:max-w-[80px] md:max-w-none"
-                                >
-                                  {tag}
-                                </button>
-                              ))}
                             </div>
                           </div>
                         </div>
@@ -725,7 +669,10 @@ export default function PhotoGridContainer({
   const [expandedPermlink, setExpandedPermlink] = useState<string | null>(null);
   const [hasLargeContent, setHasLargeContent] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [showMobileTags, setShowMobileTags] = useState(false);
   const groupedMedia = groupMediaByPermlink(media);
+
+  const allTags = Array.from(new Set(media.flatMap(item => item.tags || [])));
 
   const mediaGroups = Array.from(groupedMedia.entries())
     .filter(([_, group]) => {
@@ -745,13 +692,79 @@ export default function PhotoGridContainer({
 
   return (
     <div className="w-full">
+      {allTags.length > 0 && (
+        <div className="sm:hidden mb-4 relative z-40">
+          <button
+            className="flex items-center gap-2 px-3 py-2 rounded Todas as tags shadow bg-transparent border-0 focus:ring-2 focus:ring-red-200"
+            onClick={() => setShowMobileTags(true)}
+            aria-label="Abrir menu de tags"
+          >
+            <IconMenu width={26} />
+            <span className="font-bold">
+              {selectedTag ? selectedTag : 'Filtrar tags'}
+            </span>
+          </button>
+          {showMobileTags && (
+            <>
+              <div
+                className="fixed inset-0 z-40 transition-opacity animate-fade-in"
+                style={{
+                  background: 'rgba(0,0,0,0.15)',
+                  left: '16rem',
+                  backdropFilter: 'blur(2px)'
+                }}
+                onClick={() => setShowMobileTags(false)}
+                aria-label="Fechar menu de tags"
+              />
+              <aside
+                id="mobile-tags-drawer"
+                className="fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 shadow-2xl z-50 flex flex-col animate-slide-in-left"
+                style={{ maxWidth: '80vw' }}
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
+                  <span className="font-bold text-lg text-gray-800">{selectedTag ? selectedTag : ''}</span>
+                  <button
+                    onClick={() => setShowMobileTags(false)}
+                    className="text-gray-500 hover:text-black p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                    aria-label="Fechar menu"
+                  >
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto py-2 bg-white">
+                  <div className="flex flex-col gap-4 px-1">
+                    {allTags.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => { setSelectedTag(tag); setShowMobileTags(false); }}
+                        className={clsx(
+                          'w-full text-left px-5 py-3 text-base text-gray-800 bg-white hover:bg-gray-100 hover:text-black transition',
+                          selectedTag === tag && 'bg-gray-200 font-bold text-black border-l-4 border-gray-500'
+                        )}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => { setSelectedTag(null); setShowMobileTags(false); }}
+                  className="w-full px-5 py-3 text-left text-gray-500 hover:bg-gray-100 border-t border-gray-200 font-semibold bg-white"
+                >
+                  Limpar filtro
+                </button>
+              </aside>
+            </>
+          )}
+        </div>
+      )}
       <div className={clsx(
         'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
         {selectedTag && (
-          <div className="mb-3 sm:mb-4 flex items-center gap-2">
+          <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:flex hidden">
             <span className="text-2xl sm:text-2xl text-gray-400">Filtrando por:</span>
             <button
               onClick={() => handleTagClick(selectedTag)}
