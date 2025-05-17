@@ -269,7 +269,7 @@ const MediaItem = ({
     } else {
       onContentSizeChange(false);
     }
-  }, [isExpanded, mainItem.hiveMetadata?.body, mainItem.src, onContentSizeChange]);
+  }, [isExpanded, mainItem.hiveMetadata?.body, mainItem.src]);
 
   const formatPostContent = (content: string): string => {
     if (!content) return '';
@@ -355,15 +355,19 @@ const MediaItem = ({
 
   return (
     <div className={clsx(
-      'rounded-lg overflow-hidden transition-all duration-300 h-full',
+      'rounded-lg overflow-hidden h-full',
+      isExpanded && 'transition-all duration-300',
       isExpanded
         ? 'w-full border-4 border-solid border-black bg-black text-white'
         : 'cursor-pointer hover:opacity-90 border-2 border-solid border-black'
     )}
-      onClick={() => !isExpanded && onExpand()}
+      onClick={e => {
+        if (!isExpanded) onExpand();
+      }}
     >
       <div className={clsx(
-        'w-full h-full transition-all duration-300',
+        'w-full h-full',
+        isExpanded && 'transition-all duration-300',
         isExpanded
           ? hasLargeContent
             ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]'
@@ -378,7 +382,6 @@ const MediaItem = ({
                   {updatedThumbnail ? (
                     <>
                       <div className="flex flex-row h-full w-full">
-                        {/*tela pequena texto e tags a esquerda */}
                         {!isReversedLayout && (
                           <>
                             <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
@@ -466,7 +469,7 @@ const MediaItem = ({
             <div className="flex items-center px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-10 bg-black border-b border-gray-700">
               <h2 className="text-sm sm:text-base font-medium truncate flex-1 text-white">{mainItem.title}</h2>
               <button
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   onExpand();
                 }}
@@ -666,8 +669,8 @@ export default function PhotoGridContainer({
   header,
   ...props
 }: PhotoGridContainerProps) {
-  const [expandedPermlink, setExpandedPermlink] = useState<string | null>(null);
-  const [hasLargeContent, setHasLargeContent] = useState(false);
+  const [expandedPermlinks, setExpandedPermlinks] = useState<string[]>([]);
+  const [hasLargeContentMap, setHasLargeContentMap] = useState<Record<string, boolean>>({});
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [showMobileTags, setShowMobileTags] = useState(false);
   const groupedMedia = groupMediaByPermlink(media);
@@ -687,7 +690,11 @@ export default function PhotoGridContainer({
 
   const handleTagClick = (tag: string) => {
     setSelectedTag(selectedTag === tag ? null : tag);
-    setExpandedPermlink(null);
+    setExpandedPermlinks([]);
+  };
+
+  const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
+    setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
 
   return (
@@ -791,43 +798,40 @@ export default function PhotoGridContainer({
         {header}
         {selectedTag && (
           <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:flex hidden">
-            {/* Removido o aviso 'Filtrando por' e o botão de limpar tag no desktop */}
           </div>
         )}
         <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
-            const isExpanded = expandedPermlink === permlink;
+            const isExpanded = expandedPermlinks.includes(permlink);
             const isOdd = idx % 2 === 1;
             return (
               <div
                 key={permlink}
                 className={clsx(
-                  'relative overflow-hidden rounded-lg transition-all duration-300 w-full',
+                  'relative overflow-hidden rounded-lg w-full',
+                  isExpanded && 'transition-all duration-300',
                   isExpanded
-                    ? hasLargeContent
+                    ? hasLargeContentMap[permlink]
                       ? 'col-span-full sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
                       : 'col-span-full sm:col-span-2 md:col-span-2 lg:col-span-3 row-span-2 h-auto'
                     : 'col-span-1'
                 )}
               >
-
                 <MediaItem
                   items={group}
                   isExpanded={isExpanded}
                   onExpand={() => {
-                    if (expandedPermlink === permlink) {
-                      setExpandedPermlink(null);
-                      setHasLargeContent(false);
-                    } else {
-                      setExpandedPermlink(permlink);
-                    }
+                    setExpandedPermlinks(prev =>
+                      prev.includes(permlink)
+                        ? prev.filter(p => p !== permlink)
+                        : [...prev, permlink]
+                    );
                   }}
-                  onContentSizeChange={setHasLargeContent}
+                  onContentSizeChange={isLarge => handleContentSizeChange(permlink, isLarge)}
                   onTagClick={handleTagClick}
-                  hasLargeContent={hasLargeContent}
+                  hasLargeContent={!!hasLargeContentMap[permlink]}
                   isReversedLayout={isOdd}
                 />
-
               </div>
             );
           })}
