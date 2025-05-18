@@ -160,20 +160,7 @@ const MediaItem = ({
   const [isHovered, setIsHovered] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [imageError, setImageError] = useState(false);
-  const [showTagsMenu, setShowTagsMenu] = useState(false);
-  const tagsMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!showTagsMenu) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (tagsMenuRef.current && !tagsMenuRef.current.contains(event.target as Node)) {
-        setShowTagsMenu(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showTagsMenu]);
-
+  const [showAllTags, setShowAllTags] = useState(false);
   // Function to get thumbnail URL from metadata or first image in content
   function getThumbnailUrl(item: Media): string | null {
     try {
@@ -443,6 +430,47 @@ const MediaItem = ({
                             <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
                               {mainItem.title}
                             </div>
+                            {mainItem.tags && mainItem.tags.length > 0 && (
+                              <div className={clsx(
+                                "flex flex-wrap gap-1 mt-1",
+                                showAllTags ? "max-h-none pb-2" : "min-h-[24px] max-h-[24px] overflow-hidden"
+                              )}>
+                                {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
+                                  <span 
+                                    key={tag} 
+                                    className="text-xs text-gray-300 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTagClick(tag);
+                                    }}
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                                {!showAllTags && mainItem.tags.length > 3 && (
+                                  <span 
+                                    className="text-xs text-gray-300 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setShowAllTags(true);
+                                    }}
+                                  >
+                                    +{mainItem.tags.length - 3}
+                                  </span>
+                                )}
+                                {showAllTags && (
+                                  <span 
+                                    className="text-xs text-gray-300 bg-gray-800 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setShowAllTags(false);
+                                    }}
+                                  >
+                                    Menos
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -765,39 +793,23 @@ export default function PhotoGridContainer({
           )}
         </div>
       )}
-      {allTags.length > 0 && (
-        <nav className="hidden sm:flex flex-wrap gap-4 mb-6 items-center justify-center">
-          {allTags.map(tag => (
-            <button
-              key={tag}
-              onClick={() => setSelectedTag(tag)}
-              className={clsx(
-                'bg-transparent border-0 px-0 py-0 text-base font-medium  hover:text-black transition-all duration-150',
-                selectedTag === tag && 'text-black underline underline-offset-4 decoration-2 decoration-gray-800'
-              )}
-              style={{ boxShadow: 'none' }}
-            >
-              {tag}
-            </button>
-          ))}
-          {selectedTag && (
-            <button
-              onClick={() => setSelectedTag(null)}
-              className="ml-4 text-sm  hover:text-black underline underline-offset-4 bg-transparent border-0 px-0 py-0 font-normal transition-all duration-150"
-              style={{ boxShadow: 'none' }}
-            >
-              Limpar filtro
-            </button>
-          )}
-        </nav>
-      )}
       <div className={clsx(
         'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
         {selectedTag && (
-          <div className="mb-3 sm:mb-4 flex items-center gap-2 sm:flex hidden">
+          <div className="mb-4 hidden sm:flex items-center justify-center">
+            <div className="flex items-center gap-2 px-3 py-2">
+              <span className="text-sm font-medium">Filtrado por: <span className="font-bold">{selectedTag}</span></span>
+              <button
+                onClick={() => setSelectedTag(null)}
+                className="text-sm text-gray-500 hover:text-black px-2 py-0.5 transition-colors"
+                aria-label="Limpar filtro"
+              >
+                Limpar
+              </button>
+            </div>
           </div>
         )}
         <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 grid-flow-dense">
