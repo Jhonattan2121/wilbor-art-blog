@@ -91,7 +91,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" href="/favicons/icon.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon.png" />
       </head>
-      <body>
+      <body className="bg-main">
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>

@@ -744,37 +744,37 @@ export default function PhotoGridContainer({
               <div
                 className="fixed inset-0 z-40 transition-opacity animate-fade-in"
                 style={{
-                  background: 'rgba(0,0,0,0.15)',
+                
                   left: '16rem',
                   backdropFilter: 'blur(2px)'
                 }}
                 onClick={() => setShowMobileTags(false)}
                 aria-label="Fechar menu de tags"
               />
-              <aside
+                <aside
                 id="mobile-tags-drawer"
-                className="fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 shadow-2xl z-50 flex flex-col animate-slide-in-left"
+                className="fixed top-0 left-0 h-full w-64     shadow-2xl z-50 flex flex-col animate-slide-in-left"
                 style={{ maxWidth: '80vw' }}
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
-                  <span className="font-bold text-lg text-gray-800">{selectedTag ? selectedTag : ''}</span>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+                  <span className="font-bold text-lg text-gray-800 dark:text-white">{selectedTag ? selectedTag : ''}</span>
                   <button
                     onClick={() => setShowMobileTags(false)}
-                    className="text-gray-500 hover:text-black p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                    className=" hover:text-black dark:hover:text-white p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                     aria-label="Fechar menu"
                   >
                     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto py-2 bg-white">
+                <div className="flex-1 overflow-y-auto py-2 bg-white dark:bg-black">
                   <div className="flex flex-col gap-4 px-1">
                     {allTags.map(tag => (
                       <button
                         key={tag}
                         onClick={() => { setSelectedTag(tag); setShowMobileTags(false); }}
                         className={clsx(
-                          'w-full text-left px-5 py-3 text-base text-gray-800 bg-white hover:bg-gray-100 hover:text-black transition',
-                          selectedTag === tag && 'bg-gray-200 font-bold text-black border-l-4 border-gray-500'
+                          'w-full text-left px-5 py-3 text-base  dark:text-gray-200 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-black dark:hover:text-white transition',
+                          selectedTag === tag && 'bg-gray-200 dark:bg-gray-800 font-bold text-black dark:text-white border-l-4 border-gray-500 dark:border-gray-400'
                         )}
                       >
                         {tag}
@@ -784,7 +784,7 @@ export default function PhotoGridContainer({
                 </div>
                 <button
                   onClick={() => { setSelectedTag(null); setShowMobileTags(false); }}
-                  className="w-full px-5 py-3 text-left text-gray-500 hover:bg-gray-100 border-t border-gray-200 font-semibold bg-white"
+                  className="w-full px-5 py-3 text-left  font-semibold bg-white dark:bg-black"
                 >
                   Limpar filtro
                 </button>
