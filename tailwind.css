@@ -138,8 +138,7 @@
 }
 /* Background */
 @utility bg-main {
-  @apply
-    bg-gray-50 dark:bg-black
+  @apply bg-[color:var(--background-light)] dark:bg-[color:var(--background-dark)];
 }
 @utility bg-medium {
   @apply
