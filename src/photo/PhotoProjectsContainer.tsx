@@ -835,8 +835,8 @@ export default function PhotoGridContainer({
                   onExpand={() => {
                     setExpandedPermlinks(prev =>
                       prev.includes(permlink)
-                        ? prev.filter(p => p !== permlink)
-                        : [...prev, permlink]
+                        ? [] 
+                        : [permlink]
                     );
                   }}
                   onContentSizeChange={isLarge => handleContentSizeChange(permlink, isLarge)}
