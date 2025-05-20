@@ -520,7 +520,7 @@ const MediaItem = ({
                       controls
                       autoPlay={false}
                       playsInline
-                      muted={false}
+                      muted={true}
                       onLoadedMetadata={(e) => {
                         const video = e.target as HTMLVideoElement;
                         video.volume = 0.2;
