@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import JsonLd from '../../../app/components/JsonLd';
-import { SITE_TITLE } from '../config';
 
 const images = [
   './wilborPhotos/1.jpg',
@@ -39,17 +38,15 @@ export default function About() {
         }}
       />
       
-      <h1 className="text-4xl font-bold mb-8 text-center">{SITE_TITLE}</h1>
-
-      <div className="mb-8">
-        <div className="relative w-full h-[400px] max-w-xl mx-auto">
+      <div className="mb-4">
+        <div className="relative w-full h-[300px] ">
           <Image
             src={images[currentImageIndex]}
             alt={`Imagem ${currentImageIndex + 1}`}
             fill={true}
             className="rounded-lg shadow-lg object-contain"
             priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 768px) , (max-width: 1200px) 50vw, 33vw"
             style={{ objectFit: 'contain' }}
           />
 

@@ -736,7 +736,7 @@ export default function PhotoGridContainer({
           >
             <IconMenu width={26} />
             <span className="font-bold">
-              {selectedTag ? selectedTag : 'Filtrar tags'}
+              {selectedTag ? selectedTag : 'Tags'}
             </span>
           </button>
           {showMobileTags && (

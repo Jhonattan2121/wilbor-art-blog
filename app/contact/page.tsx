@@ -29,8 +29,6 @@ export default function ContactPage() {
                     </a>
                 </div>
 
-                <p className="mt-6  text-lg">Ficarei feliz em atender você!</p>
-
                 <div className="mt-4">
                     <Link href="/" className="  text-lg font-medium transition-all">
                         ← Voltar para a página inicial
