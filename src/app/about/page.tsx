@@ -29,15 +29,6 @@ export default function About() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <JsonLd type="person" />
-      <JsonLd 
-        type="breadcrumb" 
-        data={{
-          path: '/about',
-          currentPage: 'Sobre'
-        }}
-      />
-      
       <div className="mb-4">
         <div className="relative w-full h-[300px] ">
           <Image
