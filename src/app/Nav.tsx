@@ -43,14 +43,12 @@ export default function Nav({
   const switcherSelectionForPath = (): SwitcherSelection | undefined => {
     if (pathname === PATH_ROOT) {
       return GRID_HOMEPAGE_ENABLED ? 'projects' : 'about';
-    } else if (isPathGrid(pathname)) {
-      return 'projects';
     } else if (isPathFeed(pathname)) {
       return 'about';
+    } else if (isPathGrid(pathname)) {
+      return 'projects';
     } else if (pathname === '/exhibitions') {
       return 'exhibitions';
-    } else if (pathname === '/social-media') {
-      return 'social-media';
     } else if (pathname === '/partners') {
       return 'partners'
     } else if (pathname === '/contact') {
