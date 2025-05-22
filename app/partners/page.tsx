@@ -171,25 +171,25 @@ export default function PartnersPage() {
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-12">
+    <div className="w-full px-6 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left" style={{marginLeft: '2rem'}}>
       <div className="text-left mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-left">Parceiros e Colaboradores</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 text-left">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-left w-full" style={{maxWidth: 'none'}}>
+          Parceiros e Colaboradores
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400 text-left w-full" style={{maxWidth: 'none'}}>
           Tenho a honra de trabalhar com algumas das marcas, artistas e atletas mais criativos e inspiradores.
           Conheça algumas das colaborações que fizeram parte da minha trajetória.
         </p>
       </div>
-
-      <div className="space-y-12">
+      <div className="space-y-12 w-full text-left">
         {partnerCategories.map((category) => (
           <div key={category.title} className="mb-10">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 pb-2 border-b border-gray-200 dark:border-gray-800">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6 pb-2 border-b border-gray-200 dark:border-gray-800 text-left">
               {category.title}
             </h2>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 text-left">
               {category.partners.map((partner) => (
-                <div key={partner} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-300">
+                <div key={partner} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-300 text-left">
                   {partner}
                 </div>
               ))}
@@ -197,9 +197,8 @@ export default function PartnersPage() {
           </div>
         ))}
       </div>
-
-      <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800 text-center">
-        <p className="text-gray-500 dark:text-gray-400">
+      <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800 text-left w-full">
+        <p >
           Esta lista representa apenas uma parte dos parceiros e colaboradores ao longo da minha carreira.
         </p>
       </div>
