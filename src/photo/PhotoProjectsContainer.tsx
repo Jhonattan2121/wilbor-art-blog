@@ -678,12 +678,12 @@ export default function PhotoGridContainer({
       )}>
         {header}
         {selectedTag && (
-          <div className="mb-4 hidden sm:flex items-center justify-center">
-            <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-900 rounded shadow">
+          <div className="mb-4 hidden sm:flex items-center justify-start">
+            <div className="flex items-center gap-2 px-3 py-2   rounded shadow-none">
               <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Filtrado por: <span className="font-bold">{selectedTag}</span></span>
               <button
                 onClick={() => setSelectedTag(null)}
-                className="text-sm text-gray-500 hover:text-black dark:hover:text-white px-2 py-0.5 transition-colors rounded focus:outline-none focus:ring-2 focus:ring-red-200"
+                className="text-sm  hover:text-black dark:hover:text-white px-2 py-0.5 transition-colors rounded focus:outline-none focus:ring-2 focus:ring-red-200"
                 aria-label="Limpar filtro"
                 title="Limpar filtro"
               >
