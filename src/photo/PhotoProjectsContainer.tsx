@@ -286,8 +286,17 @@ const MediaItem = ({
           />
         </div>
         {media.title && (
-          <div className="bg-black flex flex-col justify-center px-4 py-3">
-            <p className="text-white text-base font-medium">{media.title}</p>
+          <div className="bg-black flex flex-col justify-center px-4 py-8 w-full rounded-b-lg">
+            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center">
+              {media.title}
+            </div>
+            {media.tags && media.tags.length > 0 && (
+              <div className="mt-1 flex flex-wrap justify-center gap-x-2 gap-y-0.5">
+                {media.tags.map(tag => (
+                  <span key={tag} className="text-xs text-gray-400 font-mono">{tag}</span>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -316,54 +325,44 @@ const MediaItem = ({
       )}>
         {!isExpanded && (
           <>
-            <div className="flex flex-row h-full">
+            <div className="sm:hidden w-full">
+              {mainItem.hiveMetadata?.body && updatedThumbnail ? (
+                <div className="flex flex-col h-full w-full">
+                  <div className="relative w-full aspect-[4/3]">
+                    <Image
+                      src={updatedThumbnail}
+                      alt={mainItem.title || ''}
+                      fill
+                      className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0 rounded-t-lg"
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, 33vw"
+                      style={{ objectFit: 'cover', objectPosition: 'center' }}
+                    />
+                  </div>
+                  <div className="bg-black flex flex-col justify-center items-center px-4 py-6 w-full rounded-b-lg">
+                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center">
+                      {mainItem.title}
+                    </div>
+                    {mainItem.tags && mainItem.tags.length > 0 && (
+                      <div className="mt-1 flex flex-wrap justify-center gap-x-2 gap-y-0.5">
+                        {mainItem.tags.map(tag => (
+                          <span key={tag} className="text-base text-gray-400 font-mono">{tag}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 relative group h-full">
+                  {renderMedia(mainItem)}
+                </div>
+              )}
+            </div>
+            <div className="hidden sm:flex flex-row h-full w-full">
               {mainItem.hiveMetadata?.body && (
                 <>
                   {updatedThumbnail ? (
                     <>
                       <div className="flex flex-row h-full w-full">
-                        {!isReversedLayout && (
-                          <>
-                            <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
-                              <div className="text-white text-base sm:text-sm md:text-base font-medium line-clamp-2">
-                                {mainItem.title}
-                              </div>
-                            </div>
-                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '200px' }}>
-                              <Image
-                                src={updatedThumbnail}
-                                alt={mainItem.title || ''}
-                                fill
-                                className="object-fill transition-all duration-300 filter grayscale group-hover:grayscale-0"
-                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, 33vw"
-                                quality={85}
-                                unoptimized={true}
-                                style={{ objectFit: 'fill', objectPosition: 'center' }}
-                              />
-                            </div>
-                          </>
-                        )}
-                        {isReversedLayout && (
-                          <>
-                            <div className="flex-1 relative group h-full sm:hidden" style={{ height: '200px' }}>
-                              <Image
-                                src={updatedThumbnail}
-                                alt={mainItem.title || ''}
-                                fill
-                                className="object-fill transition-all duration-300 filter grayscale group-hover:grayscale-0"
-                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, 33vw"
-                                quality={85}
-                                unoptimized={true}
-                                style={{ objectFit: 'fill', objectPosition: 'center' }}
-                              />
-                            </div>
-                            <div className="bg-black flex flex-col justify-center px-2 py-1.5 w-1/2 sm:px-3 sm:py-2 md:px-4 md:py-3 sm:hidden">
-                              <div className="text-white text-base sm:text-sm md:text-base font-medium line-clamp-2">
-                                {mainItem.title}
-                              </div>
-                            </div>
-                          </>
-                        )}
                         <div className="hidden sm:flex sm:flex-col h-full w-full">
                           <div className="flex-1 relative group" style={{ minHeight: '200px' }}>
                             <Image
@@ -377,7 +376,7 @@ const MediaItem = ({
                             />
                           </div>
                           <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
-                            <div className="text-white text-xs sm:text-sm md:text-base font-medium line-clamp-1">
+                            <div className="text-gray-400 text-xs sm:text-sm md:text-base font-medium line-clamp-1">
                               {mainItem.title}
                             </div>
                             {mainItem.tags && mainItem.tags.length > 0 && (
@@ -388,7 +387,7 @@ const MediaItem = ({
                                 {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
                                   <span
                                     key={tag}
-                                    className="text-xs text-gray-300 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       onTagClick(tag);
@@ -399,7 +398,7 @@ const MediaItem = ({
                                 ))}
                                 {!showAllTags && mainItem.tags.length > 3 && (
                                   <span
-                                    className="text-xs text-gray-300 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setShowAllTags(true);
@@ -410,7 +409,7 @@ const MediaItem = ({
                                 )}
                                 {showAllTags && (
                                   <span
-                                    className="text-xs text-gray-300 bg-gray-800 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    className="text-xs text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setShowAllTags(false);
@@ -674,7 +673,7 @@ export default function PhotoGridContainer({
         </div>
       )}
       <div className={clsx(
-        'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
+        'max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
@@ -693,7 +692,7 @@ export default function PhotoGridContainer({
             </div>
           </div>
         )}
-        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
+        <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
             const isOdd = idx % 2 === 1;
