@@ -693,79 +693,45 @@ export default function PhotoGridContainer({
             </div>
           </div>
         )}
-        {expandedPermlinks.length > 0 ? (
-          <div className="w-full">
-            {mediaGroups.filter(({ permlink }) => expandedPermlinks.includes(permlink)).map(({ permlink, group }, idx) => {
-              const isExpanded = true;
-              const isOdd = idx % 2 === 1;
-              return (
-                <div
-                  key={permlink}
-                  className={clsx(
-                    'relative overflow-hidden rounded-lg w-full shadow-sm',
-                    'transition-all duration-300',
-                    hasLargeContentMap[permlink]
-                      ? 'col-span-full h-auto'
-                      : 'col-span-full h-auto'
-                  )}
-                  tabIndex={0}
-                  aria-label={`Projeto ${group[0]?.title || ''}`}
-                  title={group[0]?.title || ''}
-                >
-                  <MediaItem
-                    items={group}
-                    isExpanded={isExpanded}
-                    onExpand={() => setExpandedPermlinks([])}
-                    onContentSizeChange={isLarge => handleContentSizeChange(permlink, isLarge)}
-                    onTagClick={handleTagClick}
-                    hasLargeContent={!!hasLargeContentMap[permlink]}
-                    isReversedLayout={isOdd}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
-            {mediaGroups.map(({ permlink, group }, idx) => {
-              const isExpanded = expandedPermlinks.includes(permlink);
-              const isOdd = idx % 2 === 1;
-              return (
-                <div
-                  key={permlink}
-                  className={clsx(
-                    'relative overflow-hidden rounded-lg w-full shadow-sm',
-                    isExpanded && 'transition-all duration-300 ',
-                    isExpanded
-                      ? hasLargeContentMap[permlink]
-                        ? 'col-span-full sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                        : 'col-span-full sm:col-span-2 md:col-span-2 lg:col-span-3 row-span-2 h-auto'
-                      : 'col-span-1'
-                  )}
-                  tabIndex={0}
-                  aria-label={`Projeto ${group[0]?.title || ''}`}
-                  title={group[0]?.title || ''}
-                >
-                  <MediaItem
-                    items={group}
-                    isExpanded={isExpanded}
-                    onExpand={() => {
-                      setExpandedPermlinks(prev =>
-                        prev.includes(permlink)
-                          ? []
-                          : [permlink]
-                      );
-                    }}
-                    onContentSizeChange={isLarge => handleContentSizeChange(permlink, isLarge)}
-                    onTagClick={handleTagClick}
-                    hasLargeContent={!!hasLargeContentMap[permlink]}
-                    isReversedLayout={isOdd}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <div className="grid gap-y-4 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
+          {mediaGroups.map(({ permlink, group }, idx) => {
+            const isExpanded = expandedPermlinks.includes(permlink);
+            const isOdd = idx % 2 === 1;
+            return (
+              <div
+                key={permlink}
+                className={clsx(
+                  'relative overflow-hidden rounded-lg w-full shadow-sm',
+                  'transition-all duration-300',
+                  isExpanded
+                    ? (hasLargeContentMap[permlink]
+                      ? 'sm:col-span-3 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
+                      : 'sm:col-span-3 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
+                    : 'col-span-1'
+                )}
+                tabIndex={0}
+                aria-label={`Projeto ${group[0]?.title || ''}`}
+                title={group[0]?.title || ''}
+              >
+                <MediaItem
+                  items={group}
+                  isExpanded={isExpanded}
+                  onExpand={() => {
+                    setExpandedPermlinks(prev =>
+                      prev.includes(permlink)
+                        ? []
+                        : [permlink]
+                    );
+                  }}
+                  onContentSizeChange={isLarge => handleContentSizeChange(permlink, isLarge)}
+                  onTagClick={handleTagClick}
+                  hasLargeContent={!!hasLargeContentMap[permlink]}
+                  isReversedLayout={isOdd}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
       {sidebar && (
         <div className="hidden md:block">
