@@ -172,9 +172,9 @@ export default function PartnersPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200">Parceiros e Colaboradores</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+      <div className="text-left mb-12">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-left">Parceiros e Colaboradores</h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400 text-left">
           Tenho a honra de trabalhar com algumas das marcas, artistas e atletas mais criativos e inspiradores.
           Conheça algumas das colaborações que fizeram parte da minha trajetória.
         </p>

@@ -3,7 +3,6 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import JsonLd from '../../../app/components/JsonLd';
 
 const images = [
   './wilborPhotos/1.jpg',
@@ -29,48 +28,49 @@ export default function About() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="mb-4">
-        <div className="relative w-full h-[300px] ">
-          <Image
-            src={images[currentImageIndex]}
-            alt={`Imagem ${currentImageIndex + 1}`}
-            fill={true}
-            className="rounded-lg shadow-lg object-contain"
-            priority
-            sizes="(max-width: 768px) , (max-width: 1200px) 50vw, 33vw"
-            style={{ objectFit: 'contain' }}
-          />
-
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-            {currentImageIndex + 1} / {images.length}
-          </div>
-        </div>
-
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={previousImage}
-            className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
-          >
-            ← Previous
-          </button>
-
-          <button
-            onClick={nextImage}
-            className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
-          >
-            Next →
-          </button>
-        </div>
-      </div>
-
       <section className="max-w-3xl mx-auto">
-
         <div className="prose prose-lg max-w-none space-y-6">
-          <h1 className="text-4xl font-bold text-center mb-6">Wilson Domingues "Wilbor"</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-6 leading-tight text-left pl-2 md:pl-0 md:text-left">
+            Wilson Domingues "Wilbor"
+          </h1>
 
           <p className="text-lg mb-4">
-            Wilson Domingues, conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
+             Conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
           </p>
+
+          <div className="mb-8">
+            <div className="relative w-full h-[300px]">
+              <Image
+                src={images[currentImageIndex]}
+                alt={`Imagem ${currentImageIndex + 1}`}
+                fill={true}
+                className="rounded-lg shadow-lg object-contain"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                style={{ objectFit: 'contain' }}
+              />
+
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                {currentImageIndex + 1} / {images.length}
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                onClick={previousImage}
+                className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
+              >
+                ← Previous
+              </button>
+
+              <button
+                onClick={nextImage}
+                className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
 
           <h2 className="text-2xl font-semibold mt-6 mb-3">Legado na Praça XV</h2>
           <p className="mb-4">
@@ -106,7 +106,7 @@ export default function About() {
             Sua arte se estende ao design comercial, criando identidades visuais para marcas de skate em shapes, rodas e vestuário. Entre 2009 e 2013, expandiu sua atuação dirigindo conteúdo audiovisual para o Circo Voador, com veiculação na MTV, consolidando sua versatilidade criativa.
           </p>
 
-          <footer className="mt-8 text-center text-gray-600 text-sm">Fotos por Tio Verde, Alex Carvalho, Cauã Csik, Henrique Madeira, Bianca Moraes, Felipe Tavora.</footer>
+          <footer className="mt-8 text-center  text-sm">Fotos por Tio Verde, Alex Carvalho, Cauã Csik, Henrique Madeira, Bianca Moraes, Felipe Tavora.</footer>
         </div>
         <div className="flex justify-center mt-12 mb-8">
           <a

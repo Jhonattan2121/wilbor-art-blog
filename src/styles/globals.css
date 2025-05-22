@@ -1,6 +1,6 @@
 :root {
   --background-light: #f5f5f5;
-  --background-dark: #222222;
+  --background-dark: #000000;
   background-color: var(--background-light) !important;
 }
 :root[class~="dark"] {

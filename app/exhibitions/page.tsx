@@ -33,7 +33,7 @@ export default function ExhibitionsPage() {
         }}
       />
       
-      <h1 className="text-4xl font-bold mb-8 text-center">EXPOSIÇÕES, EXIBIÇÕES E PRÊMIOS</h1>
+      <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-center md:text-left break-words">EXPOSIÇÕES, EXIBIÇÕES E PRÊMIOS</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
         <div className="space-y-12">
@@ -246,4 +246,4 @@ export default function ExhibitionsPage() {
       </div>
     </div>
   );
-} 
+}

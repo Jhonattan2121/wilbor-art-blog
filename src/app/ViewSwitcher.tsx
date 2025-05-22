@@ -7,7 +7,7 @@ import {
 } from '@/app/paths';
 import SwitcherItem from './SwitcherItem';
 
-export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'social-media' | 'partners' | 'contact'; 
+export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
 
 export default function ViewSwitcher({
   currentSelection,
@@ -18,23 +18,18 @@ export default function ViewSwitcher({
 }) {
   const menuItems = [
     {
-      text: "exposições/exibições",
-      mobileText: "expo",
-      href: Path_Exhibitions,
-      active: currentSelection === 'exhibitions',
-    },
-    {
       text: "Sobre",
       mobileText: "sobre",
       href: PATH_FEED_INFERRED,
       active: currentSelection === 'about',
     },
     {
-      text: "Mídia Social",
-      mobileText: "mídia",
-      href: Path_Social_Media,
-      active: currentSelection === 'social-media',
+      text: "exposições/exibições",
+      mobileText: "expo",
+      href: Path_Exhibitions,
+      active: currentSelection === 'exhibitions',
     },
+  
     {
       text: "Parceiros",
       mobileText: "parceiros",
