@@ -443,7 +443,7 @@ const MediaItem = ({
         {isExpanded && (
           <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
             <div className="flex items-center px-6 py-4 sticky top-0 z-20 bg-black shadow-md">
-              <h2 className="flex-1 text-lg sm:text-xl font-normal text-white tracking-wide" style={{fontFamily: 'IBMPlexMono, monospace'}}>{mainItem.title}</h2>
+              <h2 className="flex-1 text-lg sm:text-xl font-normal text-white tracking-wide" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
                 className="ml-4 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-2 focus:outline-none focus:ring-2 focus:ring-red-200"
@@ -590,19 +590,29 @@ export default function PhotoGridContainer({
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
+  useEffect(() => {
+    if (showMobileTags) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showMobileTags]);
   return (
     <div className="w-full">
       {allTags.length > 0 && (
         <div className="sm:hidden z-40 w-full flex flex-row items-center justify-start mt-2 mb-4 bg-transparent">
           <button
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold text-gray-200 border border-gray-400  focus:ring-2 focus:ring-red-200 transition-colors shadow-sm w-auto outline-none"
-            style={{marginLeft: 0}}
+            className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold  border border-gray-400  focus:ring-2 focus:ring-red-200 transition-colors shadow-sm w-auto outline-none"
+            style={{ marginLeft: 0 }}
             onClick={() => setShowMobileTags(true)}
             aria-label="Abrir menu de tags"
             title="Abrir menu de tags"
           >
             <IconMenu width={22} />
-            <span className="font-bold text-gray-200">
+            <span className="font-bold">
               {selectedTag ? selectedTag : 'Tags'}
             </span>
           </button>
@@ -610,7 +620,7 @@ export default function PhotoGridContainer({
             <>
               <div
                 className="fixed inset-0 z-40 transition-opacity animate-fade-in bg-black/30 dark:bg-black/60"
-                style={{backdropFilter: 'blur(2px)'}}
+                style={{ backdropFilter: 'blur(2px)' }}
                 onClick={() => setShowMobileTags(false)}
                 aria-label="Fechar menu de tags"
                 title="Fechar menu de tags"
