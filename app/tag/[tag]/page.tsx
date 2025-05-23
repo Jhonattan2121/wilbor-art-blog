@@ -2,13 +2,13 @@ import { IS_PRODUCTION, STATICALLY_OPTIMIZED_PHOTO_CATEGORIES } from '@/app/conf
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { INFINITE_SCROLL_GRID_INITIAL } from '@/photo';
-import PhotoGridPage from '@/photo/PhotoGridPage';
 import { Photo } from '@/photo/components/types';
 import { getUniqueTags } from '@/photo/db/query';
 import { generateMetaForTag } from '@/tag';
 import { getPhotosTagDataCached } from '@/tag/data';
 import type { Metadata } from 'next';
 import { cache } from 'react';
+import PhotoGridPageClient from './PhotoGridPageClient';
 
 interface TagPageParams {
   tag: string;
@@ -203,8 +203,7 @@ export default async function TagPage({
 
   return (
     <div>
-
-      <PhotoGridPage
+      <PhotoGridPageClient
         photos={uniquePosts}
         photosCount={uniquePosts.length}
         tags={[{ tag: decodedTag, count: uniquePosts.length }]}

@@ -1,7 +1,10 @@
+"use client";
+
 import { Photo, PhotoDateRange } from '@/photo';
 import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
 import { Camera, createCameraKey } from '.';
 import CameraHeader from './CameraHeader';
+import { useState } from 'react';
 
 export default function CameraOverview({
   camera,
@@ -16,6 +19,8 @@ export default function CameraOverview({
   dateRange?: PhotoDateRange,
   animateOnFirstLoadOnly?: boolean,
 }) {
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
   return (
     <PhotoGridContainer {...{
       cacheKey: `camera-${createCameraKey(camera)}`,
@@ -31,6 +36,8 @@ export default function CameraOverview({
         count,
         dateRange,
       }} />,
+      selectedTag,
+      setSelectedTag,
     }} />
   );
 }
