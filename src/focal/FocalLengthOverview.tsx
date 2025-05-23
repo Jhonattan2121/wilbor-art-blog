@@ -1,6 +1,8 @@
+"use client";
 import { Photo, PhotoDateRange } from "@/photo";
 import PhotoGridContainer from "@/photo/PhotoProjectsContainer";
 import FocalLengthHeader from "./FocalLengthHeader";
+import { useState } from "react";
 
 export default function FocalLengthOverview({
   focal,
@@ -15,6 +17,8 @@ export default function FocalLengthOverview({
   dateRange?: PhotoDateRange,
   animateOnFirstLoadOnly?: boolean,
 }) {
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
   return (
     <PhotoGridContainer
       cacheKey={`focal-${focal}`}
@@ -42,6 +46,8 @@ export default function FocalLengthOverview({
         dateRange={dateRange} />}
       animateOnFirstLoadOnly={animateOnFirstLoadOnly}
       sidebar={undefined}
+      selectedTag={selectedTag}
+      setSelectedTag={setSelectedTag}
     />
   );
 }

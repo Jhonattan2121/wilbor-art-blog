@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function ExhibitionsPage() {
   return (
-    <div className="w-full px-6 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left" style={{marginLeft: '2rem'}}>
+    <div className="w-full px-4 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left">
       <JsonLd 
         type="breadcrumb" 
         data={{

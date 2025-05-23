@@ -1,7 +1,9 @@
+"use client";
 import { Photo, PhotoDateRange } from '@/photo';
 import PhotoGridContainer from '@/photo/PhotoProjectsContainer';
 import { FilmSimulation } from '.';
 import FilmSimulationHeader from './FilmSimulationHeader';
+import { useState } from 'react';
 
 export default function FilmSimulationOverview({
   simulation,
@@ -16,20 +18,25 @@ export default function FilmSimulationOverview({
   dateRange?: PhotoDateRange,
   animateOnFirstLoadOnly?: boolean,
 }) {
-  return (
-    <PhotoGridContainer media={[]} {...{
-      cacheKey: `simulation-${simulation}`,
-      photos,
-      count,
-      simulation,
-      header: <FilmSimulationHeader {...{
-        simulation,
-        photos,
-        count,
-        dateRange,
-      }} />,
-      animateOnFirstLoadOnly,
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-    }} />
+  return (
+    <PhotoGridContainer
+      media={[]}
+      cacheKey={`simulation-${simulation}`}
+     
+   
+      header={
+        <FilmSimulationHeader
+          simulation={simulation}
+          photos={photos}
+          count={count}
+          dateRange={dateRange}
+        />
+      }
+      animateOnFirstLoadOnly={animateOnFirstLoadOnly}
+      selectedTag={selectedTag}
+      setSelectedTag={setSelectedTag}
+    />
   );
 }

@@ -171,7 +171,7 @@ export default function PartnersPage() {
   ];
 
   return (
-    <div className="w-full px-6 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left" style={{marginLeft: '2rem'}}>
+    <div className="w-full px-4 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left">
       <div className="text-left mb-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-left w-full" style={{maxWidth: 'none'}}>
           Parceiros e Colaboradores

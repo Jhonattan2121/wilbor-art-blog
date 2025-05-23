@@ -26,7 +26,7 @@ export default function SwitcherItem({
   fullWidth,
 }: SwitcherItemProps) {
   const className = clsx(
-    'flex items-center justify-center',
+    'inline-flex items-center',
     icon ? 'w-10 h-10 rounded-full' : 'px-2.5 py-1.5 rounded-md whitespace-nowrap',
     'text-red-500 hover:text-red-300 transition-colors',
     'hover:bg-gray-100 dark:hover:bg-gray-800',
@@ -54,4 +54,4 @@ export default function SwitcherItem({
       {content}
     </button>
   );
-} 
+}
