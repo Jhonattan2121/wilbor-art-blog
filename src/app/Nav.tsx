@@ -1,6 +1,6 @@
 'use client';
 
-import ViewSwitcher, { SwitcherSelection } from '@/app/ViewSwitcher';
+import { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
   isPathAdmin,
@@ -19,9 +19,7 @@ import {
   SITE_DESCRIPTION,
 } from './config';
 
-const NAV_HEIGHT_CLASS = HAS_DEFINED_SITE_DESCRIPTION
-  ? 'min-h-[4rem] sm:min-h-[5rem]'
-  : 'min-h-[4rem]';
+const NAV_HEIGHT_CLASS = '';
 
 export default function Nav({
   siteDomainOrTitle,
@@ -40,24 +38,8 @@ export default function Nav({
       ? <Link href={linkOrAction}>{text}</Link>
       : <button onClick={linkOrAction}>{text}</button>;
 
-  const switcherSelectionForPath = (): SwitcherSelection | undefined => {
-    if (pathname === PATH_ROOT) {
-      return GRID_HOMEPAGE_ENABLED ? 'projects' : 'about';
-    } else if (isPathFeed(pathname)) {
-      return 'about';
-    } else if (isPathGrid(pathname)) {
-      return 'projects';
-    } else if (pathname === '/exhibitions') {
-      return 'exhibitions';
-    } else if (pathname === '/partners') {
-      return 'partners'
-    } else if (pathname === '/contact') {
-      return 'contact'
-    }
-  };
-
   return (
-    <div className="w-full px-4 md:px-6">
+    <div className="w-full">
       <div className="max-w-[2000px] mx-auto">
         <AnimateItems
           animateOnFirstLoadOnly
@@ -68,19 +50,12 @@ export default function Nav({
               key="nav"
               className={clsx(
                 'flex items-center justify-between w-full',
-                NAV_HEIGHT_CLASS,
-                'px-2 md:px-4'
+                NAV_HEIGHT_CLASS
               )}>
-              <div className="flex-1">
-                <ViewSwitcher
-                  currentSelection={switcherSelectionForPath()}
-                  showAdmin={isUserSignedIn}
-                />
-              </div>
               <div className={clsx(
                 'flex-none',
                 'hidden xs:block',
-                'translate-y-[-1px]',
+                'translate-y-[-1px]'
               )}>
                 <div className={clsx(
                   'truncate overflow-hidden',

@@ -1,6 +1,5 @@
 'use client';
 
-import IconMenu from '@/app/IconMenu';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
@@ -564,12 +563,15 @@ export default function PhotoGridContainer({
   sidebar,
   media = [],
   header,
+  selectedTag,
+  setSelectedTag,
   ...props
-}: PhotoGridContainerProps) {
+}: PhotoGridContainerProps & {
+  selectedTag: string | null;
+  setSelectedTag: (tag: string | null) => void;
+}) {
   const [expandedPermlinks, setExpandedPermlinks] = useState<string[]>([]);
   const [hasLargeContentMap, setHasLargeContentMap] = useState<Record<string, boolean>>({});
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [showMobileTags, setShowMobileTags] = useState(false);
   const groupedMedia = groupMediaByPermlink(media);
   const allTags = Array.from(new Set(media.flatMap(item => item.tags || [])));
   const mediaGroups = Array.from(groupedMedia.entries())
@@ -589,89 +591,8 @@ export default function PhotoGridContainer({
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
-  useEffect(() => {
-    if (showMobileTags) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [showMobileTags]);
   return (
     <div className="w-full">
-      {allTags.length > 0 && (
-        <div className="sm:hidden z-40 w-full flex flex-row items-center justify-start mt-2 mb-4 bg-transparent">
-          <button
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold  border border-gray-400  focus:ring-2 focus:ring-red-200 transition-colors shadow-sm w-auto outline-none"
-            style={{ marginLeft: 0 }}
-            onClick={() => setShowMobileTags(true)}
-            aria-label="Abrir menu de tags"
-            title="Abrir menu de tags"
-          >
-            <IconMenu width={22} />
-            <span className="font-bold">
-              {selectedTag ? selectedTag : 'Tags'}
-            </span>
-          </button>
-          {showMobileTags && (
-            <>
-              <div
-                className="fixed inset-0 z-40 transition-opacity animate-fade-in bg-black/30 dark:bg-black/60"
-                style={{ backdropFilter: 'blur(2px)' }}
-                onClick={() => setShowMobileTags(false)}
-                aria-label="Fechar menu de tags"
-                title="Fechar menu de tags"
-              />
-              <aside
-                id="mobile-tags-drawer"
-                className="fixed top-0 left-0 h-full w-64 shadow-2xl z-50 flex flex-col animate-slide-in-left bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800"
-                style={{ maxWidth: '80vw' }}
-                aria-label="Menu lateral de tags"
-              >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-                  <span className="font-bold text-lg text-gray-800 dark:text-white">{selectedTag ? selectedTag : 'Tags'}</span>
-                  <button
-                    onClick={() => setShowMobileTags(false)}
-                    className="hover:text-black dark:hover:text-white p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-                    aria-label="Fechar menu"
-                    title="Fechar menu"
-                  >
-                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto py-2 bg-white dark:bg-black">
-                  <div className="flex flex-col gap-2 px-1">
-                    {allTags.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => { setSelectedTag(tag); setShowMobileTags(false); }}
-                        className={clsx(
-                          'w-full text-left px-5 py-2 text-base rounded transition font-medium dark:text-gray-200 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-black dark:hover:text-white',
-                          selectedTag === tag && 'bg-gray-200 dark:bg-gray-800 font-bold text-black dark:text-white border-l-4 border-gray-500 dark:border-gray-400'
-                        )}
-                        aria-label={`Filtrar por tag ${tag}`}
-                        title={`Filtrar por tag ${tag}`}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <button
-                  onClick={() => { setSelectedTag(null); setShowMobileTags(false); }}
-                  className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-                  aria-label="Limpar filtro de tags"
-                  title="Limpar filtro de tags"
-                >
-                  Limpar filtro
-                </button>
-              </aside>
-            </>
-          )}
-        </div>
-      )}
       <div className={clsx(
         'max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'

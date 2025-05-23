@@ -1,14 +1,12 @@
-import { Cameras } from '@/camera';
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { Photo } from '@/photo/components/types';
-import PhotoGridPage from '@/photo/PhotoGridPage';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
-import { FilmSimulations } from '@/simulation';
 import { Tags } from '@/tag';
 import { createMetadata } from '@/utility/metadata';
 import { Discussion } from '@hiveio/dhive';
 import { Metadata } from 'next/types';
+import ProjectsClient from './ProjectsClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -236,11 +234,6 @@ export default async function GridPage(props: any) {
 
   const photosCount = formattedPosts.length;
 
-  if (photosCount === 0) {
-    console.log('No posts found');
-    return <PhotosEmptyState />;
-  }
-
   // Sidebar data com todas as tags
   const sidebarData = {
     tags: postTags,
@@ -249,16 +242,12 @@ export default async function GridPage(props: any) {
   };
 
   return (
-    <div className="flex flex-row">
-      <div className="flex-1">
-        <PhotoGridPage
-          photos={posts as Photo[]}
-          photosCount={photosCount}
-          tags={[]}
-          cameras={[] as Cameras}
-          simulations={[] as FilmSimulations}
-        />
-      </div>
-    </div>
+    <ProjectsClient
+      posts={posts}
+      tags={postTags}
+      photosCount={photosCount}
+      cameras={sidebarData.cameras}
+      simulations={sidebarData.simulations}
+    />
   );
 }
