@@ -4,7 +4,6 @@ import {
   PATH_FEED_INFERRED,
   Path_Partners
 } from '@/app/paths';
-import { useState } from 'react';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
 import SwitcherItem from './SwitcherItem';
 
@@ -56,7 +55,7 @@ export default function ViewSwitcher({
 
   return (
     <>
-      <div className="sm:hidden w-full mb-0">
+      <div className="sm:hidden w-full mb-4">
         <div className="flex items-center justify-center gap-4 px-2 py-1">
           {menuItems.map((item, index) => (
             <a
