@@ -1,6 +1,7 @@
 import About from '@/app/about/page';
 import { createMetadata } from '@/utility/metadata';
 import { Metadata } from 'next/types';
+import ViewSwitcher from '../../src/app/ViewSwitcher';
 
 export const dynamic = 'force-static';
 export const maxDuration = 60;
@@ -15,6 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
   return (
-    <About />
+    <>
+      <ViewSwitcher currentSelection="about" />
+      <About />
+    </>
   );
 }

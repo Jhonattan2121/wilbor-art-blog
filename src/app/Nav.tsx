@@ -1,6 +1,5 @@
 'use client';
 
-import { SwitcherSelection } from '@/app/ViewSwitcher';
 import {
   PATH_ROOT,
   isPathAdmin,
