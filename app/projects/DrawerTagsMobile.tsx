@@ -27,6 +27,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
         <div className="sm:hidden flex items-center">
             <button
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
+                style={{ outline: 'none', boxShadow: 'none' }}
                 onClick={() => setShowMobileTags(true)}
                 aria-label="Abrir menu de tags"
                 title="Abrir menu de tags"
@@ -52,6 +53,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                             <button
                                 onClick={() => setShowMobileTags(false)}
                                 className="hover:text-black dark:hover:text-white p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                                style={{ outline: 'none', boxShadow: 'none' }}
                                 aria-label="Fechar menu"
                                 title="Fechar menu"
                             >
@@ -70,6 +72,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                                                 ? 'bg-gray-50 text-red-600 font-bold border-l-4 border-red-300 dark:bg-gray-800 dark:text-red-400 dark:border-red-500'
                                                 : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 hover:bg-gray-200 hover:text-black dark:hover:bg-gray-800 dark:hover:text-white'
                                         )}
+                                        style={{ outline: 'none', boxShadow: 'none' }}
                                         aria-label={`Filtrar por tag ${tag}`}
                                         title={`Filtrar por tag ${tag}`}
                                     >
@@ -81,6 +84,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                         <button
                             onClick={() => { setSelectedTag(null); setShowMobileTags(false); }}
                             className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+                            style={{ outline: 'none', boxShadow: 'none' }}
                             aria-label="Limpar filtro de tags"
                             title="Limpar filtro de tags"
                         >
