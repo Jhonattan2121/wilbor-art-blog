@@ -55,7 +55,7 @@ export default function ViewSwitcher({
 
   return (
     <>
-      <div className="sm:hidden w-full mb-4">
+      <div className="sm:hidden w-full mb-0"> 
         <div className="flex items-center justify-center gap-4 px-2 py-1">
           {menuItems.map((item, index) => (
             <a

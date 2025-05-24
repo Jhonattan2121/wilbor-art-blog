@@ -95,8 +95,8 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-              <div className="w-full   px-3 py-3">
-                <div className="w-full max-w-[1280px] ml-2 sm:ml-8 flex justify-start">
+              <div className="w-full px-3 ">
+                <div className="w-full max-w-[1280px] flex justify-center sm:justify-start ml-0 sm:ml-8">
                   <Link href="/projects">
                     <Image
                       src={BannerWilbor}
@@ -109,7 +109,7 @@ export default function RootLayout({
               <main >
                 <div className="flex flex-col items-center">
                 </div>
-                <Nav siteDomainOrTitle="" />
+                {/* <Nav siteDomainOrTitle="" /> */}
                 <div >
                   <ShareModals />
                   {children}
