@@ -26,7 +26,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
     return (
         <div className="sm:hidden flex items-center">
             <button
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold border border-gray-400 focus:ring-2 focus:ring-red-200 transition-colors shadow-sm w-auto outline-none"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
                 onClick={() => setShowMobileTags(true)}
                 aria-label="Abrir menu de tags"
                 title="Abrir menu de tags"
@@ -49,7 +49,6 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                         aria-label="Menu lateral de tags"
                     >
                         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-                            <span className="font-bold text-lg text-gray-800 dark:text-white">{selectedTag ? selectedTag : 'Tags'}</span>
                             <button
                                 onClick={() => setShowMobileTags(false)}
                                 className="hover:text-black dark:hover:text-white p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
@@ -66,8 +65,10 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                                         key={tag}
                                         onClick={() => { setSelectedTag(tag); setShowMobileTags(false); }}
                                         className={clsx(
-                                            'w-full text-left px-5 py-2 text-base rounded transition font-medium dark:text-gray-200 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-black dark:hover:text-white',
-                                            selectedTag === tag && 'bg-gray-200 dark:bg-gray-800 font-bold text-black dark:text-white border-l-4 border-gray-500 dark:border-gray-400'
+                                            'w-full text-left px-5 py-2 text-base rounded transition font-medium',
+                                            selectedTag === tag
+                                                ? 'bg-gray-50 text-red-600 font-bold border-l-4 border-red-300 dark:bg-gray-800 dark:text-red-400 dark:border-red-500'
+                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 hover:bg-gray-200 hover:text-black dark:hover:bg-gray-800 dark:hover:text-white'
                                         )}
                                         aria-label={`Filtrar por tag ${tag}`}
                                         title={`Filtrar por tag ${tag}`}

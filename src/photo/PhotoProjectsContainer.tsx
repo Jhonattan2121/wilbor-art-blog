@@ -6,10 +6,11 @@ import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import Slider from "react-slick";
 import rehypeRaw from 'rehype-raw';
-import "slick-carousel/slick/slick-theme.css";
-import "slick-carousel/slick/slick.css";
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { Media, PhotoGridContainerProps } from './components/types';
 
 const formatPinataUrl = (url: string): string => {
@@ -133,6 +134,10 @@ const MediaItem = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [imageError, setImageError] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
+  const [fullscreenImg, setFullscreenImg] = useState<string | null>(null);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+  const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
   function getThumbnailUrl(item: Media): string | null {
     try {
       if (item.hiveMetadata) {
@@ -440,25 +445,26 @@ const MediaItem = ({
         )}
         {isExpanded && (
           <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
-            <div className="flex items-center px-6 py-4 sticky top-0 z-20 bg-black shadow-md">
-              <h2 className="flex-1 text-lg sm:text-xl font-normal text-white tracking-wide" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
+            <div className="flex items-center px-3 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-black shadow-md">
+              <h2 className="flex-1 text-lg sm:text-3xl font-bold text-white tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-4 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-2 focus:outline-none focus:ring-2 focus:ring-red-200"
+                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1.5 sm:p-3 focus:outline-none focus:ring-2 focus:ring-red-200"
                 aria-label="Fechar"
                 title="Fechar"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-2 sm:px-8 py-6 bg-black/90">
-              {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-3xl mx-auto mb-8">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-center">
+            {mainItem.src?.includes(SKATEHIVE_URL) && (
+                <div className="w-full max-w-3xl mx-auto mb-8 mt-4 sm:mt-0">
                   <div className="relative w-full aspect-[16/9] bg-black rounded-lg overflow-hidden shadow-lg">
                     <video
                       src={mainItem.src}
+                      poster={updatedThumbnail || thumbnailUrl || mainItem.thumbnailSrc || ''}
                       className="absolute top-0 left-0 w-full h-full object-contain bg-black rounded-lg"
                       controls
                       autoPlay={false}
@@ -469,37 +475,41 @@ const MediaItem = ({
                   </div>
                 </div>
               )}
-              {extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '').length > 0 && (
-                <div className="w-full max-w-3xl mx-auto mb-8">
-                  <Slider
-                    dots={true}
-                    infinite={true}
-                    speed={500}
-                    slidesToShow={1}
-                    slidesToScroll={1}
-                    className="carousel-container overflow-hidden"
-                    adaptiveHeight={false}
+              {images.length > 0 && (
+                <div className="w-full max-w-3xl mx-auto mb-4 sm:mb-10">
+                  <Swiper
+                    spaceBetween={8}
+                    slidesPerView={1}
+                    loop={true}
+                    pagination={false}
+                    navigation={false}
+                    style={{ width: '100%', height: '100%' }}
                   >
-                    {extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '').map(
-                      (imgSrc, index) => (
-                        <div key={index} className="px-0">
-                          <div className="relative w-full aspect-[16/9] bg-black rounded-lg overflow-hidden shadow-lg">
-                            <Image
-                              src={imgSrc}
-                              alt="Imagem do post"
-                              fill
-                              className="object-contain absolute top-0 left-0 rounded-lg"
-                              unoptimized={true}
-                              onError={e => { const target = e.target as HTMLImageElement; target.src = 'https://placehold.co/600x400?text=Image+Error'; }}
-                            />
-                          </div>
+                    {images.map((imgSrc, index) => (
+                      <SwiperSlide key={index}>
+                        <div className="relative w-full aspect-[5/6] sm:aspect-[5/4] bg-black rounded-lg overflow-hidden shadow-lg">
+                          <Image
+                            src={imgSrc}
+                            alt="Imagem do post"
+                            fill
+                            className="object-contain absolute top-0 left-0 rounded-lg cursor-pointer"
+                            unoptimized={true}
+                            onClick={() => {
+                              if (window.innerWidth < 640) {
+                                setFullscreenImg(imgSrc);
+                                setFullscreenIndex(index);
+                              }
+                            }}
+                            onError={e => { const target = e.target as HTMLImageElement; target.src = 'https://placehold.co/600x400?text=Image+Error'; }}
+                          />
                         </div>
-                      ))}
-                  </Slider>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
                 </div>
               )}
               {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-invert prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-6 shadow-lg">
+                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-2 sm:mt-6 text-center sm:text-left">
                   <ReactMarkdown
                     rehypePlugins={[rehypeRaw]}
                     components={{
@@ -507,31 +517,31 @@ const MediaItem = ({
                       video: () => null,
                       iframe: () => null,
                       p: ({ node, children, ...props }) => (
-                        <p className="mb-4 text-gray-200 leading-relaxed text-lg" {...props}>{children}</p>
+                        <p className="mb-3 sm:mb-5 text-gray-200 leading-relaxed text-base sm:text-lg" {...props}>{children}</p>
                       ),
                       h1: ({ node, children, ...props }) => (
-                        <h1 className="text-3xl font-bold mb-4 mt-8 text-white" {...props}>{children}</h1>
+                        <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-5 mt-4 sm:mt-8 text-white" {...props}>{children}</h1>
                       ),
                       h2: ({ node, children, ...props }) => (
-                        <h2 className="text-2xl font-bold mb-3 mt-6 text-white" {...props}>{children}</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 mt-3 sm:mt-6 text-white" {...props}>{children}</h2>
                       ),
                       h3: ({ node, children, ...props }) => (
-                        <h3 className="text-xl font-semibold mb-2 mt-4 text-white" {...props}>{children}</h3>
+                        <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 mt-2 sm:mt-4 text-white" {...props}>{children}</h3>
                       ),
                       a: ({ node, children, ...props }) => (
                         <a className="text-blue-400 underline hover:text-blue-200" {...props}>{children}</a>
                       ),
                       ul: ({ node, children, ...props }) => (
-                        <ul className="list-disc pl-6 mb-4 text-gray-200" {...props}>{children}</ul>
+                        <ul className="list-disc pl-4 sm:pl-6 mb-2 sm:mb-4 text-gray-200" {...props}>{children}</ul>
                       ),
                       ol: ({ node, children, ...props }) => (
-                        <ol className="list-decimal pl-6 mb-4 text-gray-200" {...props}>{children}</ol>
+                        <ol className="list-decimal pl-4 sm:pl-6 mb-2 sm:mb-4 text-gray-200" {...props}>{children}</ol>
                       ),
                       li: ({ node, children, ...props }) => (
-                        <li className="mb-1" {...props}>{children}</li>
+                        <li className="mb-0.5 sm:mb-1" {...props}>{children}</li>
                       ),
                       blockquote: ({ node, children, ...props }) => (
-                        <blockquote className="border-l-4 border-gray-500 pl-4 italic my-4 text-gray-300" {...props}>{children}</blockquote>
+                        <blockquote className="border-l-4 border-gray-500 pl-2 sm:pl-4 italic my-2 sm:my-4 text-gray-300" {...props}>{children}</blockquote>
                       ),
                     }}
                   >
@@ -540,6 +550,40 @@ const MediaItem = ({
                 </div>
               )}
             </div>
+          </div>
+        )}
+        {/* Fullscreen image overlay para mobile com dots e blur */}
+        {fullscreenImg && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
+            <button
+              className="absolute top-4 right-4 text-white bg-black bg-opacity-60 rounded-full p-2"
+              onClick={() => setFullscreenImg(null)}
+              aria-label="Fechar imagem em tela cheia"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <Swiper
+              modules={[Pagination]}
+              pagination={{ clickable: true }}
+              initialSlide={fullscreenIndex}
+              onSlideChange={swiper => setFullscreenIndex(swiper.activeIndex)}
+              style={{ width: '100vw', maxWidth: 600 }}
+            >
+              {images.map((imgSrc, idx) => (
+                <SwiperSlide key={idx}>
+                  <div className="flex items-center justify-center min-h-[60vh]">
+                    <img
+                      src={imgSrc}
+                      alt="Imagem em tela cheia"
+                      className="max-w-full max-h-[80vh] rounded-lg shadow-lg"
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         )}
       </div>
@@ -625,8 +669,8 @@ export default function PhotoGridContainer({
                   'transition-all duration-300',
                   isExpanded
                     ? (hasLargeContentMap[permlink]
-                      ? 'sm:col-span-3 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                      : 'sm:col-span-3 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
+                      ? 'sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-3 h-auto'
+                      : 'sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-2 h-auto')
                     : 'col-span-1'
                 )}
                 tabIndex={0}

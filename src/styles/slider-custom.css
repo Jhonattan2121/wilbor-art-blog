@@ -1,3 +1,19 @@
+.slick-slider .slick-dots,
+.slick-dots,
+ul.slick-dots,
+div.slick-dots,
+.carousel-container .slick-dots,
+.fullscreen-carousel .slick-dots {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  position: absolute !important;
+  z-index: -1 !important;
+}
+
 /* Base style for dots and arrows */
 .slick-dots li button:before,
 .slick-dots li.slick-active button:before,
