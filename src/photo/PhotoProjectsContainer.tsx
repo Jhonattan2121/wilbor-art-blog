@@ -462,15 +462,9 @@ const MediaItem = ({
             {mainItem.src?.includes(SKATEHIVE_URL) && (
                 <div className="w-full max-w-3xl mx-auto mb-8 mt-4 sm:mt-0">
                   <div className="relative w-full aspect-[16/9] bg-black rounded-lg overflow-hidden shadow-lg">
-                    <video
+                    <VideoWithFullPoster
                       src={mainItem.src}
                       poster={updatedThumbnail || thumbnailUrl || mainItem.thumbnailSrc || ''}
-                      className="absolute top-0 left-0 w-full h-full object-contain bg-black rounded-lg"
-                      controls
-                      autoPlay={false}
-                      playsInline
-                      muted={true}
-                      onLoadedMetadata={e => { const video = e.target as HTMLVideoElement; video.volume = 0.2; }}
                     />
                   </div>
                 </div>
@@ -703,5 +697,26 @@ export default function PhotoGridContainer({
         </div>
       )}
     </div>
+  );
+}
+
+function VideoWithFullPoster({ src, poster }: { src: string; poster: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      poster={poster}
+      className={`absolute top-0 left-0 w-full h-full bg-black rounded-lg transition-all duration-200 ${isPlaying ? 'object-contain' : 'object-cover'}`}
+      controls
+      autoPlay={false}
+      playsInline
+      muted={true}
+      onPlay={() => setIsPlaying(true)}
+      onPause={() => setIsPlaying(false)}
+      onLoadedMetadata={e => { const video = e.target as HTMLVideoElement; video.volume = 0.2; }}
+    />
   );
 }
