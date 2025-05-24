@@ -290,14 +290,14 @@ const MediaItem = ({
           />
         </div>
         {media.title && (
-          <div className="bg-black flex flex-col justify-center px-4 py-8 w-full rounded-b-lg">
-            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center">
+          <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg">
+            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left">
               {media.title}
             </div>
             {media.tags && media.tags.length > 0 && (
-              <div className="mt-1 flex flex-wrap justify-center gap-x-2 gap-y-0.5">
+              <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                 {media.tags.map(tag => (
-                  <span key={tag} className="text-xs text-gray-400 font-mono">{tag}</span>
+                  <span key={tag} className="text-base text-gray-400 font-mono">{tag}</span>
                 ))}
               </div>
             )}
@@ -342,12 +342,12 @@ const MediaItem = ({
                       style={{ objectFit: 'cover', objectPosition: 'center' }}
                     />
                   </div>
-                  <div className="bg-black flex flex-col justify-center items-center px-4 py-6 w-full rounded-b-lg">
-                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center">
+                  <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg">
+                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
-                      <div className="mt-1 flex flex-wrap justify-center gap-x-2 gap-y-0.5">
+                      <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                         {mainItem.tags.map(tag => (
                           <span key={tag} className="text-base text-gray-400 font-mono">{tag}</span>
                         ))}
@@ -458,10 +458,11 @@ const MediaItem = ({
                 </svg>
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-center">
-            {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-3xl mx-auto mb-8 mt-4 sm:mt-0">
-                  <div className="relative w-full aspect-[16/9] bg-black rounded-lg overflow-hidden shadow-lg">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
+              {/* Exibe vídeo e carrossel juntos, mas com pouco espaço entre eles */}
+              {mainItem.src?.includes(SKATEHIVE_URL) && (
+                <div className="w-full max-w-3xl mx-auto p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
+                  <div className="relative w-full aspect-[16/9] p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
                     <VideoWithFullPoster
                       src={mainItem.src}
                       poster={updatedThumbnail || thumbnailUrl || mainItem.thumbnailSrc || ''}
@@ -470,23 +471,23 @@ const MediaItem = ({
                 </div>
               )}
               {images.length > 0 && (
-                <div className="w-full max-w-3xl mx-auto mb-4 sm:mb-10">
+                <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
                   <Swiper
-                    spaceBetween={8}
+                    spaceBetween={0}
                     slidesPerView={1}
                     loop={true}
                     pagination={false}
                     navigation={false}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: '100%', height: '100%', marginTop: 0, background: 'none' }}
                   >
                     {images.map((imgSrc, index) => (
-                      <SwiperSlide key={index}>
-                        <div className="relative w-full aspect-[5/6] sm:aspect-[5/4] bg-black rounded-lg overflow-hidden shadow-lg">
+                      <SwiperSlide key={index} style={{margin: 0, padding: 0, background: 'none'}}>
+                        <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
                           <Image
                             src={imgSrc}
                             alt="Imagem do post"
                             fill
-                            className="object-contain absolute top-0 left-0 rounded-lg cursor-pointer"
+                            className="object-contain absolute top-0 left-0 cursor-pointer"
                             unoptimized={true}
                             onClick={() => {
                               if (window.innerWidth < 640) {
@@ -503,7 +504,7 @@ const MediaItem = ({
                 </div>
               )}
               {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-2 sm:mt-6 text-center sm:text-left">
+                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left">
                   <ReactMarkdown
                     rehypePlugins={[rehypeRaw]}
                     components={{
