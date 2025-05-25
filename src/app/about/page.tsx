@@ -49,10 +49,6 @@ export default function About() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 style={{ objectFit: 'contain' }}
               />
-
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                {currentImageIndex + 1} / {images.length}
-              </div>
             </div>
 
             <div className="flex justify-center gap-4 mt-6">
@@ -60,14 +56,14 @@ export default function About() {
                 onClick={previousImage}
                 className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
               >
-                ← Previous
+                ←
               </button>
 
               <button
                 onClick={nextImage}
                 className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
               >
-                Next →
+                →
               </button>
             </div>
           </div>
