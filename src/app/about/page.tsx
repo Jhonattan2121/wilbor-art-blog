@@ -2,7 +2,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 const images = [
   './wilborPhotos/1.jpg',
@@ -16,16 +19,6 @@ const images = [
 ];
 
 export default function About() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  const previousImage = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <section className="max-w-3xl mx-auto">
@@ -39,33 +32,29 @@ export default function About() {
           </p>
 
           <div className="mb-8">
-            <div className="relative w-full h-[300px]">
-              <Image
-                src={images[currentImageIndex]}
-                alt={`Imagem ${currentImageIndex + 1}`}
-                fill={true}
-                className="rounded-lg shadow-lg object-contain"
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                style={{ objectFit: 'contain' }}
-              />
-            </div>
-
-            <div className="flex justify-center gap-4 mt-6">
-              <button
-                onClick={previousImage}
-                className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
-              >
-                ←
-              </button>
-
-              <button
-                onClick={nextImage}
-                className="bg-black/70 hover:bg-black/90 text-white px-6 py-2 rounded-full flex items-center gap-2 transition-all"
-              >
-                →
-              </button>
-            </div>
+            <Swiper
+              spaceBetween={50}
+              slidesPerView={1}
+              className="rounded-lg shadow-lg"
+              pagination={{ clickable: true }}
+              modules={[Pagination]}
+            >
+              {images.map((image, index) => (
+                <SwiperSlide key={index}>
+                  <div className="relative w-full h-[300px]">
+                    <Image
+                      src={image}
+                      alt={`Imagem ${index + 1}`}
+                      fill={true}
+                      className="rounded-lg shadow-lg object-contain"
+                      priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      style={{ objectFit: 'contain' }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
 
           <h2 className="text-2xl font-semibold mt-6 mb-3">Legado na Praça XV</h2>
