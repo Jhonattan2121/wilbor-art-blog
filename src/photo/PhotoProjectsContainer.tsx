@@ -504,7 +504,7 @@ const MediaItem = ({
                 </div>
               )}
               {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left">
+                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left pl-4 sm:pl-12 sm:ml-[-3rem]">
                   <ReactMarkdown
                     rehypePlugins={[rehypeRaw]}
                     components={{
