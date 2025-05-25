@@ -45,14 +45,14 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                     />
                     <aside
                         id="mobile-tags-drawer"
-                        className="fixed top-0 left-0 h-full w-64 shadow-2xl z-50 flex flex-col animate-slide-in-left bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800"
+                        className="fixed top-0 left-0 h-full w-64 shadow-2xl z-50 flex flex-col animate-slide-in-left bg-white dark:bg-black"
                         style={{ maxWidth: '80vw' }}
                         aria-label="Menu lateral de tags"
                     >
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
+                        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black">
                             <button
                                 onClick={() => setShowMobileTags(false)}
-                                className="hover:text-black dark:hover:text-white p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                                className="hover:text-black dark:hover:text-white p-1 rounded-full dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                                 style={{ outline: 'none', boxShadow: 'none' }}
                                 aria-label="Fechar menu"
                                 title="Fechar menu"
@@ -67,12 +67,12 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                                         key={tag}
                                         onClick={() => { setSelectedTag(tag); setShowMobileTags(false); }}
                                         className={clsx(
-                                            'w-full text-left px-5 py-2 text-base rounded transition font-medium',
+                                            'w-full text-left px-5 py-2 text-base transition font-medium border-0',
                                             selectedTag === tag
-                                                ? 'bg-gray-50 text-red-600 font-bold border-l-4 border-red-300 dark:bg-gray-800 dark:text-red-400 dark:border-red-500'
-                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200 hover:bg-gray-200 hover:text-black dark:hover:bg-gray-800 dark:hover:text-white'
+                                                ? 'text-red-600 dark:text-red-400'
+                                                : 'text-gray-800 dark:text-gray-200 hover:text-black dark:hover:text-white'
                                         )}
-                                        style={{ outline: 'none', boxShadow: 'none' }}
+                                        style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
                                         aria-label={`Filtrar por tag ${tag}`}
                                         title={`Filtrar por tag ${tag}`}
                                     >
@@ -83,7 +83,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                         </div>
                         <button
                             onClick={() => { setSelectedTag(null); setShowMobileTags(false); }}
-                            className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+                            className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 transition"
                             style={{ outline: 'none', boxShadow: 'none' }}
                             aria-label="Limpar filtro de tags"
                             title="Limpar filtro de tags"
