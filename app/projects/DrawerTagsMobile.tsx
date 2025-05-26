@@ -78,12 +78,12 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                                 className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                                 aria-label="Fechar"
                                 title="Fechar"
-                                style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
+                                style={{ width: 32, height: 32, background: '#bbb', border: 'none', boxShadow: 'none' }}
                             >
-                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="14" cy="14" r="14" fill="#bbb" />
-                                    <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-                                    <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="8" cy="8" r="8" fill="#bbb" />
+                                    <line x1="5" y1="5" x2="11" y2="11" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
+                                    <line x1="11" y1="5" x2="5" y2="11" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
                                 </svg>
                             </button>
                         </div>
@@ -110,8 +110,8 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                         </div>
                         <button
                             onClick={() => handleTagSelection(null)}
-                            className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-                            style={{ outline: 'none', boxShadow: 'none' }}
+                            className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black transition border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
+                            style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
                             aria-label="Limpar filtro de tags"
                             title="Limpar filtro de tags"
                         >

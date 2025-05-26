@@ -192,12 +192,12 @@ export default function About() {
               onClick={() => setFullscreenImg(null)}
               aria-label="Fechar"
               title="Fechar"
-              style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
+              style={{ width: 44, height: 44, background: '#666', border: 'none', boxShadow: 'none' }}
             >
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="14" r="14" fill="#bbb" />
-                <line x1="9" y1="9" x2="19" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="19" y1="9" x2="9" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+                <circle cx="14" cy="14" r="14" fill="#666" />
+                <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </button>
 
