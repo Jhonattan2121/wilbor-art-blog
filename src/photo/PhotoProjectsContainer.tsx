@@ -775,6 +775,19 @@ export default function PhotoGridContainer({
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (expandedPermlinks.length === 1) {
+      const permlink = expandedPermlinks[0];
+      const ref = cardRefs.current[permlink];
+      if (ref) {
+        setTimeout(() => {
+          ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+  }, [expandedPermlinks]);
   return (
     <div className="w-full">
       <div className={clsx(
@@ -790,6 +803,7 @@ export default function PhotoGridContainer({
             return (
               <div
                 key={permlink}
+                ref={el => { cardRefs.current[permlink] = el; }}
                 className={clsx(
                   'relative overflow-hidden rounded-lg w-full shadow-sm',
                   'transition-all duration-300',
