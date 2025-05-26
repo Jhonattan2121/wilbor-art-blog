@@ -4,6 +4,7 @@ import {
   PATH_FEED_INFERRED,
   Path_Partners
 } from '@/app/paths';
+import DrawerTagsDesktop from '../../app/projects/DrawerTagsDesktop';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
 
 export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
@@ -92,6 +93,13 @@ export default function ViewSwitcher({
               {item.text}
             </a>
           ))}
+          {drawerTagsProps && (
+            <DrawerTagsDesktop
+              tags={drawerTagsProps.tags}
+              selectedTag={drawerTagsProps.selectedTag}
+              setSelectedTag={drawerTagsProps.setSelectedTag}
+            />
+          )}
         </div>
       </div>
     </>

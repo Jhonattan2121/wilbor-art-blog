@@ -75,16 +75,15 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                         <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black">
                             <button
                                 onClick={() => setShowMobileTags(false)}
-                                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-2 focus:outline-none focus:ring-2 focus:ring-red-200 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
+                                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                                 aria-label="Fechar"
                                 title="Fechar"
-                                style={{ width: 44, height: 44 }}
+                                style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
                             >
                                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="14" cy="14" r="12" stroke="#fff" strokeWidth="2" fill="#222" />
-                                    <circle cx="14" cy="14" r="4" stroke="#fff" strokeWidth="2" fill="#d32f2f" />
-                                    <rect x="13" y="7" width="2" height="14" rx="1" fill="#fff" />
-                                    <rect x="7" y="13" width="14" height="2" rx="1" fill="#fff" />
+                                    <circle cx="14" cy="14" r="14" fill="#bbb" />
+                                    <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                                    <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
                                 </svg>
                             </button>
                         </div>
