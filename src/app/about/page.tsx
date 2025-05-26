@@ -3,6 +3,10 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 const images = [
   './wilborPhotos/1.jpg',
@@ -32,9 +36,55 @@ export default function About() {
             Conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
           </p>
 
-          <div className="my-3 sm:my-5 -mx-2 sm:mx-0">
-            <div className="w-full sm:max-w-2xl mx-auto sm:-ml-0">
-              <div className="relative w-full h-[260px] md:h-[400px] select-none">
+          <div className="sm:hidden my-3 -mx-2">
+            <Swiper
+              modules={[Pagination]}
+              pagination={{ clickable: true }}
+              spaceBetween={8}
+              slidesPerView={1}
+              onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
+              className="w-full h-[260px]"
+            >
+              {images.map((img, idx) => (
+                <SwiperSlide key={img}>
+                  <div className="relative w-full h-[260px] select-none">
+                    <Image
+                      src={img}
+                      alt={`Imagem ${idx + 1}`}
+                      fill={true}
+                      priority={idx === 0}
+                      sizes="100vw"
+                      className="object-contain"
+                      onClick={() => {
+                        setFullscreenImg(img);
+                        setFullscreenIndex(idx);
+                      }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <style jsx global>{`
+              .swiper-pagination-bullet {
+                width: 10px !important;
+                height: 10px !important;
+                margin: 0 3px !important;
+                background: #fff;
+                opacity: 0.6;
+                border: 1.5px solid #e11d48;
+                transition: all 0.2s;
+              }
+              .swiper-pagination-bullet-active {
+                background: #e11d48 !important;
+                opacity: 1 !important;
+                transform: scale(1.15);
+              }
+            `}</style>
+          </div>
+
+          <div className="hidden sm:block my-5 sm:mx-0">
+            <div className="w-full sm:max-w-2xl mx-auto">
+              <div className="relative w-full h-[400px] select-none">
                 <Image
                   src={images[currentIndex]}
                   alt={`Imagem ${currentIndex + 1}`}
@@ -43,20 +93,15 @@ export default function About() {
                   sizes="(max-width: 768px) 100vw, 640px"
                   className="object-contain cursor-pointer"
                   onClick={(e) => {
-                    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                    const bounds = (e.target as HTMLElement).getBoundingClientRect();
+                    const x = (e as React.MouseEvent).clientX - bounds.left;
+                    if (x < bounds.width / 3) {
+                      goPrev();
+                    } else if (x > (2 * bounds.width) / 3) {
+                      goNext();
+                    } else {
                       setFullscreenImg(images[currentIndex]);
                       setFullscreenIndex(currentIndex);
-                    } else {
-                      const bounds = (e.target as HTMLElement).getBoundingClientRect();
-                      const x = (e as React.MouseEvent).clientX - bounds.left;
-                      if (x < bounds.width / 3) {
-                        goPrev();
-                      } else if (x > (2 * bounds.width) / 3) {
-                        goNext();
-                      } else {
-                        setFullscreenImg(images[currentIndex]);
-                        setFullscreenIndex(currentIndex);
-                      }
                     }
                   }}
                 />
