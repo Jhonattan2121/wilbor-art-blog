@@ -18,7 +18,7 @@ export default function ExhibitionsPage() {
   return (
     <>
       <ViewSwitcher currentSelection="exhibitions" />
-      <div className="w-full px-4 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left">
+      <div className="w-full px-4 sm:px-8 pt-4 md:px-12 py-12  dark:text-gray-200 text-left">
         <JsonLd
           type="breadcrumb"
           data={{
@@ -36,7 +36,7 @@ export default function ExhibitionsPage() {
         />
         <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-left break-words">EXPOSIÇÕES, EXIBIÇÕES E PRÊMIOS</h1>
 
-        <div className="flex flex-col gap-12 mt-12 items-start text-left">
+        <div className="max-w-4xl w-full text-left space-y-4 sm:space-y-6 mx-0">
           <div className="space-y-12 text-left">
 
             <div className="exhibition-item text-left">

@@ -75,12 +75,17 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                         <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black">
                             <button
                                 onClick={() => setShowMobileTags(false)}
-                                className="hover:text-black dark:hover:text-white p-1 rounded-full dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-                                style={{ outline: 'none', boxShadow: 'none' }}
-                                aria-label="Fechar menu"
-                                title="Fechar menu"
+                                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-2 focus:outline-none focus:ring-2 focus:ring-red-200 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
+                                aria-label="Fechar"
+                                title="Fechar"
+                                style={{ width: 44, height: 44 }}
                             >
-                                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="14" cy="14" r="12" stroke="#fff" strokeWidth="2" fill="#222" />
+                                    <circle cx="14" cy="14" r="4" stroke="#fff" strokeWidth="2" fill="#d32f2f" />
+                                    <rect x="13" y="7" width="2" height="14" rx="1" fill="#fff" />
+                                    <rect x="7" y="13" width="14" height="2" rx="1" fill="#fff" />
+                                </svg>
                             </button>
                         </div>
                         <div className="flex-1 overflow-y-auto py-2 bg-white dark:bg-black">

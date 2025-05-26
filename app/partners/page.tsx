@@ -174,7 +174,7 @@ export default function PartnersPage() {
   return (
     <>
       <ViewSwitcher currentSelection="partners" />
-      <div className="w-full px-4 sm:px-8 md:px-12 py-12 text-gray-800 dark:text-gray-200 text-left">
+      <div className="max-w-4xl w-full text-left px-4 py-3 md:px-12  space-y-4 sm:space-y-6 mx-0 ">
         <div className="text-left mb-12">
         
           <p className="text-lg text-gray-600 dark:text-gray-400 text-left w-full" style={{maxWidth: 'none'}}>

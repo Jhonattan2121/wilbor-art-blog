@@ -5,7 +5,6 @@ import {
   SITE_TITLE
 } from '@/app/config';
 import Footer from '@/app/Footer';
-import Nav from '@/app/Nav';
 import PhotoEscapeHandler from '@/photo/PhotoEscapeHandler';
 import ShareModals from '@/share/ShareModals';
 import AppStateProvider from '@/state/AppStateProvider';
@@ -95,8 +94,8 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-              <div className="w-full px-3 ">
-                <div className="w-full max-w-[1280px] flex justify-center sm:justify-start ml-0 sm:ml-8">
+              <div className="w-full px-4 sm:px-8 pt-4">
+                <div className="w-full flex justify-start">
                   <Link href="/projects">
                     <Image
                       src={BannerWilbor}

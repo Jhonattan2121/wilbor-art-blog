@@ -26,7 +26,7 @@ export default function ViewSwitcher({
   
   const menuItems = [
     {
-      text: "Sobre",
+      text: "sobre",
       mobileText: "sobre",
       href: PATH_FEED_INFERRED,
       active: currentSelection === 'about',
@@ -39,13 +39,13 @@ export default function ViewSwitcher({
     },
   
     {
-      text: "Parceiros",
+      text: "parceiros",
       mobileText: "parceiros",
       href: Path_Partners,
       active: currentSelection === 'partners',
     },
     {
-      text: "Contato",
+      text: "contato",
       mobileText: "contato",
       href: Path_Contact,
       active: currentSelection === 'contact',
@@ -60,8 +60,8 @@ export default function ViewSwitcher({
             <a
               key={index}
               href={item.href}
-              className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 
-                ${item.active ? 'text-red-500 font-semibold' : 'text-gray-500 font-sans'}`}
+              className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 font-sans 
+                ${item.active ? 'text-red-500' : 'text-gray-500'}`}
             >
               {item.mobileText}
             </a>
@@ -86,8 +86,8 @@ export default function ViewSwitcher({
             <a
               key={index}
               href={item.href}
-              className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 
-                ${item.active ? 'text-red-500 font-semibold' : 'text-gray-500 font-sans'}`}
+              className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 font-sans 
+                ${item.active ? 'text-red-500' : 'text-gray-500'}`}
             >
               {item.text}
             </a>
