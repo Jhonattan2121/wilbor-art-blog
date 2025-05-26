@@ -5,7 +5,6 @@ import {
   Path_Partners
 } from '@/app/paths';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
-import SwitcherItem from './SwitcherItem';
 
 export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
 
@@ -83,26 +82,16 @@ export default function ViewSwitcher({
 
       <div className="hidden sm:flex sm:flex-row items-center gap-4 w-full mt-4 mb-4" style={{ marginLeft: '56px' }}>
         <div className="flex flex-row gap-4 flex-1 items-center">
-          <SwitcherItem
-            text="Sobre"
-            href={PATH_FEED_INFERRED}
-            active={currentSelection === 'about'}
-          />
-          <SwitcherItem
-            text="exposições/exibições"
-            href={Path_Exhibitions}
-            active={currentSelection === 'exhibitions'}
-          />
-          <SwitcherItem
-            text="Parceiros"
-            href={Path_Partners}
-            active={currentSelection === 'partners'}
-          />
-          <SwitcherItem
-            text="Contato"
-            href={Path_Contact}
-            active={currentSelection === 'contact'}
-          />
+          {menuItems.map((item, index) => (
+            <a
+              key={index}
+              href={item.href}
+              className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 
+                ${item.active ? 'text-red-500 font-semibold' : 'text-gray-500 font-sans'}`}
+            >
+              {item.text}
+            </a>
+          ))}
         </div>
       </div>
     </>
