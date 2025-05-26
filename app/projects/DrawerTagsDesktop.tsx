@@ -54,7 +54,6 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
         title="Abrir menu de tags"
       >
         <IconMenu width={22} />
-        <span className="font-bold">{selectedTag ? selectedTag : 'Tags'}</span>
       </button>
       {showDrawer && (
         <>
@@ -67,12 +66,11 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
           />
           <aside
             id="desktop-tags-drawer"
-            className="fixed top-0 right-0 h-full w-72 shadow-2xl z-50 flex flex-col animate-slide-in-right bg-white dark:bg-black border-l border-gray-200 dark:border-gray-800"
+            className="fixed top-0 left-0 h-full w-72 shadow-2xl z-50 flex flex-col animate-slide-in-left bg-white dark:bg-black border-r border-gray-200 dark:border-gray-800"
             style={{ maxWidth: '90vw' }}
             aria-label="Menu lateral de tags"
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-              <span className="font-bold text-lg text-gray-800 dark:text-white">{selectedTag ? selectedTag : ''}</span>
               <button
                 onClick={() => setShowDrawer(false)}
                 className="hover:text-black dark:hover:text-white p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"

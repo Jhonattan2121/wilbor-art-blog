@@ -288,14 +288,14 @@ const MediaItem = ({
           />
         </div>
         {media.title && (
-          <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg">
-            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left">
+          <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
+            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left group-hover:text-black transition-colors duration-100">
               {media.title}
             </div>
             {media.tags && media.tags.length > 0 && (
               <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                 {media.tags.map(tag => (
-                  <span key={tag} className="text-base text-gray-400 font-mono">{tag}</span>
+                  <span key={tag} className="text-base text-gray-400 font-mono group-hover:text-black transition-colors duration-100">{tag}</span>
                 ))}
               </div>
             )}
@@ -306,11 +306,11 @@ const MediaItem = ({
   };
   return (
     <div className={clsx(
-      'rounded-lg overflow-hidden h-full',
-      isExpanded && 'transition-all duration-300 border-none',
+      'rounded-lg overflow-hidden h-full group transition-colors duration-100',
+      isExpanded && 'border-none',
       isExpanded
         ? 'w-full bg-black text-white'
-        : 'cursor-pointer hover:opacity-90 border-2 border-solid border-black'
+        : 'cursor-pointer hover:opacity-90 border-l-8 border-r-8 border-t-8 border-black hover:border-white hover:bg-white hover:text-black'
     )}
       onClick={e => {
         if (!isExpanded) onExpand();
@@ -335,19 +335,19 @@ const MediaItem = ({
                       src={updatedThumbnail}
                       alt={mainItem.title || ''}
                       fill
-                      className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0 rounded-t-lg"
+                      className="object-cover filter grayscale group-hover:grayscale-0 rounded-t-lg"
                       sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, 33vw"
                       style={{ objectFit: 'cover', objectPosition: 'center' }}
                     />
                   </div>
-                  <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg">
-                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left">
+                  <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
+                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left group-hover:text-black transition-colors duration-100">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
                       <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                         {mainItem.tags.map(tag => (
-                          <span key={tag} className="text-base text-gray-400 font-mono">{tag}</span>
+                          <span key={tag} className="text-base text-gray-400 font-mono group-hover:text-black transition-colors duration-100">{tag}</span>
                         ))}
                       </div>
                     )}
@@ -371,14 +371,14 @@ const MediaItem = ({
                               src={updatedThumbnail}
                               alt={mainItem.title || ''}
                               fill
-                              className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                              className="object-cover filter grayscale group-hover:grayscale-0"
                               sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                               quality={85}
                               unoptimized={true}
                             />
                           </div>
-                          <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3">
-                            <div className="text-gray-400 text-xs sm:text-sm md:text-base font-medium line-clamp-1">
+                          <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 group-hover:bg-white transition-colors duration-100">
+                            <div className="text-gray-400 text-xs sm:text-sm md:text-base font-medium line-clamp-1 group-hover:text-black transition-colors duration-100">
                               {mainItem.title}
                             </div>
                             {mainItem.tags && mainItem.tags.length > 0 && (
@@ -389,7 +389,7 @@ const MediaItem = ({
                                 {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
                                   <span
                                     key={tag}
-                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700 group-hover:text-black transition-colors duration-100"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       onTagClick(tag);
@@ -447,16 +447,15 @@ const MediaItem = ({
               <h2 className="flex-1 text-lg sm:text-3xl font-bold text-white tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-2 focus:outline-none focus:ring-2 focus:ring-red-200 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
+                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                 aria-label="Fechar"
                 title="Fechar"
-                style={{ width: 44, height: 44 }}
+                style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
               >
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="14" cy="14" r="12" stroke="#fff" strokeWidth="2" fill="#222" />
-                  <circle cx="14" cy="14" r="4" stroke="#fff" strokeWidth="2" fill="#d32f2f" />
-                  <rect x="13" y="7" width="2" height="14" rx="1" fill="#fff" />
-                  <rect x="7" y="13" width="14" height="2" rx="1" fill="#fff" />
+                  <circle cx="14" cy="14" r="14" fill="#bbb" />
+                  <line x1="9" y1="9" x2="19" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="19" y1="9" x2="9" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
@@ -508,13 +507,11 @@ const MediaItem = ({
                       {images.map((_, idx) => (
                         <button
                           key={idx}
-                          className={`w-4 h-4 rounded-full border-2 border-red-500 flex items-center justify-center transition-all duration-200 ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-transparent'}`}
+                          className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-white/20 hover:bg-red-400/40'}`}
                           onClick={() => setFullscreenIndex(idx)}
                           aria-label={`Ir para imagem ${idx + 1}`}
+                          style={{ boxShadow: 'none', border: 'none', padding: 0, margin: 0 }}
                         >
-                          {idx === fullscreenIndex && (
-                            <span className="block w-1.5 h-1.5 bg-white rounded-full" />
-                          )}
                         </button>
                       ))}
                     </div>
@@ -693,23 +690,7 @@ export default function PhotoGridContainer({
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
-        {selectedTag && (
-          <div className="mb-4 hidden sm:flex items-center justify-start">
-            <div className="flex items-center gap-2 px-3 py-2   rounded shadow-none">
-              <button
-                onClick={() => {
-                  setSelectedTag(null);
-                  window.location.href = window.location.pathname;
-                }}
-                className="text-sm hover:text-black dark:hover:text-white px-2 py-0.5 transition-colors rounded focus:outline-none focus:ring-2 focus:ring-red-200"
-                aria-label="Limpar filtro"
-                title="Limpar filtro"
-              >
-                Limpar
-              </button>
-            </div>
-          </div>
-        )}
+       
         <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
