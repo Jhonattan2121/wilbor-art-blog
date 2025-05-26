@@ -297,7 +297,12 @@ const MediaItem = ({
             {media.tags && media.tags.length > 0 && (
               <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                 {media.tags.map(tag => (
-                  <span key={tag} className="text-base text-gray-400 font-mono group-hover:text-black transition-colors duration-100">{tag}</span>
+                  <span
+                    key={tag}
+                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
+                  >
+                    {tag}
+                  </span>
                 ))}
               </div>
             )}
@@ -355,7 +360,12 @@ const MediaItem = ({
                     {mainItem.tags && mainItem.tags.length > 0 && (
                       <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                         {mainItem.tags.map(tag => (
-                          <span key={tag} className="text-base text-gray-400 font-mono group-hover:text-black transition-colors duration-100">{tag}</span>
+                          <span
+                            key={tag}
+                            className="text-xs text-gray-400 px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
+                          >
+                            {tag}
+                          </span>
                         ))}
                       </div>
                     )}
@@ -397,11 +407,7 @@ const MediaItem = ({
                                 {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
                                   <span
                                     key={tag}
-                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700 group-hover:text-black transition-colors duration-100"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onTagClick(tag);
-                                    }}
+                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
                                   >
                                     {tag}
                                   </span>
@@ -409,7 +415,7 @@ const MediaItem = ({
                                 {!showAllTags && mainItem.tags.length > 3 && (
                                   <span
                                     className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
-                                    onClick={(e) => {
+                                    onClick={e => {
                                       e.stopPropagation();
                                       setShowAllTags(true);
                                     }}
@@ -419,8 +425,8 @@ const MediaItem = ({
                                 )}
                                 {showAllTags && (
                                   <span
-                                    className="text-xs text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
-                                    onClick={(e) => {
+                                    className="text-xs text-gray-400  px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    onClick={e => {
                                       e.stopPropagation();
                                       setShowAllTags(false);
                                     }}
