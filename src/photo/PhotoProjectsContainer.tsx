@@ -323,7 +323,9 @@ const MediaItem = ({
       isExpanded && 'border-none',
       isExpanded
         ? 'w-full bg-black text-white'
-        : 'cursor-pointer hover:opacity-90 border-l-8 border-r-8 border-t-8 border-black hover:border-white hover:bg-white hover:text-black'
+        : 'cursor-pointer hover:opacity-90 border-l-8 border-r-8 border-t-8 border-black hover:border-white hover:bg-white hover:text-black',
+      'sm:border-l-8 sm:border-r-8 sm:border-t-8 sm:border-black sm:hover:border-white sm:hover:bg-white sm:hover:text-black', // só aplica borda branca no desktop
+      'border-0 bg-black text-white',
     )}
       onClick={e => {
         if (!isExpanded) onExpand();
@@ -460,16 +462,16 @@ const MediaItem = ({
             <div className="flex items-center px-3 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-black shadow-md">
               <h2 className="flex-1 text-lg sm:text-3xl font-bold text-white tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
-                onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
-                aria-label="Fechar"
-                title="Fechar"
-                style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
+                  onClick={e => { e.stopPropagation(); onExpand(); }}
+                  className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+                  aria-label="Fechar"
+                  title="Fechar"
+                style={{ width: 36, height: 36, background: '#666', border: 'none', boxShadow: 'none' }}
               >
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="14" cy="14" r="14" fill="#bbb" />
-                  <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="10" fill="#666" />
+                  <line x1="6" y1="6" x2="14" y2="14" stroke="black" strokeWidth="2" strokeLinecap="round" />
+                  <line x1="14" y1="6" x2="6" y2="14" stroke="black" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
@@ -515,7 +517,7 @@ const MediaItem = ({
                         margin: 0 3px !important;
                         background: #fff;
                         opacity: 0.6;
-                        border: 1.5px solid #e11d48;
+                        border: none !important;
                         transition: all 0.2s;
                       }
                       .swiper-pagination-bullet-active {
@@ -659,7 +661,7 @@ const MediaItem = ({
                       margin: 0 3px !important;
                       background: #fff;
                       opacity: 0.6;
-                      border: 1.5px solid #e11d48;
+                      border: none !important;
                       transition: all 0.2s;
                     }
                     .swiper-pagination-bullet-active {

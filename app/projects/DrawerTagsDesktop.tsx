@@ -77,12 +77,12 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
                 className="mr-auto rounded-full transition-colors p-1 flex items-center justify-center focus:outline-none"
                 aria-label="Fechar"
                 title="Fechar"
-                style={{ width: 32, height: 32, background: '#bbb', border: 'none', boxShadow: 'none', minWidth: 0, minHeight: 0 }}
+                style={{ width: 44, height: 44, background: '#666', border: 'none', boxShadow: 'none' }}
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="10" cy="10" r="10" fill="#bbb" />
-                  <line x1="6" y1="6" x2="14" y2="14" stroke="black" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="14" y1="6" x2="6" y2="14" stroke="black" strokeWidth="2" strokeLinecap="round" />
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="14" cy="14" r="14" fill="#666" />
+                  <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
@@ -109,8 +109,8 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
             </div>
             <button
               onClick={() => handleTagSelection(null)}
-              className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-              style={{ outline: 'none', boxShadow: 'none' }}
+              className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black transition border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
+              style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
               aria-label="Limpar filtro de tags"
               title="Limpar filtro de tags"
             >
