@@ -72,7 +72,7 @@ export default function About() {
                 margin: 0 3px !important;
                 background: #fff;
                 opacity: 0.6;
-                border: 1.5px solid #e11d48;
+                border: none !important;
                 transition: all 0.2s;
               }
               .swiper-pagination-bullet-active {
@@ -234,7 +234,7 @@ export default function About() {
                       margin: 0 3px !important;
                       background: #fff;
                       opacity: 0.6;
-                      border: 1.5px solid #e11d48;
+                      border: none !important;
                       transition: all 0.2s;
                     }
                     .swiper-pagination-bullet-active {
