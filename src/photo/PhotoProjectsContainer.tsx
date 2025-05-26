@@ -9,6 +9,8 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { Media, PhotoGridContainerProps } from './components/types';
 
 const formatPinataUrl = (url: string): string => {
@@ -135,7 +137,7 @@ const MediaItem = ({
   const [fullscreenImg, setFullscreenImg] = useState<string | null>(null);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
   const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const [isMobile, setIsMobile] = useState(false);
   function getThumbnailUrl(item: Media): string | null {
     try {
       if (item.hiveMetadata) {
@@ -304,6 +306,12 @@ const MediaItem = ({
       </div>
     );
   };
+  useEffect(() => {
+    setIsMobile(typeof window !== 'undefined' && window.innerWidth < 640);
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   return (
     <div className={clsx(
       'rounded-lg overflow-hidden h-full group transition-colors duration-100',
@@ -454,8 +462,8 @@ const MediaItem = ({
               >
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="14" cy="14" r="14" fill="#bbb" />
-                  <line x1="9" y1="9" x2="19" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="19" y1="9" x2="9" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                  <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
@@ -471,52 +479,91 @@ const MediaItem = ({
                 </div>
               )}
               {images.length > 0 && (
-                <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
-                  <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] p-0 m-0 flex items-center justify-center">
-                    <img
-                      src={images[fullscreenIndex]}
-                      alt="Imagem do post"
-                      className="object-contain absolute top-0 left-0 w-full h-full cursor-pointer select-none"
-                      onClick={e => {
-                        const bounds = (e.target as HTMLElement).getBoundingClientRect();
-                        const x = (e as React.MouseEvent).clientX - bounds.left;
-                        if (x < bounds.width / 3) {
-                          setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
-                        } else if (x > (2 * bounds.width) / 3) {
-                          setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
-                        } else if (window.innerWidth < 640) {
-                          setFullscreenImg(images[fullscreenIndex]);
-                        }
-                      }}
-                    />
-                    <button
-                      className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                      tabIndex={-1}
-                      style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                      onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
-                      aria-label="Imagem anterior"
-                    />
-                    <button
-                      className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                      tabIndex={-1}
-                      style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                      onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
-                      aria-label="Próxima imagem"
-                    />
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                      {images.map((_, idx) => (
-                        <button
-                          key={idx}
-                          className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-white/20 hover:bg-red-400/40'}`}
-                          onClick={() => setFullscreenIndex(idx)}
-                          aria-label={`Ir para imagem ${idx + 1}`}
-                          style={{ boxShadow: 'none', border: 'none', padding: 0, margin: 0 }}
-                        >
-                        </button>
+                isMobile ? (
+                  <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
+                    <Swiper
+                      pagination={{ clickable: true }}
+                      modules={[Pagination]}
+                      className="w-full h-[320px]"
+                    >
+                      {images.map((img, idx) => (
+                        <SwiperSlide key={img}>
+                          <div className="relative w-full h-[260px] select-none">
+                            <img
+                              src={img}
+                              alt={`Imagem ${idx + 1}`}
+                              className="object-contain absolute top-0 left-0 w-full h-full cursor-pointer select-none"
+                              onClick={() => {
+                                setFullscreenImg(img);
+                                setFullscreenIndex(idx);
+                              }}
+                            />
+                          </div>
+                        </SwiperSlide>
                       ))}
+                    </Swiper>
+                    <style jsx global>{`
+                      .swiper-pagination-bullet {
+                        width: 10px !important;
+                        height: 10px !important;
+                        margin: 0 3px !important;
+                        background: #fff;
+                        opacity: 0.6;
+                        border: 1.5px solid #e11d48;
+                        transition: all 0.2s;
+                      }
+                      .swiper-pagination-bullet-active {
+                        background: #e11d48 !important;
+                        opacity: 1 !important;
+                      }
+                    `}</style>
+                  </div>
+                ) : (
+                  <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
+                    <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] p-0 m-0 flex items-center justify-center">
+                      <img
+                        src={images[fullscreenIndex]}
+                        alt="Imagem do post"
+                        className="object-contain absolute top-0 left-0 w-full h-full cursor-pointer select-none"
+                        onClick={e => {
+                          const bounds = (e.target as HTMLElement).getBoundingClientRect();
+                          const x = (e as React.MouseEvent).clientX - bounds.left;
+                          if (x < bounds.width / 3) {
+                            setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
+                          } else if (x > (2 * bounds.width) / 3) {
+                            setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
+                          }
+                        }}
+                      />
+                      <button
+                        className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                        tabIndex={-1}
+                        style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                        onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
+                        aria-label="Imagem anterior"
+                      />
+                      <button
+                        className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                        tabIndex={-1}
+                        style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                        onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
+                        aria-label="Próxima imagem"
+                      />
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                        {images.map((_, idx) => (
+                          <button
+                            key={idx}
+                            className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-white/20 hover:bg-red-400/40'}`}
+                            onClick={() => setFullscreenIndex(idx)}
+                            aria-label={`Ir para imagem ${idx + 1}`}
+                            style={{ boxShadow: 'none', border: 'none', padding: 0, margin: 0 }}
+                          >
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )
               )}
               {mainItem.hiveMetadata?.body && (
                 <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left pl-4 sm:pl-12 sm:ml-[-3rem]">
@@ -568,61 +615,100 @@ const MediaItem = ({
               className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
               onClick={() => setFullscreenImg(null)}
               aria-label="Fechar imagem em tela cheia"
-              style={{ width: 44, height: 44 }}
+              style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
             >
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="14" r="12" stroke="#fff" strokeWidth="2" fill="#222" />
-                <circle cx="14" cy="14" r="4" stroke="#fff" strokeWidth="2" fill="#d32f2f" />
-                <rect x="13" y="7" width="2" height="14" rx="1" fill="#fff" />
-                <rect x="7" y="13" width="14" height="2" rx="1" fill="#fff" />
+                <circle cx="14" cy="14" r="14" fill="#bbb" />
+                <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </button>
             <div className="relative w-full max-w-xl flex flex-col items-center">
-              <div className="relative w-full flex items-center justify-center">
-                <img
-                  src={images[fullscreenIndex]}
-                  alt="Imagem em tela cheia"
-                  className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
-                  style={{ objectFit: 'contain' }}
-                  onClick={e => {
-                    const bounds = (e.target as HTMLElement).getBoundingClientRect();
-                    const x = (e as React.MouseEvent).clientX - bounds.left;
-                    if (x < bounds.width / 3) {
-                      setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
-                    } else if (x > (2 * bounds.width) / 3) {
-                      setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
-                    }
-                  }}
-                />
-                <button
-                  className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                  tabIndex={-1}
-                  style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                  onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
-                  aria-label="Imagem anterior"
-                />
-                <button
-                  className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                  tabIndex={-1}
-                  style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                  onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
-                  aria-label="Próxima imagem"
-                />
-              </div>
-              <div className="flex gap-2 mt-4">
-                {images.map((_, idx) => (
-                  <button
-                    key={idx}
-                    className={`w-4 h-4 rounded-full border-2 border-red-500 flex items-center justify-center transition-all duration-200 ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-transparent'}`}
-                    onClick={() => setFullscreenIndex(idx)}
-                    aria-label={`Ir para imagem ${idx + 1}`}
+              {isMobile ? (
+                <div className="w-full">
+                  <Swiper
+                    pagination={{ clickable: true }}
+                    modules={[Pagination]}
+                    initialSlide={fullscreenIndex}
+                    onSlideChange={swiper => setFullscreenIndex(swiper.activeIndex)}
+                    className="w-full h-[80vh]"
                   >
-                    {idx === fullscreenIndex && (
-                      <span className="block w-1.5 h-1.5 bg-white rounded-full" />
-                    )}
-                  </button>
-                ))}
-              </div>
+                    {images.map((img, idx) => (
+                      <SwiperSlide key={img}>
+                        <div className="flex items-center justify-center w-full h-[80vh] select-none">
+                          <img
+                            src={img}
+                            alt={`Imagem ${idx + 1}`}
+                            className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
+                            style={{ objectFit: 'contain' }}
+                          />
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                  <style jsx global>{`
+                    .swiper-pagination-bullet {
+                      width: 10px !important;
+                      height: 10px !important;
+                      margin: 0 3px !important;
+                      background: #fff;
+                      opacity: 0.6;
+                      border: 1.5px solid #e11d48;
+                      transition: all 0.2s;
+                    }
+                    .swiper-pagination-bullet-active {
+                      background: #e11d48 !important;
+                      opacity: 1 !important;
+                    }
+                  `}</style>
+                </div>
+              ) : (
+                <div className="relative w-full flex items-center justify-center">
+                  <img
+                    src={images[fullscreenIndex]}
+                    alt="Imagem em tela cheia"
+                    className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
+                    style={{ objectFit: 'contain' }}
+                    onClick={e => {
+                      const bounds = (e.target as HTMLElement).getBoundingClientRect();
+                      const x = (e as React.MouseEvent).clientX - bounds.left;
+                      if (x < bounds.width / 3) {
+                        setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
+                      } else if (x > (2 * bounds.width) / 3) {
+                        setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
+                      }
+                    }}
+                  />
+                  <button
+                    className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                    tabIndex={-1}
+                    style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                    onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
+                    aria-label="Imagem anterior"
+                  />
+                  <button
+                    className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                    tabIndex={-1}
+                    style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                    onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
+                    aria-label="Próxima imagem"
+                  />
+                  <div className="flex gap-2 mt-4 absolute bottom-4 left-1/2 -translate-x-1/2">
+                    {images.map((_, idx) => (
+                      <button
+                        key={idx}
+                        className={`w-4 h-4 rounded-full border-2 border-red-500 flex items-center justify-center transition-all duration-200 ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-transparent'}`}
+                        onClick={() => setFullscreenIndex(idx)}
+                        aria-label={`Ir para imagem ${idx + 1}`}
+                      >
+                        {idx === fullscreenIndex && (
+                          <span className="block w-1.5 h-1.5 bg-white rounded-full" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -690,7 +776,7 @@ export default function PhotoGridContainer({
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
-       
+
         <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
