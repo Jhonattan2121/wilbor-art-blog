@@ -475,7 +475,7 @@ const MediaItem = ({
             </div>
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
               {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-3xl mx-auto p-0 m-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
+                <div className="w-full max-w-3xl mx-auto p-0 m-0 mb-6" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
                   <div className="relative w-full aspect-[16/9] p-0 m-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
                     <VideoWithFullPoster
                       src={mainItem.src}
