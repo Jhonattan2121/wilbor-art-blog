@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="flex flex-col items-center justify-center">
             <ThemeSwitcher />
             <p className="text-sm mt-2">
-              <strong>Copyright Wilbor Art @ 2025</strong>
+            Wilbor Studio @ 2025
             </p>
           </div>
         </div>

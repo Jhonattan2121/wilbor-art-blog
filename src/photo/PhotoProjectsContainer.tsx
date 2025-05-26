@@ -9,8 +9,6 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { Media, PhotoGridContainerProps } from './components/types';
 
 const formatPinataUrl = (url: string): string => {
@@ -449,19 +447,23 @@ const MediaItem = ({
               <h2 className="flex-1 text-lg sm:text-3xl font-bold text-white tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-2 focus:outline-none focus:ring-2 focus:ring-red-200"
+                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-2 focus:outline-none focus:ring-2 focus:ring-red-200 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
                 aria-label="Fechar"
                 title="Fechar"
+                style={{ width: 44, height: 44 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="14" cy="14" r="12" stroke="#fff" strokeWidth="2" fill="#222" />
+                  <circle cx="14" cy="14" r="4" stroke="#fff" strokeWidth="2" fill="#d32f2f" />
+                  <rect x="13" y="7" width="2" height="14" rx="1" fill="#fff" />
+                  <rect x="7" y="13" width="14" height="2" rx="1" fill="#fff" />
                 </svg>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
               {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-3xl mx-auto p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
-                  <div className="relative w-full aspect-[16/9] p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
+                <div className="w-full max-w-3xl mx-auto p-0 m-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
+                  <div className="relative w-full aspect-[16/9] p-0 m-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
                     <VideoWithFullPoster
                       src={mainItem.src}
                       poster={updatedThumbnail || thumbnailUrl || mainItem.thumbnailSrc || ''}
@@ -470,36 +472,53 @@ const MediaItem = ({
                 </div>
               )}
               {images.length > 0 && (
-                <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
-                  <Swiper
-                    spaceBetween={0}
-                    slidesPerView={1}
-                    loop={true}
-                    pagination={false}
-                    navigation={false}
-                    style={{ width: '100%', height: '100%', marginTop: 0, background: 'none' }}
-                  >
-                    {images.map((imgSrc, index) => (
-                      <SwiperSlide key={index} style={{margin: 0, padding: 0, background: 'none'}}>
-                        <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
-                          <Image
-                            src={imgSrc}
-                            alt="Imagem do post"
-                            fill
-                            className="object-contain absolute top-0 left-0 cursor-pointer"
-                            unoptimized={true}
-                            onClick={() => {
-                              if (window.innerWidth < 640) {
-                                setFullscreenImg(imgSrc);
-                                setFullscreenIndex(index);
-                              }
-                            }}
-                            onError={e => { const target = e.target as HTMLImageElement; target.src = 'https://placehold.co/600x400?text=Image+Error'; }}
-                          />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
+                <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
+                  <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] p-0 m-0 flex items-center justify-center">
+                    <img
+                      src={images[fullscreenIndex]}
+                      alt="Imagem do post"
+                      className="object-contain absolute top-0 left-0 w-full h-full cursor-pointer select-none"
+                      onClick={e => {
+                        const bounds = (e.target as HTMLElement).getBoundingClientRect();
+                        const x = (e as React.MouseEvent).clientX - bounds.left;
+                        if (x < bounds.width / 3) {
+                          setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
+                        } else if (x > (2 * bounds.width) / 3) {
+                          setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
+                        } else if (window.innerWidth < 640) {
+                          setFullscreenImg(images[fullscreenIndex]);
+                        }
+                      }}
+                    />
+                    <button
+                      className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                      tabIndex={-1}
+                      style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                      onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
+                      aria-label="Imagem anterior"
+                    />
+                    <button
+                      className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                      tabIndex={-1}
+                      style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                      onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
+                      aria-label="Próxima imagem"
+                    />
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                      {images.map((_, idx) => (
+                        <button
+                          key={idx}
+                          className={`w-4 h-4 rounded-full border-2 border-red-500 flex items-center justify-center transition-all duration-200 ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-transparent'}`}
+                          onClick={() => setFullscreenIndex(idx)}
+                          aria-label={`Ir para imagem ${idx + 1}`}
+                        >
+                          {idx === fullscreenIndex && (
+                            <span className="block w-1.5 h-1.5 bg-white rounded-full" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
               {mainItem.hiveMetadata?.body && (
@@ -549,34 +568,65 @@ const MediaItem = ({
         {fullscreenImg && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
             <button
-              className="absolute top-4 right-4 text-white bg-black bg-opacity-60 rounded-full p-2"
+              className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
               onClick={() => setFullscreenImg(null)}
               aria-label="Fechar imagem em tela cheia"
+              style={{ width: 44, height: 44 }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="14" cy="14" r="12" stroke="#fff" strokeWidth="2" fill="#222" />
+                <circle cx="14" cy="14" r="4" stroke="#fff" strokeWidth="2" fill="#d32f2f" />
+                <rect x="13" y="7" width="2" height="14" rx="1" fill="#fff" />
+                <rect x="7" y="13" width="14" height="2" rx="1" fill="#fff" />
               </svg>
             </button>
-            <Swiper
-              modules={[Pagination]}
-              pagination={{ clickable: true }}
-              initialSlide={fullscreenIndex}
-              onSlideChange={swiper => setFullscreenIndex(swiper.activeIndex)}
-              style={{ width: '100vw', maxWidth: 600 }}
-            >
-              {images.map((imgSrc, idx) => (
-                <SwiperSlide key={idx}>
-                  <div className="flex items-center justify-center min-h-[60vh]">
-                    <img
-                      src={imgSrc}
-                      alt="Imagem em tela cheia"
-                      className="max-w-full max-h-[80vh] rounded-lg shadow-lg"
-                      style={{ objectFit: 'contain' }}
-                    />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            <div className="relative w-full max-w-xl flex flex-col items-center">
+              <div className="relative w-full flex items-center justify-center">
+                <img
+                  src={images[fullscreenIndex]}
+                  alt="Imagem em tela cheia"
+                  className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
+                  style={{ objectFit: 'contain' }}
+                  onClick={e => {
+                    const bounds = (e.target as HTMLElement).getBoundingClientRect();
+                    const x = (e as React.MouseEvent).clientX - bounds.left;
+                    if (x < bounds.width / 3) {
+                      setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
+                    } else if (x > (2 * bounds.width) / 3) {
+                      setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
+                    }
+                  }}
+                />
+                <button
+                  className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                  tabIndex={-1}
+                  style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                  onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
+                  aria-label="Imagem anterior"
+                />
+                <button
+                  className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
+                  tabIndex={-1}
+                  style={{ outline: 'none', border: 'none', background: 'transparent' }}
+                  onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
+                  aria-label="Próxima imagem"
+                />
+              </div>
+              <div className="flex gap-2 mt-4">
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-4 h-4 rounded-full border-2 border-red-500 flex items-center justify-center transition-all duration-200 ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-transparent'}`}
+                    onClick={() => setFullscreenIndex(idx)}
+                    aria-label={`Ir para imagem ${idx + 1}`}
+                  >
+                    {idx === fullscreenIndex && (
+                      <span className="block w-1.5 h-1.5 bg-white rounded-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -624,7 +674,7 @@ export default function PhotoGridContainer({
   const handleTagClick = (tag: string) => {
     setSelectedTag(selectedTag === tag ? null : tag);
     setExpandedPermlinks([]);
-    
+
     const url = new URL(window.location.href);
     if (selectedTag !== tag) {
       url.searchParams.set('tag', tag);
@@ -671,10 +721,10 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden rounded-lg w-full shadow-sm',
                   'transition-all duration-300',
                   isExpanded
-                  ? (hasLargeContentMap[permlink]
-                    ? 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                    : 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
-                  : 'col-span-1'
+                    ? (hasLargeContentMap[permlink]
+                      ? 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
+                      : 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
+                    : 'col-span-1'
                 )}
                 tabIndex={0}
                 aria-label={`Projeto ${group[0]?.title || ''}`}
