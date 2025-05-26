@@ -56,8 +56,10 @@ export default function About() {
                       sizes="100vw"
                       className="object-contain"
                       onClick={() => {
-                        setFullscreenImg(img);
-                        setFullscreenIndex(idx);
+                        if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                          setFullscreenImg(img);
+                          setFullscreenIndex(idx);
+                        }
                       }}
                     />
                   </div>
@@ -100,8 +102,10 @@ export default function About() {
                     } else if (x > (2 * bounds.width) / 3) {
                       goNext();
                     } else {
-                      setFullscreenImg(images[currentIndex]);
-                      setFullscreenIndex(currentIndex);
+                      if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                        setFullscreenImg(images[currentIndex]);
+                        setFullscreenIndex(currentIndex);
+                      }
                     }
                   }}
                 />
@@ -182,58 +186,98 @@ export default function About() {
       </section>
 
       {fullscreenImg && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
-          <button
-            className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
-
-            onClick={() => setFullscreenImg(null)}
-            aria-label="Fechar"
-            title="Fechar"
-            style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
-          >
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="14" cy="14" r="14" fill="#bbb" />
-              <line x1="9" y1="9" x2="19" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-              <line x1="19" y1="9" x2="9" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          <div className="flex items-center justify-center h-screen w-screen ">
-            <div
-              className="relative w-full h-full flex items-center justify-center"
-              style={{ maxHeight: '90vh', maxWidth: '100vw' }}
+        typeof window !== 'undefined' && window.innerWidth < 640 && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
+            <button
+              className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
+              onClick={() => setFullscreenImg(null)}
+              aria-label="Fechar"
+              title="Fechar"
+              style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
             >
-              <img
-                src={fullscreenImg}
-                alt={`Imagem em tela cheia`}
-                className="object-contain max-h-[90vh] max-w-full w-auto h-auto select-none"
-                style={{ pointerEvents: 'none' }}
-              />
-              <button
-                className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 focus:outline-none active:outline-none border-none bg-transparent p-0 m-0"
-                tabIndex={-1}
-                style={{ outline: 'none', border: 'none', boxShadow: 'none', background: 'transparent' }}
-                onClick={() => {
-                  const prev = fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1;
-                  setFullscreenImg(images[prev]);
-                  setFullscreenIndex(prev);
-                }}
-                aria-label="Imagem anterior"
-              />
-              <button
-                className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 focus:outline-none active:outline-none border-none bg-transparent p-0 m-0"
-                tabIndex={-1}
-                style={{ outline: 'none', border: 'none', boxShadow: 'none', background: 'transparent' }}
-                onClick={() => {
-                  const next = fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1;
-                  setFullscreenImg(images[next]);
-                  setFullscreenIndex(next);
-                }}
-                aria-label="Próxima imagem"
-              />
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="14" cy="14" r="14" fill="#bbb" />
+                <line x1="9" y1="9" x2="19" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="19" y1="9" x2="9" y2="19" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </button>
+
+            <div className="flex items-center justify-center h-screen w-screen ">
+              <div className="relative w-full h-full flex items-center justify-center" style={{ maxHeight: '90vh', maxWidth: '100vw' }}>
+                <div className="sm:hidden w-full h-full">
+                  <Swiper
+                    modules={[Pagination]}
+                    pagination={{ clickable: true }}
+                    initialSlide={fullscreenIndex}
+                    onSlideChange={swiper => {
+                      setFullscreenIndex(swiper.activeIndex);
+                      setFullscreenImg(images[swiper.activeIndex]);
+                    }}
+                    className="w-full h-[90vh]"
+                  >
+                    {images.map((img, idx) => (
+                      <SwiperSlide key={img}>
+                        <div className="flex items-center justify-center w-full h-[90vh] select-none">
+                          <img
+                            src={img}
+                            alt={`Imagem ${idx + 1}`}
+                            className="max-w-full max-h-[90vh] rounded-lg shadow-lg object-contain select-none"
+                            style={{ objectFit: 'contain' }}
+                          />
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                  <style jsx global>{`
+                    .swiper-pagination-bullet {
+                      width: 10px !important;
+                      height: 10px !important;
+                      margin: 0 3px !important;
+                      background: #fff;
+                      opacity: 0.6;
+                      border: 1.5px solid #e11d48;
+                      transition: all 0.2s;
+                    }
+                    .swiper-pagination-bullet-active {
+                      background: #e11d48 !important;
+                      opacity: 1 !important;
+                    }
+                  `}</style>
+                </div>
+                <div className="hidden sm:flex relative w-full h-full items-center justify-center">
+                  <img
+                    src={fullscreenImg}
+                    alt={`Imagem em tela cheia`}
+                    className="object-contain max-h-[90vh] max-w-full w-auto h-auto select-none"
+                    style={{ pointerEvents: 'none' }}
+                  />
+                  <button
+                    className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 focus:outline-none active:outline-none border-none bg-transparent p-0 m-0"
+                    tabIndex={-1}
+                    style={{ outline: 'none', border: 'none', boxShadow: 'none', background: 'transparent' }}
+                    onClick={() => {
+                      const prev = fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1;
+                      setFullscreenImg(images[prev]);
+                      setFullscreenIndex(prev);
+                    }}
+                    aria-label="Imagem anterior"
+                  />
+                  <button
+                    className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 focus:outline-none active:outline-none border-none bg-transparent p-0 m-0"
+                    tabIndex={-1}
+                    style={{ outline: 'none', border: 'none', boxShadow: 'none', background: 'transparent' }}
+                    onClick={() => {
+                      const next = fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1;
+                      setFullscreenImg(images[next]);
+                      setFullscreenIndex(next);
+                    }}
+                    aria-label="Próxima imagem"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );
