@@ -1,6 +1,7 @@
 "use client";
 import IconMenu from '@/app/IconMenu';
 import { clsx } from 'clsx/lite';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: {
@@ -9,6 +10,14 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
     setSelectedTag: (tag: string | null) => void;
 }) {
     const [showMobileTags, setShowMobileTags] = useState(false);
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const tagFromUrl = searchParams.get('tag');
+        if (tagFromUrl && tags.includes(tagFromUrl) && tagFromUrl !== selectedTag) {
+            setSelectedTag(tagFromUrl);
+        }
+    }, [searchParams, tags, selectedTag, setSelectedTag]);
 
     useEffect(() => {
         if (showMobileTags) {
@@ -20,6 +29,19 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
             document.body.style.overflow = '';
         };
     }, [showMobileTags]);
+
+    const handleTagSelection = (tag: string | null) => {
+        setSelectedTag(tag);
+        setShowMobileTags(false);
+
+        if (tag) {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('tag', tag);
+            window.history.pushState({}, '', currentUrl.toString());
+        } else {
+            window.location.href = window.location.pathname;
+        }
+    };
 
     if (!tags || tags.length === 0) return null;
 
@@ -33,6 +55,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                 title="Abrir menu de tags"
             >
                 <IconMenu width={22} />
+
             </button>
             {showMobileTags && (
                 <>
@@ -65,7 +88,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                                 {tags.map(tag => (
                                     <button
                                         key={tag}
-                                        onClick={() => { setSelectedTag(tag); setShowMobileTags(false); }}
+                                        onClick={() => handleTagSelection(tag)}
                                         className={clsx(
                                             'w-full text-left px-5 py-2 text-base transition font-medium border-0',
                                             selectedTag === tag
@@ -82,7 +105,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
                             </div>
                         </div>
                         <button
-                            onClick={() => { setSelectedTag(null); setShowMobileTags(false); }}
+                            onClick={() => handleTagSelection(null)}
                             className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 transition"
                             style={{ outline: 'none', boxShadow: 'none' }}
                             aria-label="Limpar filtro de tags"

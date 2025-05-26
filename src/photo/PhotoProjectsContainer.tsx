@@ -626,6 +626,14 @@ export default function PhotoGridContainer({
   const handleTagClick = (tag: string) => {
     setSelectedTag(selectedTag === tag ? null : tag);
     setExpandedPermlinks([]);
+    
+    const url = new URL(window.location.href);
+    if (selectedTag !== tag) {
+      url.searchParams.set('tag', tag);
+    } else {
+      url.searchParams.delete('tag');
+    }
+    window.history.pushState({}, '', url);
   };
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
@@ -642,8 +650,11 @@ export default function PhotoGridContainer({
             <div className="flex items-center gap-2 px-3 py-2   rounded shadow-none">
               <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Filtrado por: <span className="font-bold">{selectedTag}</span></span>
               <button
-                onClick={() => setSelectedTag(null)}
-                className="text-sm  hover:text-black dark:hover:text-white px-2 py-0.5 transition-colors rounded focus:outline-none focus:ring-2 focus:ring-red-200"
+                onClick={() => {
+                  setSelectedTag(null);
+                  window.location.href = window.location.pathname;
+                }}
+                className="text-sm hover:text-black dark:hover:text-white px-2 py-0.5 transition-colors rounded focus:outline-none focus:ring-2 focus:ring-red-200"
                 aria-label="Limpar filtro"
                 title="Limpar filtro"
               >

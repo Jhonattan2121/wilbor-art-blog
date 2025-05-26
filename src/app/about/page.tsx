@@ -2,6 +2,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
@@ -19,11 +20,14 @@ const images = [
 ];
 
 export default function About() {
+  const [fullscreenImg, setFullscreenImg] = useState<string | null>(null);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <section className="max-w-3xl mx-auto">
-        <div className="prose prose-lg max-w-none space-y-6">
-          <h1 className="text-2xl md:text-4xl font-bold mb-6 leading-tight text-left pl-2 md:pl-0 md:text-left">
+    <div className="container mx-auto px-4 sm:px-8 py-6 ">
+      <section>
+        <div className="prose prose-lg space-y-4 sm:space-y-6 prose-invert">
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 leading-tight">
             Wilson Domingues "Wilbor"
           </h1>
 
@@ -31,30 +35,40 @@ export default function About() {
              Conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
           </p>
 
-          <div className="mb-8">
-            <Swiper
-              spaceBetween={50}
-              slidesPerView={1}
-              className="rounded-lg shadow-lg"
-              pagination={{ clickable: true }}
-              modules={[Pagination]}
-            >
-              {images.map((image, index) => (
-                <SwiperSlide key={index}>
-                  <div className="relative w-full h-[300px]">
-                    <Image
-                      src={image}
-                      alt={`Imagem ${index + 1}`}
-                      fill={true}
-                      className="rounded-lg shadow-lg object-contain"
-                      priority
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      style={{ objectFit: 'contain' }}
-                    />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          <div className="my-6 sm:my-10 -mx-4 sm:mx-0">
+            <div className="w-full sm:max-w-2xl">
+              <Swiper
+                spaceBetween={20}
+                slidesPerView={1}
+                pagination={{ 
+                  clickable: true,
+                  bulletActiveClass: 'swiper-pagination-bullet-active bg-white',
+                }}
+                modules={[Pagination]}
+                className="w-full"
+              >
+                {images.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="relative w-full h-[300px] md:h-[500px]">
+                      <Image
+                        src={image}
+                        alt={`Imagem ${index + 1}`}
+                        fill={true}
+                        priority
+                        sizes="(max-width: 768px) 100vw, 640px"
+                        className="object-contain cursor-pointer"
+                        onClick={() => {
+                          if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                            setFullscreenImg(image);
+                            setFullscreenIndex(index);
+                          }
+                        }}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
           </div>
 
           <h2 className="text-2xl font-semibold mt-6 mb-3">Legado na Praça XV</h2>
@@ -91,17 +105,52 @@ export default function About() {
             Sua arte se estende ao design comercial, criando identidades visuais para marcas de skate em shapes, rodas e vestuário. Entre 2009 e 2013, expandiu sua atuação dirigindo conteúdo audiovisual para o Circo Voador, com veiculação na MTV, consolidando sua versatilidade criativa.
           </p>
 
-          <footer className="mt-8 text-center  text-sm">Fotos por Tio Verde, Alex Carvalho, Cauã Csik, Henrique Madeira, Bianca Moraes, Felipe Tavora.</footer>
+          <footer className="mt-8 text-sm text-gray-400">Fotos por Tio Verde, Alex Carvalho, Cauã Csik, Henrique Madeira, Bianca Moraes, Felipe Tavora.</footer>
         </div>
-        <div className="flex justify-center mt-12 mb-8">
+        <div className="flex mt-8 mb-8">
           <a
             href="/projects"
-            className="group bg-black/70 hover:bg-black/90 text-white px-8 py-3 rounded-full text-lg font-medium transition-all flex items-center gap-2"
+            className="group  px-8 py-3 rounded-md text-lg font-medium transition-all flex items-center gap-2"
           >
             Ver Meus projetos →
           </a>
         </div>
       </section>
+
+      {/* Modal de fullscreen para mobile */}
+      {fullscreenImg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
+          <button
+            className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50"
+            onClick={() => setFullscreenImg(null)}
+            aria-label="Fechar imagem em tela cheia"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <Swiper
+            modules={[Pagination]}
+            pagination={{ clickable: true }}
+            initialSlide={fullscreenIndex}
+            onSlideChange={(swiper) => setFullscreenIndex(swiper.activeIndex)}
+            className="w-full h-full"
+          >
+            {images.map((imgSrc, idx) => (
+              <SwiperSlide key={idx}>
+                <div className="flex items-center justify-center h-screen w-screen ">
+                  <img
+                    src={imgSrc}
+                    alt={`Imagem ${idx + 1} em tela cheia`}
+                    style={{ objectFit: 'contain' }}
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
     </div>
   );
 }
