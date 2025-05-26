@@ -28,15 +28,14 @@ export default function About() {
   const goNext = () => setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
 
   return (
-    <div className="max-w-4xl w-full text-left px-4 py-3 md:px-12  space-y-4 sm:space-y-6 mx-0 ">
-      <section>
-        <div className="max-w-4xl w-full text-left space-y-4 sm:space-y-6 mx-0">
-          <p className="text-lg text-gray-600 dark:text-gray-400 text-left w-full" >
-
+    <div className="w-full flex flex-col items-start">
+      <section className="w-full flex flex-col items-start">
+        <div className="w-full max-w-2xl text-left mx-0 px-8 space-y-4 sm:space-y-6">
+          <p className="text-lg text-gray-600 dark:text-gray-400 w-full">
             Conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
           </p>
 
-          <div className="sm:hidden my-3 -mx-2">
+          <div className="sm:hidden my-3 w-full">
             <Swiper
               modules={[Pagination]}
               pagination={{ clickable: true }}
@@ -84,8 +83,8 @@ export default function About() {
             `}</style>
           </div>
 
-          <div className="hidden sm:block my-5 sm:mx-0">
-            <div className="w-full sm:max-w-2xl mx-auto">
+          <div className="hidden sm:block my-5 w-full">
+            <div className="w-full max-w-2xl mx-0 px-8">
               <div className="relative w-full h-[400px] select-none">
                 <Image
                   src={images[currentIndex]}
