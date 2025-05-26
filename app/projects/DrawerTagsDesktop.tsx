@@ -1,6 +1,7 @@
 "use client";
 import IconMenu from '@/app/IconMenu';
 import { clsx } from 'clsx/lite';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }: {
@@ -9,6 +10,14 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
   setSelectedTag: (tag: string | null) => void;
 }) {
   const [showDrawer, setShowDrawer] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const tagFromUrl = searchParams.get('tag');
+    if (tagFromUrl && tags.includes(tagFromUrl) && tagFromUrl !== selectedTag) {
+      setSelectedTag(tagFromUrl);
+    }
+  }, [searchParams, tags, selectedTag, setSelectedTag]);
 
   useEffect(() => {
     if (showDrawer) {
@@ -20,6 +29,19 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
       document.body.style.overflow = '';
     };
   }, [showDrawer]);
+
+  const handleTagSelection = (tag: string | null) => {
+    setSelectedTag(tag);
+    setShowDrawer(false);
+
+    if (tag) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tag', tag);
+      window.history.pushState({}, '', url.toString());
+    } else {
+      window.location.href = window.location.pathname;
+    }
+  };
 
   if (!tags || tags.length === 0) return null;
 
@@ -65,7 +87,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
                 {tags.map(tag => (
                   <button
                     key={tag}
-                    onClick={() => { setSelectedTag(tag); setShowDrawer(false); }}
+                    onClick={() => handleTagSelection(tag)}
                     className={clsx(
                       'w-full text-left px-5 py-2 text-base rounded transition font-medium dark:text-gray-200 bg-white dark:bg-black hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-black dark:hover:text-white',
                       selectedTag === tag && 'bg-gray-200 dark:bg-gray-800 font-bold text-black dark:text-white border-l-4 border-gray-500 dark:border-gray-400'
@@ -79,7 +101,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
               </div>
             </div>
             <button
-              onClick={() => { setSelectedTag(null); setShowDrawer(false); }}
+              onClick={() => handleTagSelection(null)}
               className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
               aria-label="Limpar filtro de tags"
               title="Limpar filtro de tags"
