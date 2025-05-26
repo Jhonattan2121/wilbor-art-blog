@@ -449,17 +449,16 @@ const MediaItem = ({
               <h2 className="flex-1 text-lg sm:text-3xl font-bold text-white tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1.5 sm:p-3 focus:outline-none focus:ring-2 focus:ring-red-200"
+                className="ml-2 sm:ml-6 text-gray-400 hover:text-white rounded-full hover:bg-gray-800 transition-colors p-1 sm:p-2 focus:outline-none focus:ring-2 focus:ring-red-200"
                 aria-label="Fechar"
                 title="Fechar"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
-              {/* Exibe vídeo e carrossel juntos, mas com pouco espaço entre eles */}
               {mainItem.src?.includes(SKATEHIVE_URL) && (
                 <div className="w-full max-w-3xl mx-auto p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
                   <div className="relative w-full aspect-[16/9] p-0 m-0" style={{background: 'none', boxShadow: 'none', borderRadius: 0}}>
@@ -547,7 +546,6 @@ const MediaItem = ({
             </div>
           </div>
         )}
-        {/* Fullscreen image overlay para mobile com dots e blur */}
         {fullscreenImg && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
             <button
@@ -648,7 +646,6 @@ export default function PhotoGridContainer({
         {selectedTag && (
           <div className="mb-4 hidden sm:flex items-center justify-start">
             <div className="flex items-center gap-2 px-3 py-2   rounded shadow-none">
-              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">Filtrado por: <span className="font-bold">{selectedTag}</span></span>
               <button
                 onClick={() => {
                   setSelectedTag(null);
@@ -674,10 +671,10 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden rounded-lg w-full shadow-sm',
                   'transition-all duration-300',
                   isExpanded
-                    ? (hasLargeContentMap[permlink]
-                      ? 'sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-3 h-auto'
-                      : 'sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-2 h-auto')
-                    : 'col-span-1'
+                  ? (hasLargeContentMap[permlink]
+                    ? 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
+                    : 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
+                  : 'col-span-1'
                 )}
                 tabIndex={0}
                 aria-label={`Projeto ${group[0]?.title || ''}`}
