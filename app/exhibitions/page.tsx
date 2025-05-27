@@ -236,10 +236,10 @@ export default function ExhibitionsPage() {
           </ul>
         </div>
 
-        <div className="flex justify-start mt-12 mb-8">
+        <div className="flex mt-8 mb-8">
           <a
             href="/about"
-            className="group bg-black/70 hover:bg-black/90 text-white px-8 py-3 rounded-full text-lg font-medium transition-all flex items-center gap-2"
+            className="group  px-8 py-3 rounded-md text-lg font-medium transition-all flex items-center gap-2"
           >
             Saiba mais sobre o artista →
           </a>
