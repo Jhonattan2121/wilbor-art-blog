@@ -46,3 +46,15 @@ body {
 .markdown-content p:has(span[role="img"]) {
   @apply flex items-center gap-2;
 }
+
+/* Removendo regras globais de overflow e largura agressivas */
+html, body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  width: 100%;
+  max-width: 100vw;
+}
+
+* {
+  box-sizing: border-box;
+}
