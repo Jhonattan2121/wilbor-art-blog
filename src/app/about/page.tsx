@@ -30,7 +30,7 @@ export default function About() {
   return (
     <div className="w-full flex flex-col items-start">
       <section className="w-full flex flex-col items-start">
-        <div className="w-full max-w-2xl text-left mx-0 px-8 space-y-4 sm:space-y-6">
+        <div className="w-full max-w-2xl text-left mx-0 px-3 sm:px-8 space-y-4 sm:space-y-6">
           <p className="text-lg text-gray-600 dark:text-gray-400 w-full">
             Conhecido como Wilbor, é um artista multifacetado do Rio de Janeiro que une skate, arte e audiovisual. Sua jornada começou em 2002 com a direção do primeiro vídeo de street skate carioca "<span className="font-semibold">021 RSRJ</span>". Em 2007, consolidou sua visão com "<span className="font-semibold">Sangue e Suor</span>", um documentário sobre a cena do skate no Rio, que ganhou reconhecimento internacional no festival <span className="italic">Camera Mundo</span> na Holanda.
           </p>
