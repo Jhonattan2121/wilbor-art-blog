@@ -1,6 +1,7 @@
 /* eslint-disable */
 'use client';
 
+import { IconX } from "@/components/IconX";
 import Image from 'next/image';
 import { useState } from 'react';
 import 'swiper/css';
@@ -188,17 +189,13 @@ export default function About() {
         typeof window !== 'undefined' && window.innerWidth < 640 && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
             <button
-              className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
+              className="absolute top-3 right-3 rounded-full p-2.5 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg  hover:rotate-90 transition-all"
               onClick={() => setFullscreenImg(null)}
               aria-label="Fechar"
               title="Fechar"
-              style={{ width: 44, height: 44, background: '#666', border: 'none', boxShadow: 'none' }}
+              style={{ width: 56, height: 56, background: 'transparent', border: 'none', boxShadow: 'none' }}
             >
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="14" r="14" fill="#666" />
-                <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
+              <IconX size={40} />
             </button>
 
             <div className="flex items-center justify-center h-screen w-screen ">
