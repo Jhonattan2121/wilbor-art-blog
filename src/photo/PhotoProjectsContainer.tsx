@@ -1,5 +1,6 @@
 'use client';
 
+import { IconX } from '@/components/IconX';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
@@ -321,10 +322,14 @@ const MediaItem = ({
     <div className={clsx(
       'rounded-lg overflow-hidden h-full group transition-colors duration-100',
       isExpanded && 'border-none',
-      isExpanded
-        ? 'w-full bg-black text-white'
-        : 'cursor-pointer hover:opacity-90 border-l-8 border-r-8 border-t-8 border-black hover:border-white hover:bg-white hover:text-black',
-      'sm:border-l-8 sm:border-r-8 sm:border-t-8 sm:border-black sm:hover:border-white sm:hover:bg-white sm:hover:text-black', // só aplica borda branca no desktop
+      !isExpanded && [
+        'cursor-pointer',
+        'hover:opacity-90',
+        'border-l-8 border-r-8 border-t-8 border-black',
+        'hover:border-white hover:bg-white hover:text-black',
+        'sm:border-l-8 sm:border-r-8 sm:border-t-8 sm:border-black sm:hover:border-white sm:hover:bg-white sm:hover:text-black',
+      ],
+      isExpanded && 'w-full bg-black text-white',
       'border-0 bg-black text-white',
     )}
       onClick={e => {
@@ -466,13 +471,9 @@ const MediaItem = ({
                   className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                   aria-label="Fechar"
                   title="Fechar"
-                style={{ width: 36, height: 36, background: '#666', border: 'none', boxShadow: 'none' }}
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="10" cy="10" r="10" fill="#666" />
-                  <line x1="6" y1="6" x2="14" y2="14" stroke="black" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="14" y1="6" x2="6" y2="14" stroke="black" strokeWidth="2" strokeLinecap="round" />
-                </svg>
+                  style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
+                  >
+                <IconX size={35} />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
@@ -623,13 +624,9 @@ const MediaItem = ({
               className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
               onClick={() => setFullscreenImg(null)}
               aria-label="Fechar imagem em tela cheia"
-              style={{ width: 44, height: 44, background: '#bbb', border: 'none', boxShadow: 'none' }}
-            >
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="14" r="14" fill="#bbb" />
-                <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
+              style={{  background: 'transparent', border: 'none', boxShadow: 'none' }}
+              >
+              <IconX size={38} />
             </button>
             <div className="relative w-full max-w-xl flex flex-col items-center">
               {isMobile ? (

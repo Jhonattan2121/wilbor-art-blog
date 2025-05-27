@@ -1,5 +1,6 @@
 "use client";
 import IconMenu from '@/app/IconMenu';
+import { IconX } from '@/components/IconX';
 import { clsx } from 'clsx/lite';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -77,13 +78,9 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
                 className="mr-auto rounded-full transition-colors p-1 flex items-center justify-center focus:outline-none"
                 aria-label="Fechar"
                 title="Fechar"
-                style={{ width: 44, height: 44, background: '#666', border: 'none', boxShadow: 'none' }}
-              >
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="14" cy="14" r="14" fill="#666" />
-                  <line x1="9" y1="9" x2="19" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="19" y1="9" x2="9" y2="19" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
+                style={{ width: 56, height: 56, background: 'transparent', border: 'none', boxShadow: 'none' }}
+                >
+               <IconX size={35} />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto py-2 bg-white dark:bg-black">
