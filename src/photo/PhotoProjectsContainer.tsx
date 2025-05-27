@@ -316,22 +316,19 @@ const MediaItem = ({
     setIsMobile(typeof window !== 'undefined' && window.innerWidth < 640);
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
   return (
-    <div className={clsx(
-      'rounded-lg overflow-hidden h-full group transition-colors duration-100',
-      isExpanded && 'border-none',
-      !isExpanded && [
-        'cursor-pointer',
-        'hover:opacity-90',
-        'border-l-8 border-r-8 border-t-8 border-black',
-        'hover:border-white hover:bg-white hover:text-black',
-        'sm:border-l-8 sm:border-r-8 sm:border-t-8 sm:border-black sm:hover:border-white sm:hover:bg-white sm:hover:text-black',
-      ],
-      isExpanded && 'w-full bg-black text-white',
-      'border-0 bg-black text-white',
-    )}
+    <div
+      className={clsx(
+        'rounded-lg overflow-hidden h-full group transition-colors duration-100 bg-black text-white',
+        !isExpanded && 'border-t-8 border-l-8 border-r-8 border-b-0 border-black hover:bg-white hover:text-black hover:border-t-white hover:border-l-white hover:border-r-white',
+        isExpanded && 'p-2'
+      )}
       onClick={e => {
         if (!isExpanded) onExpand();
       }}
@@ -533,16 +530,7 @@ const MediaItem = ({
                       <img
                         src={images[fullscreenIndex]}
                         alt="Imagem do post"
-                        className="object-contain absolute top-0 left-0 w-full h-full cursor-pointer select-none"
-                        onClick={e => {
-                          const bounds = (e.target as HTMLElement).getBoundingClientRect();
-                          const x = (e as React.MouseEvent).clientX - bounds.left;
-                          if (x < bounds.width / 3) {
-                            setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
-                          } else if (x > (2 * bounds.width) / 3) {
-                            setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
-                          }
-                        }}
+                        className="object-contain absolute top-0 left-0 w-full h-full cursor-default select-none"
                       />
                       <button
                         className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
@@ -618,7 +606,7 @@ const MediaItem = ({
             </div>
           </div>
         )}
-        {fullscreenImg && (
+        {fullscreenImg && isMobile && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
             <button
               className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
@@ -629,91 +617,43 @@ const MediaItem = ({
               <IconX size={38} />
             </button>
             <div className="relative w-full max-w-xl flex flex-col items-center">
-              {isMobile ? (
-                <div className="w-full">
-                  <Swiper
-                    pagination={{ clickable: true }}
-                    modules={[Pagination]}
-                    initialSlide={fullscreenIndex}
-                    onSlideChange={swiper => setFullscreenIndex(swiper.activeIndex)}
-                    className="w-full h-[80vh]"
-                  >
-                    {images.map((img, idx) => (
-                      <SwiperSlide key={img}>
-                        <div className="flex items-center justify-center w-full h-[80vh] select-none">
-                          <img
-                            src={img}
-                            alt={`Imagem ${idx + 1}`}
-                            className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
-                            style={{ objectFit: 'contain' }}
-                          />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                  <style jsx global>{`
-                    .swiper-pagination-bullet {
-                      width: 10px !important;
-                      height: 10px !important;
-                      margin: 0 3px !important;
-                      background: #fff;
-                      opacity: 0.6;
-                      border: none !important;
-                      transition: all 0.2s;
-                    }
-                    .swiper-pagination-bullet-active {
-                      background: #e11d48 !important;
-                      opacity: 1 !important;
-                    }
-                  `}</style>
-                </div>
-              ) : (
-                <div className="relative w-full flex items-center justify-center">
-                  <img
-                    src={images[fullscreenIndex]}
-                    alt="Imagem em tela cheia"
-                    className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
-                    style={{ objectFit: 'contain' }}
-                    onClick={e => {
-                      const bounds = (e.target as HTMLElement).getBoundingClientRect();
-                      const x = (e as React.MouseEvent).clientX - bounds.left;
-                      if (x < bounds.width / 3) {
-                        setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1);
-                      } else if (x > (2 * bounds.width) / 3) {
-                        setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1);
-                      }
-                    }}
-                  />
-                  <button
-                    className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                    tabIndex={-1}
-                    style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                    onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
-                    aria-label="Imagem anterior"
-                  />
-                  <button
-                    className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                    tabIndex={-1}
-                    style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                    onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
-                    aria-label="Próxima imagem"
-                  />
-                  <div className="flex gap-2 mt-4 absolute bottom-4 left-1/2 -translate-x-1/2">
-                    {images.map((_, idx) => (
-                      <button
-                        key={idx}
-                        className={`w-4 h-4 rounded-full border-2 border-red-500 flex items-center justify-center transition-all duration-200 ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-transparent'}`}
-                        onClick={() => setFullscreenIndex(idx)}
-                        aria-label={`Ir para imagem ${idx + 1}`}
-                      >
-                        {idx === fullscreenIndex && (
-                          <span className="block w-1.5 h-1.5 bg-white rounded-full" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div className="w-full">
+                <Swiper
+                  pagination={{ clickable: true }}
+                  modules={[Pagination]}
+                  initialSlide={fullscreenIndex}
+                  onSlideChange={swiper => setFullscreenIndex(swiper.activeIndex)}
+                  className="w-full h-[80vh]"
+                >
+                  {images.map((img, idx) => (
+                    <SwiperSlide key={img}>
+                      <div className="flex items-center justify-center w-full h-[80vh] select-none">
+                        <img
+                          src={img}
+                          alt={`Imagem ${idx + 1}`}
+                          className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
+                          style={{ objectFit: 'contain' }}
+                        />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+                <style jsx global>{`
+                  .swiper-pagination-bullet {
+                    width: 10px !important;
+                    height: 10px !important;
+                    margin: 0 3px !important;
+                    background: #fff;
+                    opacity: 0.6;
+                    border: none !important;
+                    transition: all 0.2s;
+                  }
+                  .swiper-pagination-bullet-active {
+                    background: #e11d48 !important;
+                    opacity: 1 !important;
+                  }
+                `}</style>
+              </div>
             </div>
           </div>
         )}
