@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   publisher: 'Wilbor Art',
   icons: [{
     rel: 'icon',
-    url: '/favicons/icon.png',
+    url: '/favicons/FAVCOM_WILBOR.png',
     type: 'image/png',
     sizes: '32x32'
   }, {
@@ -87,7 +87,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <link rel="icon" type="image/png" href="/favicons/icon.png" />
+        <link rel="icon" type="image/png" href="/favicons/FAVCOM_WILBOR.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon.png" />
       </head>
       <body className="bg-main">
