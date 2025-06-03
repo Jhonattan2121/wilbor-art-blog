@@ -19,62 +19,7 @@ import { Metadata } from 'next/types';
 import BannerWilbor from "../public/wilborPhotos/bannerWilbor.png";
 import '../tailwind.css';
 import JsonLd from './components/JsonLd';
-
-export const metadata: Metadata = {
-  title: SITE_TITLE,
-  description: SITE_DESCRIPTION,
-  ...BASE_URL && { metadataBase: new URL(BASE_URL) },
-  openGraph: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    type: 'website',
-    locale: 'pt_BR',
-    url: BASE_URL,
-    siteName: SITE_TITLE,
-    images: [
-      {
-        url: `${BASE_URL}/wilborPhotos/bannerWilbor.png`,
-        width: 1200,
-        height: 630,
-        alt: 'Wilbor Art'
-      }
-    ]
-  },
-  twitter: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    card: 'summary_large_image',
-    images: [`${BASE_URL}/wilborPhotos/bannerWilbor.png`],
-    creator: '@wilborart'
-  },
-  alternates: {
-    canonical: BASE_URL,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  keywords: ['Wilbor Art', 'Arte', 'Fotografia', 'Design', 'Projetos Artísticos', 'Portfolio'],
-  authors: [{ name: 'Wilbor Art' }],
-  creator: 'Wilbor Art',
-  publisher: 'Wilbor Art',
-  icons: [{
-    rel: 'icon',
-    url: '/favicons/FAVCOM_WILBOR.png',
-    type: 'image/png',
-    sizes: '32x32'
-  }, {
-    rel: 'apple-touch-icon',
-    url: '/favicons/favicon.png',
-    sizes: '180x180'
-  }],
-};
+import DashboardPage from './dashboard/page';
 
 export default function RootLayout({
   children,
@@ -94,32 +39,8 @@ export default function RootLayout({
         <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
             <SwrConfigClient>
-              <div className="w-full px-4 sm:px-8 pt-4">
-                <div className="w-full flex justify-start">
-                  <Link href="/projects">
-                    <Image
-                      src={BannerWilbor}
-                      alt="Wilbor Art Logo"
-                      className="h-24 sm:h-32 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
-                    />
-                  </Link>
-                </div>
-              </div>
-              <main >
-                <div className="flex flex-col items-center">
-                </div>
-                {/* <Nav siteDomainOrTitle="" /> */}
-                <div >
-                  <ShareModals />
-                  {children}
-                </div>
-                <Footer />
-              </main>
-              {/* <CommandK /> */}
+              <DashboardPage />
             </SwrConfigClient>
-            <Analytics debug={false} />
-            <SpeedInsights debug={false} />
-            <PhotoEscapeHandler />
             <ToasterWithThemes />
             <JsonLd type="website" />
           </ThemeProvider>

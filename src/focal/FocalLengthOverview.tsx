@@ -21,7 +21,6 @@ export default function FocalLengthOverview({
 
   return (
     <PhotoGridContainer
-      cacheKey={`focal-${focal}`}
       media={photos.map(photo => ({
         id: photo.id,
         url: photo.url,
@@ -44,7 +43,6 @@ export default function FocalLengthOverview({
         photos={photos}
         count={count}
         dateRange={dateRange} />}
-      animateOnFirstLoadOnly={animateOnFirstLoadOnly}
       sidebar={undefined}
       selectedTag={selectedTag}
       setSelectedTag={setSelectedTag}

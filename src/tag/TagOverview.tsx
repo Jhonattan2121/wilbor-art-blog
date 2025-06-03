@@ -38,7 +38,6 @@ export default function TagOverview({
           body: photo.hiveMetadata.body || ''
         }
       }))}
-      cacheKey={`tag-${tag}`}
       header={
         <TagHeader
           tag={tag}
@@ -47,7 +46,6 @@ export default function TagOverview({
           dateRange={dateRange}
         />
       }
-      animateOnFirstLoadOnly={animateOnFirstLoadOnly}
       selectedTag={selectedTag}
       setSelectedTag={setSelectedTag}
     />

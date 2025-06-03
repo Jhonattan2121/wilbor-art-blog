@@ -1,10 +1,13 @@
-import { POSTGRES_SSL_ENABLED } from '@/app/config';
-import { Pool, QueryResult, QueryResultRow } from 'pg'; 
+import { HAS_DATABASE, POSTGRES_SSL_ENABLED } from '@/app/config';
+import { Pool, QueryResult, QueryResultRow } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.POSTGRES_URL,
-  ...POSTGRES_SSL_ENABLED && { ssl: true },
-});
+// Criando o pool apenas se houver uma URL de banco de dados configurada
+const pool = HAS_DATABASE 
+  ? new Pool({
+      connectionString: process.env.POSTGRES_URL,
+      ...POSTGRES_SSL_ENABLED && { ssl: true },
+    })
+  : null;
 
 export type Primitive = string | number | boolean | undefined | null;
 
@@ -12,6 +15,25 @@ export const query = async <T extends QueryResultRow = any>(
   queryString: string,
   values: Primitive[] = [],
 ) => {
+  if (!pool) {
+    if (queryString.toUpperCase().includes('COUNT(*)')) {
+      return { 
+        rows: [{ count: '0' } as unknown as T],
+        command: '', 
+        rowCount: 1, 
+        oid: 0, 
+        fields: [],
+      } as QueryResult<T>;
+    }
+    return { 
+      rows: [] as T[], 
+      command: '', 
+      rowCount: 0, 
+      oid: 0, 
+      fields: [],
+    } as QueryResult<T>;
+  }
+  
   const client = await pool.connect();
   let response: QueryResult<T>;
   try {

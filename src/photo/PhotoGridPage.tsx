@@ -4,8 +4,8 @@ import { FilmSimulations } from '@/simulation';
 import { useAppState } from '@/state/AppState';
 import { Tags } from '@/tag';
 import { useEffect } from 'react';
-import PhotoGridContainer from './PhotoProjectsContainer';
 import { Photo } from './components/types';
+import PhotoGridContainer from './PhotoProjectsContainer';
 
 const PATH_GRID_INFERRED = 'projects';
 
@@ -16,15 +16,21 @@ export default function PhotoGridPage({
   cameras,
   simulations,
   selectedTag,
-  setSelectedTag
+  setSelectedTag,
+  username,
+  postingKey,
+  isEditMode
 }: {
-  photos: Photo[]
-  photosCount: number
-  tags: Tags
-  cameras: Cameras
-  simulations: FilmSimulations
-  selectedTag: string | null
-  setSelectedTag: (tag: string | null) => void
+  photos: Photo[],
+  photosCount: number,
+  tags: Tags,
+  cameras: Cameras,
+  simulations: FilmSimulations,
+  selectedTag: string | null,
+  setSelectedTag: (tag: string | null) => void,
+  username?: string | null,
+  postingKey?: string | null,
+  isEditMode?: boolean
 }) {
   const { setSelectedPhotoIds } = useAppState();
 
@@ -41,7 +47,6 @@ export default function PhotoGridPage({
     <>
       <div >
         <PhotoGridContainer
-          cacheKey={`page-${PATH_GRID_INFERRED}`}
           media={photos.map(photo => ({
             ...photo,
             type: photo.type === 'video' ? 'video' : 'photo',
@@ -49,9 +54,11 @@ export default function PhotoGridPage({
             videoUrl: photo.type === 'video' ? photo.src : undefined
           }))}
           sidebar={undefined}
-          canSelect
           selectedTag={selectedTag}
           setSelectedTag={setSelectedTag}
+          username={username}
+          postingKey={postingKey}
+          isEditMode={isEditMode}
         />
       </div>
     </>

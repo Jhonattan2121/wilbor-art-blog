@@ -23,8 +23,6 @@ export default function FilmSimulationOverview({
   return (
     <PhotoGridContainer
       media={[]}
-      cacheKey={`simulation-${simulation}`}
-     
    
       header={
         <FilmSimulationHeader
@@ -34,7 +32,6 @@ export default function FilmSimulationOverview({
           dateRange={dateRange}
         />
       }
-      animateOnFirstLoadOnly={animateOnFirstLoadOnly}
       selectedTag={selectedTag}
       setSelectedTag={setSelectedTag}
     />

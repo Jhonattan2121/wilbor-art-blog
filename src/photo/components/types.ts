@@ -63,10 +63,10 @@ export interface Media {
 }
 
 export interface PhotoGridContainerProps {
-  cacheKey: string;
-  media: Media[];
-  sidebar?: JSX.Element;
-  canSelect?: boolean;
-  header?: JSX.Element;
-  animateOnFirstLoadOnly?: boolean;
+  sidebar?: React.ReactNode;
+  media?: Media[];
+  header?: React.ReactNode;
+  username?: string | null;
+  postingKey?: string | null;
+  isEditMode?: boolean;
 }
