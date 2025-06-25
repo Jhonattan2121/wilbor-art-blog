@@ -13,6 +13,7 @@ import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Media, PhotoGridContainerProps } from './components/types';
+import { extractImagesFromMarkdown } from './components/markdownUtils';
 
 const formatPinataUrl = (url: string): string => {
   if (!url) return '';
@@ -474,16 +475,31 @@ const MediaItem = ({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
-              {mainItem.src?.includes(SKATEHIVE_URL) && (
-                <div className="w-full max-w-3xl mx-auto p-0 m-0 mb-6" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
-                  <div className="relative w-full aspect-[16/9] p-0 m-0" style={{ background: 'none', boxShadow: 'none', borderRadius: 0 }}>
-                    <VideoWithFullPoster
-                      src={mainItem.src}
-                      poster={updatedThumbnail || thumbnailUrl || mainItem.thumbnailSrc || ''}
-                    />
-                  </div>
-                </div>
-              )}
+              {(() => {
+                const videoRegex = /<video[^>]*src=["']([^"'>]+)["'][^>]*>/g;
+                const videos: string[] = [];
+                let match;
+                if (mainItem.hiveMetadata?.body) {
+                  while ((match = videoRegex.exec(mainItem.hiveMetadata.body)) !== null) {
+                    videos.push(match[1]);
+                  }
+                }
+                if (videos.length > 0) {
+                  return (
+                    <div className="w-full max-w-3xl mx-auto mb-6">
+                      {videos.map((src, idx) => (
+                        <video
+                          key={src + idx}
+                          src={src}
+                          controls
+                          className="w-full my-4 rounded-lg bg-black"
+                        />
+                      ))}
+                    </div>
+                  );
+                }
+                return null;
+              })()}
               {images.length > 0 && (
                 isMobile ? (
                   <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
@@ -662,17 +678,6 @@ const MediaItem = ({
   );
 };
 
-function extractImagesFromMarkdown(markdown: string): string[] {
-  if (!markdown) return [];
-  const imageRegex = /!\[.*?\]\((.*?)\)/g;
-  const images: string[] = [];
-  let match;
-  while ((match = imageRegex.exec(markdown)) !== null) {
-    const imageUrl = formatPinataUrl(match[1]);
-    images.push(imageUrl);
-  }
-  return images;
-}
 
 export default function PhotoGridContainer({
   sidebar,
