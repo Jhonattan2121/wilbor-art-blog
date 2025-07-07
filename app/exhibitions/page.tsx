@@ -1,245 +1,267 @@
-import { createMetadata } from '@/utility/metadata';
-import { Metadata } from 'next/types';
+'use client';
+
+import { getPostsByBlog, getUserAccount } from "@/../lib/hive/hive-client";
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { A11y, Navigation, Pagination, Scrollbar } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import ViewSwitcher from '../../src/app/ViewSwitcher';
-import JsonLd from '../components/JsonLd';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+
+import '@/styles/exhibitions.css';
+
+const TITLE_KEYWORDS = [
+  'exposições',
+  'exhibitions',
+  'exibições',
+];
 
 export const dynamic = 'force-static';
 export const maxDuration = 60;
 
-export async function generateMetadata(): Promise<Metadata> {
-  return createMetadata({
-    title: 'Exposições e Exibições',
-    description: 'Exposições, exibições e prêmios de Wilson Domingues "Wilbor", incluindo mostras internacionais na Europa, Ásia e América do Norte, e participações em festivais de cinema.',
-    path: '/exhibitions'
-  });
+interface HivePost {
+  title: string;
+  body: string;
+  author: string;
+  permlink: string;
+  created: string;
+  json_metadata: string;
+  url: string;
+}
+
+function extractMediaFromPost(post: any) {
+  const images: string[] = [];
+  const videos: string[] = [];
+  
+  if (post.json_metadata) {
+    let meta;
+    try {
+      meta = typeof post.json_metadata === 'string' ? JSON.parse(post.json_metadata) : post.json_metadata;
+      if (meta && Array.isArray(meta.image)) {
+        images.push(...meta.image);
+      }
+      if (meta && Array.isArray(meta.video)) {
+        videos.push(...meta.video);
+      }
+    } catch {}
+  }
+  
+  if (post.body) {
+    const imgRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
+    let match;
+    while ((match = imgRegex.exec(post.body))) {
+      images.push(match[1]);
+    }
+    
+    const videoRegex = /<video[^>]*src=["']([^"'>\s]+)["'][^>]*>/g;
+    while ((match = videoRegex.exec(post.body))) {
+      videos.push(match[1]);
+    }
+  }
+  
+  return { 
+    images: Array.from(new Set(images)),
+    videos: Array.from(new Set(videos))
+  };
+}
+
+function formatExhibitionBody(body: string): string {
+  if (!body.includes('#') && !body.includes('---')) {
+    const lines = body.trim().split('\n');
+    let formattedBody = '';
+    
+    if (lines.length >= 3) {
+      const title = lines[0];
+      formattedBody = `## ${title}\n\n`;
+      
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim()) {
+          formattedBody += `${lines[i]}\n`;
+        }
+      }
+      
+      formattedBody += '\n---\n';
+    } else {
+      formattedBody = body;
+    }
+    
+    return formattedBody;
+  }
+  
+  return body;
+}
+
+function useDynamicExhibitionsPost(username: string) {
+  const [posts, setPosts] = useState<HivePost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    
+    (async () => {
+      try {
+        console.log(`Buscando posts de exposições para o usuário: ${username}`);
+        
+        const userAccount = await getUserAccount(username);
+        if (!userAccount) {
+          setError(`Usuário '${username}' não encontrado no Hive.`);
+          setLoading(false);
+          return;
+        }
+        
+        console.log(`Usuário ${username} encontrado, buscando posts...`);
+        const allPosts = await getPostsByBlog(username);
+        console.log(`Total de posts encontrados: ${allPosts.length}`);
+        console.log('Títulos dos posts:', allPosts.map((p: any) => p.title));
+        
+        const matchingPosts = allPosts.filter((post: any) =>
+          post.title && TITLE_KEYWORDS.some(keyword =>
+            post.title.toLowerCase().includes(keyword.toLowerCase())
+          )
+        );
+        
+        console.log(`Posts filtrados: ${matchingPosts.length}`);
+        console.log('Títulos filtrados:', matchingPosts.map((p: any) => p.title));
+        
+        if (matchingPosts.length > 0) {
+          setPosts(matchingPosts);
+        } else {
+          console.log('Nenhum post específico encontrado, mostrando posts recentes');
+          setPosts(allPosts.slice(0, 5));
+        }
+      } catch (err) {
+        console.error('Erro ao buscar posts:', err);
+        setError('Erro ao buscar posts do usuário.');
+      }
+      setLoading(false);
+    })();
+  }, [username]);
+
+  return { posts, loading, error };
 }
 
 export default function ExhibitionsPage() {
+  const { posts: hivePosts, loading, error } = useDynamicExhibitionsPost(process.env.NEXT_PUBLIC_HIVE_USERNAME || '');
+
   return (
     <>
       <ViewSwitcher currentSelection="exhibitions" />
-      <div className="w-full px-4 sm:px-8 pt-4 md:px-12 py-12  dark:text-gray-200 text-left">
-        <JsonLd
-          type="breadcrumb"
-          data={{
-            path: '/exhibitions',
-            currentPage: 'Exposições e Exibições'
-          }}
-        />
-        <JsonLd
-          type="article"
-          data={{
-            title: 'Exposições, Exibições e Prêmios - Wilbor Art',
-            description: 'Histórico de exposições, exibições e prêmios de Wilson Domingues "Wilbor", artista multifacetado do Rio de Janeiro',
-            datePublished: '2023-01-01T00:00:00Z'
-          }}
-        />
-
-        <div className="max-w-4xl w-full text-left space-y-4 sm:space-y-6 mx-0">
-          <div className="space-y-12 text-left">
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">07/05/22</div>
-              <h2 className="text-2xl font-bold">MULTIVERSO COLABORATIVO</h2>
-              <h3 className="text-xl font-semibold mb-2">IMAGINÁRIO PERIFÉRICO - 20 anos</h3>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Instalação &quot;Rap do Surfista&quot;</p>
-              <p className="text-gray-500 dark:text-gray-400">Centro Cultural Capiberibe 27</p>
-              <p className="text-gray-500 dark:text-gray-400">Santo Cristo - Rio de Janeiro - RJ</p>
+      <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
+      
+        <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
+          
+          {!loading && !error && hivePosts.length > 0 && (
+            <div className="space-y-3">
+              {hivePosts.map((post, index) => {
+                const media = extractMediaFromPost(post);
+                
+                return (
+                  <article key={post.permlink} className="mb-6 p-3">
+                    <div className="space-y-0">
+                      {media.images.length > 0 && (
+                        <div className="w-full mb-2">
+                          {media.images.length === 1 ? (
+                            <div className="relative w-full h-60 sm:h-80 rounded-lg overflow-hidden">
+                              <Image
+                                src={media.images[0]}
+                                alt={`Imagem do post: ${post.title}`}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 100vw, 100vw"
+                                unoptimized
+                              />
+                            </div>
+                          ) : (
+                            <Swiper
+                              modules={[Navigation, Pagination, Scrollbar, A11y]}
+                              spaceBetween={10}
+                              slidesPerView={1}
+                              navigation
+                              pagination={{ clickable: true }}
+                              scrollbar={{ draggable: true }}
+                              className="w-full h-60 sm:h-80 rounded-lg overflow-hidden"
+                            >
+                              {media.images.map((img, imgIndex) => (
+                                <SwiperSlide key={imgIndex}>
+                                  <div className="relative w-full h-full">
+                                    <Image
+                                      src={img}
+                                      alt={`Imagem ${imgIndex + 1} do post: ${post.title}`}
+                                      fill
+                                      className="object-cover"
+                                      sizes="(max-width: 768px) 100vw, 100vw"
+                                      unoptimized
+                                    />
+                                  </div>
+                                </SwiperSlide>
+                              ))}
+                            </Swiper>
+                          )}
+                        </div>
+                      )}
+                      
+                      {media.videos.length > 0 && (
+                        <div className="grid grid-cols-1 gap-4">
+                          {media.videos.map((video, videoIndex) => (
+                            <div key={videoIndex} className="relative w-full">
+                              <video 
+                                src={video}
+                                controls
+                                className="w-full rounded-lg"
+                                style={{ maxHeight: '400px' }}
+                              >
+                                Seu navegador não suporta o elemento de vídeo.
+                              </video>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div className="prose prose-lg dark:prose-invert max-w-none exhibition-content">
+                        <div 
+                          className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg"
+                          dangerouslySetInnerHTML={{
+                            __html: formatExhibitionBody(post.body)
+                              .replace(/!\[.*?\]\(.*?\)/g, '')
+                              .replace(/^---+$/gm, '<hr class="exhibition-divider" />')
+                              .replace(/^(###?)\s+(.*?)$/gm, '<h3 class="exhibition-heading text-xl font-semibold mb-2">$2</h3>')
+                              .replace(/^(##)\s+(.*?)$/gm, '<h2 class="exhibition-heading text-2xl font-bold">$2</h2>')
+                              .replace(/^(#)\s+(.*?)$/gm, '<h1 class="exhibition-heading text-3xl font-bold">$2</h1>')
+                              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                              .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                              .replace(/\n\n/g, '</p><p>')
+                              .replace(/\n/g, '<br>')
+                              .replace(/^/, '<p>')
+                              .replace(/$/, '</p>')
+                              .replace(/<p><h([1-3])/g, '<h$1')
+                              .replace(/<\/h([1-3])><\/p>/g, '</h$1>')
+                              .replace(/<p><hr/g, '<hr')
+                              .replace(/hr\/><\/p>/g, 'hr/>')
+                          }}
+                        />
+                      </div>
+                      
+                      {index < hivePosts.length - 1 && (
+                        <hr className="border-t border-gray-200 dark:border-gray-700 my-4" />
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">21/03/21</div>
-              <h2 className="text-2xl font-bold">ARQUIVO PANDEMIA</h2>
-              <p className="mb-2 text-gray-700 dark:text-gray-300">Diários íntimos, recortes poéticos, históricos, geográficos, políticos, antropológicos, artísticos, psicossociais do isolamento.</p>
-              <p className="text-gray-500 dark:text-gray-400">UNIVERSIDADE FEDERAL DE MINAS GERAIS</p>
-              <p className="text-gray-500 dark:text-gray-400">EDITORA UFMG</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">17/07/2018</div>
-              <h2 className="text-2xl font-bold">UniVERSOS</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Cinema estação NET RIO</p>
-              <p className="text-gray-700 dark:text-gray-300">Documentário</p>
-              <p className="text-gray-700 dark:text-gray-300">Mv Bill/Baco Exu do Blues/Sant/ADL</p>
-              <p className="text-gray-500 dark:text-gray-400">17min HD áudio 5.1</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">14/05/2018</div>
-              <h2 className="text-2xl font-bold">Absurdo é ter medo</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Galeria Novos Pretos de Arte Contemporãnea</p>
-              <p className="text-gray-500 dark:text-gray-400">Curadodor Marco Antônio Teobaldo</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">28/01/2018</div>
-              <h2 className="text-2xl font-bold">SKATE ART ATTACK</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Exposição coletiva</p>
-              <p className="text-gray-500 dark:text-gray-400">Espaço cultural Glicerina</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">02/2017</div>
-              <h2 className="text-2xl font-bold">Obra Utopia</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Estréia no Canal Biz</p>
-              <p className="text-gray-700 dark:text-gray-300">Musical com a banda Braza</p>
-              <p className="text-gray-500 dark:text-gray-400">22min HD Stereo</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">01/2017</div>
-              <h2 className="text-2xl font-bold">Brasil Observer - London - UK</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Selected to make the cover of the &quot;Brasil Observer&quot; magazine</p>
-              <p className="text-gray-500 dark:text-gray-400">and expose the original work in London in February 2018</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">01/2017</div>
-              <h2 className="text-2xl font-bold">Despina - Largo das Artes Gallery - Rio de Janeiro - Brazil</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Self Service</p>
-              <p className="text-gray-700 dark:text-gray-300">Collective Exhibition with resident artists</p>
-              <p className="text-gray-500 dark:text-gray-400">Frottage, audio</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">01/2017</div>
-              <h2 className="text-2xl font-bold">Graffiti on Debate</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Tatoo Week - Rio de Janeiro - Brasil</p>
-              <p className="text-gray-500 dark:text-gray-400">Debate about public interventions</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">12/2016</div>
-              <h2 className="text-2xl font-bold">Seminar on Tourism of Urban Parks and Cultural Centers</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Federal Fluminense University - Rio de Janeiro - Brazil</p>
-              <p className="text-gray-500 dark:text-gray-400">Debate about public interventions</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">12/2016</div>
-              <h2 className="text-2xl font-bold">Celeiro Gallery - Niterói - Rio de Janeiro - Brazil</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Atual</p>
-              <p className="text-gray-700 dark:text-gray-300">Collective Exhibition</p>
-              <p className="text-gray-500 dark:text-gray-400">Prints</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">12/2016</div>
-              <h2 className="text-2xl font-bold">No Quintal Gallery - Rio de Janeiro - Brazil</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Pegada Gráfica</p>
-              <p className="text-gray-500 dark:text-gray-400">Collective Exhibition with Fernando Mira</p>
-            </div>
-          </div>
-
-          <div className="space-y-12 text-left">
-            {/* Segunda coluna de exposições */}
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">10/2016</div>
-              <h2 className="text-2xl font-bold">Arte Core - Museum of Modern Art - Rio de Janeiro - Brasil</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Collective - XV Collective of Skateboard Community</p>
-              <p className="text-gray-500 dark:text-gray-400">Wood with griptape peace, Matrices and Prints</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">08/2016</div>
-              <h2 className="text-2xl font-bold">Cidades Invisíveis / Frete Grátis - Despina / Largo das Artes</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Rio de Janeiro - Brasil</p>
-              <p className="text-gray-700 dark:text-gray-300">Collective</p>
-              <p className="text-gray-500 dark:text-gray-400">Draw, T-shirt and Vídeo Box</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">02/2016</div>
-              <h2 className="text-2xl font-bold">The Skateboard Museum - Berlin - Germany</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Collective - The Art of Skateboarding</p>
-              <p className="text-gray-500 dark:text-gray-400">Print donated to The Skateboard Museum collection</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">02/2016</div>
-              <h2 className="text-2xl font-bold">Focus Tatoo Cine - Tatoo Week - Rio de Janeiro - Brasil</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Festival of Independent Films</p>
-              <p className="text-gray-500 dark:text-gray-400">O Processo #2 - 3:46min</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">04/2015</div>
-              <h2 className="text-2xl font-bold">Black Bear - Brooklyn - New York - EUA</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Carve / Solo</p>
-              <p className="text-gray-500 dark:text-gray-400">Matrices, prints and videos</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">04/2014</div>
-              <h2 className="text-2xl font-bold">GaleRio - Mural commissioned by the city of Rio de Janeiro</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Situated on metro line in Coelho Neto in the North Zone of Rio</p>
-              <p className="text-gray-500 dark:text-gray-400">15m x 3m</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">02/2014</div>
-              <h2 className="text-2xl font-bold">MAR- Art Museum of Rio</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Deslize Surf / Skate - international collective exhibition</p>
-              <p className="text-gray-500 dark:text-gray-400">Curator and film screenings</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">11/2013</div>
-              <h2 className="text-2xl font-bold">Bethahaus – Moritsplatz – Berlin - Germany</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Mocambo – Partnership with photographer Bocarras - Mozambique</p>
-              <p className="text-gray-500 dark:text-gray-400">Matrices and prints</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">10/2013</div>
-              <h2 className="text-2xl font-bold">Skateboard Museum Stuttgart - Alemanha</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">2 pieces to the collection</p>
-              <p className="text-gray-700 dark:text-gray-300">Print - processo #2</p>
-              <p className="text-gray-500 dark:text-gray-400">Skateboard Deck with griptape - coquetel molotov</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">10/2013</div>
-              <h2 className="text-2xl font-bold">II Hong Kong Open Printshop – China</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">Print – Mahmundi</p>
-              <p className="text-gray-500 dark:text-gray-400">Exhibition and catalog</p>
-            </div>
-
-            <div className="exhibition-item text-left">
-              <div className="text-red-500 font-semibold mb-2">07/2013</div>
-              <h2 className="text-2xl font-bold">Art Museum of Prahova – Romênia</h2>
-              <p className="mb-1 text-gray-700 dark:text-gray-300">X International Biennial of Contemporary Engraving</p>
-              <p className="text-gray-500 dark:text-gray-400">Exhibition and catalog</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-6 text-left">PUBLICAÇÕES</h2>
-          <ul className="list-disc pl-6 space-y-3 text-gray-700 dark:text-gray-300 text-left">
-            <li>
-              <span className="font-semibold">2015 - </span>
-              Dumbo Magazine - <a href="https://dumbomagazine.com/2015/05/01/wilbor/" className="text-red-500 hover:text-red-600" target="_blank" rel="noopener noreferrer">https://dumbomagazine.com/2015/05/01/wilbor/</a>
-            </li>
-            <li>
-              <span className="font-semibold">2014 - </span>
-              Das Artes - issue 30 - Materia sobre a coletiva Deslize
-            </li>
-            <li>
-              <span className="font-semibold">2012 - </span>
-              Vista – issue 43 - Page 38 until 45
-            </li>
-            <li>
-              <span className="font-semibold">2011 - </span>
-              Inside The World Of Board Graphics - Publishing Modern Dog USA
-            </li>
-          </ul>
+          )}
         </div>
 
         <div className="flex mt-8 mb-8">
           <a
             href="/about"
-            className="group  px-8 py-3 rounded-md text-lg font-medium transition-all flex items-center gap-2"
+            className="group px-8 py-3 rounded-md text-lg font-medium transition-all flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg"
           >
             Saiba mais sobre o artista →
           </a>

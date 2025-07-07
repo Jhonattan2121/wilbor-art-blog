@@ -1,0 +1,74 @@
+.exhibition-content {
+  margin-top: 0;
+}
+
+.exhibition-content h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+  color: #f3f4f6;
+  line-height: 1.2;
+}
+
+.exhibition-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+  color: #f3f4f6;
+  line-height: 1.2;
+}
+
+.exhibition-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 0.125rem;
+  margin-bottom: 0;
+  color: #f3f4f6;
+  line-height: 1.2;
+}
+
+.exhibition-content p {
+  margin-bottom: 0;
+  margin-top: 0;
+  line-height: 1.2;
+  padding-bottom: 0.125rem;
+}
+
+.exhibition-content p:last-of-type {
+  margin-bottom: 0.125rem;
+}
+
+.exhibition-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0.25rem 0;
+  opacity: 0.6;
+}
+
+.dark .exhibition-divider {
+  border-top-color: #374151;
+}
+
+.exhibition-content h1,
+.exhibition-content h2,
+.exhibition-content h3 {
+  color: #1f2937;
+}
+
+.dark .exhibition-content h1,
+.dark .exhibition-content h2,
+.dark .exhibition-content h3 {
+  color: #f3f4f6;
+}
+
+.exhibition-date {
+  color: #ef4444;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.dark .exhibition-date {
+  color: #f87171;
+}
