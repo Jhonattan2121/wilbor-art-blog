@@ -119,3 +119,57 @@ export async function getPostsByAuthor(username: string) {
     throw error;
   }
 }
+
+export async function getPostsByBlog(username: string, limit = 20) {
+  try {
+    const response = await fetchWithTimeout('https://api.hive.blog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'condenser_api.get_discussions_by_blog',
+        params: [{ tag: username, limit }],
+        id: 1,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.result || [];
+  } catch (error) {
+    console.error('Error fetching posts by blog:', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+    throw error;
+  }
+}
+
+export async function getUserAccount(username: string) {
+  try {
+    const response = await fetchWithTimeout('https://api.hive.blog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'condenser_api.get_accounts',
+        params: [[username]],
+        id: 1,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.result && data.result.length > 0 ? data.result[0] : null;
+  } catch (error) {
+    console.error('Error fetching user account:', 
+      error instanceof Error ? error.message : 'Unknown error'
+    );
+    return null;
+  }
+}
