@@ -261,7 +261,6 @@ export default function ExhibitionsPage() {
         <div className="flex mt-8 mb-8">
           <a
             href="/about"
-            className="group px-8 py-3 rounded-md text-lg font-medium transition-all flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg"
           >
             Saiba mais sobre o artista →
           </a>
