@@ -1,0 +1,36 @@
+.partner-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+  color: #f3f4f6;
+  line-height: 1.2;
+}
+
+.partner-divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 0.25rem 0;
+  opacity: 0.6;
+}
+
+.dark .partner-divider {
+  border-top-color: #374151;
+}
+
+.partner-date {
+  color: #ef4444;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.dark .partner-date {
+  color: #f87171;
+}
+
+.partner-content p {
+  margin-bottom: 0;
+  margin-top: 0;
+  line-height: 1.2;
+  padding-bottom: 0.125rem;
+}
