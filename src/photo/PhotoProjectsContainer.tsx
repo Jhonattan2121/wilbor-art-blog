@@ -1,6 +1,7 @@
 'use client';
 
 import { IconX } from '@/components/IconX';
+import ProjectImageCarousel from '@/components/ProjectImageCarousel';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
@@ -12,8 +13,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Media, PhotoGridContainerProps } from './components/types';
 import { extractImagesFromMarkdown } from './components/markdownUtils';
+import { Media, PhotoGridContainerProps } from './components/types';
 
 const formatPinataUrl = (url: string): string => {
   if (!url) return '';
@@ -501,82 +502,14 @@ const MediaItem = ({
                 return null;
               })()}
               {images.length > 0 && (
-                isMobile ? (
-                  <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
-                    <Swiper
-                      pagination={{ clickable: true }}
-                      modules={[Pagination]}
-                      className="w-full h-[320px]"
-                    >
-                      {images.map((img, idx) => (
-                        <SwiperSlide key={img}>
-                          <div className="relative w-full h-[260px] select-none">
-                            <img
-                              src={img}
-                              alt={`Imagem ${idx + 1}`}
-                              className="object-contain absolute top-0 left-0 w-full h-full cursor-pointer select-none"
-                              onClick={() => {
-                                setFullscreenImg(img);
-                                setFullscreenIndex(idx);
-                              }}
-                            />
-                          </div>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                    <style jsx global>{`
-                      .swiper-pagination-bullet {
-                        width: 10px !important;
-                        height: 10px !important;
-                        margin: 0 3px !important;
-                        background: #fff;
-                        opacity: 0.6;
-                        border: none !important;
-                        transition: all 0.2s;
-                      }
-                      .swiper-pagination-bullet-active {
-                        background: #e11d48 !important;
-                        opacity: 1 !important;
-                      }
-                    `}</style>
-                  </div>
-                ) : (
-                  <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
-                    <div className="relative w-full aspect-[4/3] sm:aspect-[5/4] p-0 m-0 flex items-center justify-center">
-                      <img
-                        src={images[fullscreenIndex]}
-                        alt="Imagem do post"
-                        className="object-contain absolute top-0 left-0 w-full h-full cursor-default select-none"
-                      />
-                      <button
-                        className="absolute left-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                        tabIndex={-1}
-                        style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                        onClick={() => setFullscreenIndex(fullscreenIndex === 0 ? images.length - 1 : fullscreenIndex - 1)}
-                        aria-label="Imagem anterior"
-                      />
-                      <button
-                        className="absolute right-0 top-0 h-full w-1/3 cursor-pointer z-10 bg-transparent border-none p-0 m-0"
-                        tabIndex={-1}
-                        style={{ outline: 'none', border: 'none', background: 'transparent' }}
-                        onClick={() => setFullscreenIndex(fullscreenIndex === images.length - 1 ? 0 : fullscreenIndex + 1)}
-                        aria-label="Próxima imagem"
-                      />
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                        {images.map((_, idx) => (
-                          <button
-                            key={idx}
-                            className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none ${idx === fullscreenIndex ? 'bg-red-500 scale-110 shadow-lg' : 'bg-white/20 hover:bg-red-400/40'}`}
-                            onClick={() => setFullscreenIndex(idx)}
-                            aria-label={`Ir para imagem ${idx + 1}`}
-                            style={{ boxShadow: 'none', border: 'none', padding: 0, margin: 0 }}
-                          >
-                          </button>
-                        ))}
-                      </div>
+                (() => {
+                  const projectImages = images.map((img, idx) => ({ src: img, url: img, alt: `Imagem ${idx + 1}` }));
+                  return (
+                    <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
+                      <ProjectImageCarousel images={projectImages} />
                     </div>
-                  </div>
-                )
+                  );
+                })()
               )}
               {mainItem.hiveMetadata?.body && (
                 <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left pl-4 sm:pl-12 sm:ml-[-3rem]">
