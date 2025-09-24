@@ -2,10 +2,9 @@
 'use client';
 
 import { getPostsByBlog, getUserAccount } from "@/../lib/hive/hive-client";
+import ProjectImageCarousel from '@/components/ProjectImageCarousel';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { A11y, Navigation, Pagination, Scrollbar } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -159,30 +158,9 @@ export default function About() {
                                 />
                               </div>
                             ) : (
-                              <Swiper
-                                modules={[Navigation, Pagination, Scrollbar, A11y]}
-                                spaceBetween={20}
-                                slidesPerView={1}
-                                navigation
-                                pagination={{ clickable: true }}
-                                scrollbar={{ draggable: true }}
-                                className="w-full h-64 sm:h-96 rounded-lg overflow-hidden"
-                              >
-                                {media.images.map((img, imgIndex) => (
-                                  <SwiperSlide key={imgIndex}>
-                                    <div className="relative w-full h-full">
-                                      <Image
-                                        src={img}
-                                        alt={`Imagem ${imgIndex + 1} do post: ${post.title}`}
-                                        fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, 100vw"
-                                        unoptimized
-                                      />
-                                    </div>
-                                  </SwiperSlide>
-                                ))}
-                              </Swiper>
+                              <ProjectImageCarousel
+                                images={media.images.map((img, imgIndex) => ({ src: img, alt: `Imagem ${imgIndex + 1} do post: ${post.title}` }))}
+                              />
                             )}
                           </div>
                         )}
