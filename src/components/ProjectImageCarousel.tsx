@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 export interface ProjectImage {
   src: string;
@@ -20,29 +20,81 @@ const ProjectImageCarousel: React.FC<ProjectImageCarouselProps> = ({ images, ini
     setCurrent(idx);
   };
 
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [offsetX, setOffsetX] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setDragStartX(e.touches[0].clientX);
+    setDragging(true);
+    setIsTransitioning(false);
+  };
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!dragging || dragStartX === null) return;
+    const deltaX = e.touches[0].clientX - dragStartX;
+    setOffsetX(deltaX);
+  };
+  const handleTouchEnd = () => {
+    setDragging(false);
+    setIsTransitioning(true);
+    if (Math.abs(offsetX) > 80) {
+      if (offsetX > 0) goTo(current - 1);
+      else goTo(current + 1);
+    }
+    setOffsetX(0);
+  };
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setDragStartX(e.clientX);
+    setDragging(true);
+    setIsTransitioning(false);
+  };
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragging || dragStartX === null) return;
+    const deltaX = e.clientX - dragStartX;
+    setOffsetX(deltaX);
+  };
+  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+    setDragging(false);
+    setIsTransitioning(true);
+    if (Math.abs(offsetX) > 80) {
+      if (offsetX > 0) goTo(current - 1);
+      else goTo(current + 1);
+    }
+    setOffsetX(0);
+  };
+
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="relative w-full flex justify-center items-center" style={{ minHeight: 320 }}>
-        <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 px-2 py-1 bg-black/50 text-white rounded-full z-10"
-          onClick={() => goTo(current - 1)}
-          aria-label="Anterior"
+      <div
+        ref={carouselRef}
+        className="relative w-full flex justify-center items-center h-[420px] max-w-[600px] mx-auto select-none overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        <div
+          className="flex w-full h-full"
+          style={{
+            transform: `translateX(calc(${-current * 100}% + ${offsetX}px))`,
+            transition: isTransitioning ? 'transform 0.3s cubic-bezier(.4,0,.2,1)' : 'none',
+          }}
         >
-          &#8592;
-        </button>
-        <img
-          src={images[current].src}
-          alt={images[current].alt || `Imagem ${current + 1}`}
-          className="rounded-lg object-contain w-full h-[320px]"
-          style={{ maxHeight: 320, background: '#111' }}
-        />
-        <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 px-2 py-1 bg-black/50 text-white rounded-full z-10"
-          onClick={() => goTo(current + 1)}
-          aria-label="Próxima"
-        >
-          &#8594;
-        </button>
+          {images.map((img, idx) => (
+            <img
+              key={idx}
+              src={img.src}
+              alt={img.alt || `Imagem ${idx + 1}`}
+              className="rounded-lg object-contain w-full h-full"
+              style={{ display: 'block', margin: '0 auto', minWidth: '100%' }}
+              draggable={false}
+            />
+          ))}
+        </div>
       </div>
       <div className="flex gap-2 mt-4">
         {images.map((img, idx) => (
