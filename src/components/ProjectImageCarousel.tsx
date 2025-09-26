@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 export interface ProjectImage {
   src: string;
@@ -20,81 +20,32 @@ const ProjectImageCarousel: React.FC<ProjectImageCarouselProps> = ({ images, ini
     setCurrent(idx);
   };
 
-  const [dragStartX, setDragStartX] = useState<number | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const [offsetX, setOffsetX] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    setDragStartX(e.touches[0].clientX);
-    setDragging(true);
-    setIsTransitioning(false);
-  };
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!dragging || dragStartX === null) return;
-    const deltaX = e.touches[0].clientX - dragStartX;
-    setOffsetX(deltaX);
-  };
-  const handleTouchEnd = () => {
-    setDragging(false);
-    setIsTransitioning(true);
-    if (Math.abs(offsetX) > 80) {
-      if (offsetX > 0) goTo(current - 1);
-      else goTo(current + 1);
-    }
-    setOffsetX(0);
-  };
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setDragStartX(e.clientX);
-    setDragging(true);
-    setIsTransitioning(false);
-  };
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!dragging || dragStartX === null) return;
-    const deltaX = e.clientX - dragStartX;
-    setOffsetX(deltaX);
-  };
-  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    setDragging(false);
-    setIsTransitioning(true);
-    if (Math.abs(offsetX) > 80) {
-      if (offsetX > 0) goTo(current - 1);
-      else goTo(current + 1);
-    }
-    setOffsetX(0);
-  };
-
   return (
     <div className="flex flex-col items-center w-full">
-      <div
-        ref={carouselRef}
-        className="relative w-full flex justify-center items-center h-[420px] max-w-[600px] mx-auto select-none overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
-        <div
-          className="flex w-full h-full"
-          style={{
-            transform: `translateX(calc(${-current * 100}% + ${offsetX}px))`,
-            transition: isTransitioning ? 'transform 0.3s cubic-bezier(.4,0,.2,1)' : 'none',
-          }}
+      <div className="relative w-full flex justify-center items-center h-[420px] max-w-[600px] mx-auto select-none overflow-hidden">
+        <button
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-2 shadow-lg border-2 border-red-500 text-red-600 hover:text-white hover:bg-red-500 transition-colors duration-150"
+          onClick={() => goTo(current - 1)}
+          aria-label="Imagem anterior"
+          style={{ outline: 'none' }}
         >
-          {images.map((img, idx) => (
-            <img
-              key={idx}
-              src={img.src}
-              alt={img.alt || `Imagem ${idx + 1}`}
-              className="rounded-lg object-contain w-full h-full"
-              style={{ display: 'block', margin: '0 auto', minWidth: '100%' }}
-              draggable={false}
-            />
-          ))}
-        </div>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <img
+          src={images[current].src}
+          alt={images[current].alt || `Imagem ${current + 1}`}
+          className="rounded-lg object-contain w-full h-full"
+          style={{ display: 'block', margin: '0 auto', minWidth: '100%' }}
+          draggable={false}
+        />
+        <button
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-2 shadow-lg border-2 border-red-500 text-red-600 hover:text-white hover:bg-red-500 transition-colors duration-150"
+          onClick={() => goTo(current + 1)}
+          aria-label="Próxima imagem"
+          style={{ outline: 'none' }}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
+        </button>
       </div>
       <div className="flex gap-2 mt-4">
         {images.map((img, idx) => (
