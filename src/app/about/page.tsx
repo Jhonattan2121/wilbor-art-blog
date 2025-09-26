@@ -2,6 +2,7 @@
 'use client';
 
 import { getPostsByBlog, getUserAccount } from "@/../lib/hive/hive-client";
+import Markdown from '@/components/Markdown';
 import ProjectImageCarousel from '@/components/ProjectImageCarousel';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -182,21 +183,9 @@ export default function About() {
                           </div>
                         )}
                         
-                        <div className="prose prose-lg dark:prose-invert max-w-none">
-                          <div 
-                            className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg"
-                            dangerouslySetInnerHTML={{
-                              __html: post.body
-                                .replace(/!\[.*?\]\(.*?\)/g, '') 
-                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
-                                .replace(/\*(.*?)\*/g, '<em>$1</em>') 
-                                .replace(/\n\n/g, '</p><p>') 
-                                .replace(/\n/g, '<br>') 
-                                .replace(/^/, '<p>') 
-                                .replace(/$/, '</p>') 
-                            }}
-                          />
-                        </div>
+                        <Markdown>
+                          {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
+                        </Markdown>
                         
                       
                       </div>

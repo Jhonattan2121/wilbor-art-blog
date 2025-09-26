@@ -1,14 +1,13 @@
 'use client';
 
 import { IconX } from '@/components/IconX';
+import Markdown from '@/components/Markdown';
 import ProjectImageCarousel from '@/components/ProjectImageCarousel';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
@@ -513,43 +512,9 @@ const MediaItem = ({
               )}
               {mainItem.hiveMetadata?.body && (
                 <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left pl-4 sm:pl-12 sm:ml-[-3rem]">
-                  <ReactMarkdown
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      img: () => null,
-                      video: () => null,
-                      iframe: () => null,
-                      p: ({ node, children, ...props }) => (
-                        <p className="mb-3 sm:mb-5 text-gray-200 leading-relaxed text-base sm:text-lg" {...props}>{children}</p>
-                      ),
-                      h1: ({ node, children, ...props }) => (
-                        <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-5 mt-4 sm:mt-8 text-white" {...props}>{children}</h1>
-                      ),
-                      h2: ({ node, children, ...props }) => (
-                        <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 mt-3 sm:mt-6 text-white" {...props}>{children}</h2>
-                      ),
-                      h3: ({ node, children, ...props }) => (
-                        <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 mt-2 sm:mt-4 text-white" {...props}>{children}</h3>
-                      ),
-                      a: ({ node, children, ...props }) => (
-                        <a className="text-blue-400 underline hover:text-blue-200" {...props}>{children}</a>
-                      ),
-                      ul: ({ node, children, ...props }) => (
-                        <ul className="list-disc pl-4 sm:pl-6 mb-2 sm:mb-4 text-gray-200" {...props}>{children}</ul>
-                      ),
-                      ol: ({ node, children, ...props }) => (
-                        <ol className="list-decimal pl-4 sm:pl-6 mb-2 sm:mb-4 text-gray-200" {...props}>{children}</ol>
-                      ),
-                      li: ({ node, children, ...props }) => (
-                        <li className="mb-0.5 sm:mb-1" {...props}>{children}</li>
-                      ),
-                      blockquote: ({ node, children, ...props }) => (
-                        <blockquote className="border-l-4 border-gray-500 pl-2 sm:pl-4 italic my-2 sm:my-4 text-gray-300" {...props}>{children}</blockquote>
-                      ),
-                    }}
-                  >
+                  <Markdown removeMedia>
                     {mainItem.hiveMetadata.body}
-                  </ReactMarkdown>
+                  </Markdown>
                 </div>
               )}
             </div>

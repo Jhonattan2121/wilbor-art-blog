@@ -13,6 +13,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 
 import '@/styles/partners.css';
+import Markdown from "@/components/Markdown";
 
 const TITLE_KEYWORDS = [
   'parceiros',
@@ -223,29 +224,9 @@ export default function PartnersPage() {
                           ))}
                         </div>
                       )}
-                      <div className="prose prose-lg dark:prose-invert max-w-none partner-content">
-                        <div 
-                          className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg"
-                          dangerouslySetInnerHTML={{
-                            __html: formatPartnerBody(post.body)
-                              .replace(/!\[.*?\]\(.*?\)/g, '')
-                              .replace(/^---+$/gm, '<hr class="partner-divider" />')
-                              .replace(/^(###?)\s+(.*?)$/gm, '<h3 class="partner-heading text-xl font-semibold mb-2">$2</h3>')
-                              .replace(/^(##)\s+(.*?)$/gm, '<h2 class="partner-heading text-2xl font-bold">$2</h2>')
-                              .replace(/^(#)\s+(.*?)$/gm, '<h1 class="partner-heading text-3xl font-bold">$2</h1>')
-                              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                              .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                              .replace(/\n\n/g, '</p><p>')
-                              .replace(/\n/g, '<br>')
-                              .replace(/^/, '<p>')
-                              .replace(/$/, '</p>')
-                              .replace(/<p><h([1-3])/g, '<h$1')
-                              .replace(/<\/h([1-3])><\/p>/g, '</h$1>')
-                              .replace(/<p><hr/g, '<hr')
-                              .replace(/hr\/><\/p>/g, 'hr/>')
-                          }}
-                        />
-                      </div>
+                      <Markdown>
+                                               {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
+                                             </Markdown>
                       {index < hivePosts.length - 1 && (
                         <hr className="border-t border-gray-200 dark:border-gray-700 my-4" />
                       )}
