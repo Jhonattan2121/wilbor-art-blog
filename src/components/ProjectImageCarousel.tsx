@@ -55,7 +55,7 @@ const ProjectImageCarousel: React.FC<ProjectImageCarouselProps> = ({ images, ini
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
         </button>
         {/* Indicadores centralizados sobre a imagem */}
-        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20 bg-black/40 px-3 py-1 rounded-full">
+        <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20 px-3 py-1 rounded-full">
           {images.map((img, idx) => (
             <button
               key={idx}
