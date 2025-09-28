@@ -24,12 +24,12 @@ const ProjectImageCarousel: React.FC<ProjectImageCarouselProps> = ({ images, ini
     <div className="flex flex-col items-center w-full">
       <div className="relative w-full flex justify-center items-center h-[420px] max-w-[600px] mx-auto select-none overflow-hidden">
         <button
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-2 shadow-lg border-2 border-red-500 text-red-600 hover:text-white hover:bg-red-500 transition-colors duration-150"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 text-red-600 hover:text-red-500 transition-colors duration-150 focus:outline-none bg-transparent border-none p-0 m-0"
+          style={{ boxShadow: 'none', outline: 'none', background: 'none', border: 'none' }}
           onClick={() => goTo(current - 1)}
           aria-label="Imagem anterior"
-          style={{ outline: 'none' }}
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
         <img
           src={images[current].src}
@@ -39,19 +39,20 @@ const ProjectImageCarousel: React.FC<ProjectImageCarouselProps> = ({ images, ini
           draggable={false}
         />
         <button
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full p-2 shadow-lg border-2 border-red-500 text-red-600 hover:text-white hover:bg-red-500 transition-colors duration-150"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 text-red-600 hover:text-red-500 transition-colors duration-150 focus:outline-none bg-transparent border-none p-0 m-0"
+          style={{ boxShadow: 'none', outline: 'none', background: 'none', border: 'none' }}
           onClick={() => goTo(current + 1)}
           aria-label="Próxima imagem"
-          style={{ outline: 'none' }}
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
         </button>
       </div>
       <div className="flex gap-2 mt-4">
         {images.map((img, idx) => (
           <button
             key={idx}
-            className={`w-3 h-3 rounded-full ${current === idx ? 'bg-red-500' : 'bg-gray-400'}`}
+            className={`w-3 h-3 rounded-full p-0 m-0 border-0 focus:outline-none ${current === idx ? 'bg-red-500' : 'bg-gray-400'}`}
+            style={{ minWidth: '0', minHeight: '0' }}
             onClick={() => goTo(idx)}
             aria-label={`Ir para imagem ${idx + 1}`}
           />
