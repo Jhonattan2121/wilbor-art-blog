@@ -238,6 +238,7 @@ const MediaItem = ({
           <div className="flex-1 relative" style={isMainVideo ? { paddingTop: '56.25%' } : {}}>
             <video
               src={media.src}
+              poster={updatedThumbnail || thumbnailUrl || undefined} // thumbnail como poster
               className={clsx(
                 "transition-all duration-300 filter grayscale hover:grayscale-0",
                 isMainVideo ? "absolute top-0 left-0 w-full h-full object-contain" : "absolute inset-0 w-full h-full object-cover"
@@ -492,6 +493,7 @@ const MediaItem = ({
                           key={src + idx}
                           src={src}
                           controls
+                          poster={updatedThumbnail || thumbnailUrl || undefined} // thumbnail como poster
                           className="w-full my-4 rounded-lg bg-black"
                         />
                       ))}
@@ -688,23 +690,3 @@ export default function PhotoGridContainer({
   );
 }
 
-function VideoWithFullPoster({ src, poster }: { src: string; poster: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  return (
-    <video
-      ref={videoRef}
-      src={src}
-      poster={poster}
-      className={`absolute top-0 left-0 w-full h-full bg-black rounded-lg transition-all duration-200 ${isPlaying ? 'object-contain' : 'object-cover'}`}
-      controls
-      autoPlay={false}
-      playsInline
-      muted={true}
-      onPlay={() => setIsPlaying(true)}
-      onPause={() => setIsPlaying(false)}
-      onLoadedMetadata={e => { const video = e.target as HTMLVideoElement; video.volume = 0.2; }}
-    />
-  );
-}
