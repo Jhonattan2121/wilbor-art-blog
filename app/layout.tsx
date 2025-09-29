@@ -12,11 +12,11 @@ import SwrConfigClient from '@/state/SwrConfigClient';
 import ToasterWithThemes from '@/toast/ToasterWithThemes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider, useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next/types';
-import BannerWilbor from "../public/wilborPhotos/bannerWilbor.png";
+import BannerWilborSwitcher from '../src/components/BannerWilborSwitcher';
 import '../tailwind.css';
 import JsonLd from './components/JsonLd';
 
@@ -97,11 +97,7 @@ export default function RootLayout({
               <div className="w-full px-4 sm:px-8 pt-4">
                 <div className="w-full flex justify-start">
                   <Link href="/projects">
-                    <Image
-                      src={BannerWilbor}
-                      alt="Wilbor Art Logo"
-                      className="h-24 sm:h-32 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
-                    />
+                    <BannerWilborSwitcher />
                   </Link>
                 </div>
               </div>
