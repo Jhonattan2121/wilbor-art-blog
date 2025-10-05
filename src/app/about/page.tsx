@@ -130,7 +130,7 @@ export default function About() {
     <div className="w-full min-h-screen">
       <div className="w-full flex flex-col items-start">
         <section className="w-full flex flex-col items-start">
-          <div className="w-full max-w-4xl text-left mx-0 px-3 sm:px-8 space-y-4 sm:space-y-6">
+          <div className="w-full text-left mx-0 px-0 sm:px-8 lg:max-w-4xl space-y-4 sm:space-y-6">
             {!loading && !error && hivePosts.length > 0 && (
               <div className="space-y-8">
                 {hivePosts.map((post, index) => {
