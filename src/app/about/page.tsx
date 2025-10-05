@@ -3,8 +3,6 @@
 
 import { getPostsByBlog, getUserAccount } from "@/../lib/hive/hive-client";
 import Markdown from '@/components/Markdown';
-import ProjectImageCarousel from '@/components/ProjectImageCarousel';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import 'swiper/css';
@@ -124,7 +122,9 @@ function useDynamicAboutPost(username: string) {
 }
 
 export default function About() {
-  const { posts: hivePosts, loading, error } = useDynamicAboutPost(process.env.NEXT_PUBLIC_HIVE_USERNAME || '');
+  const { posts: hivePosts, loading, error } = useDynamicAboutPost(
+    process.env.NEXT_PUBLIC_HIVE_USERNAME || ''
+  );
 
   return (
     <div className="w-full min-h-screen">
@@ -135,7 +135,6 @@ export default function About() {
               <div className="space-y-8">
                 {hivePosts.map((post, index) => {
                   const media = extractMediaFromPost(post);
-                  
                   return (
                     <article key={post.permlink} className="mb-12 p-6">
                       {/* <header className="mb-6">
@@ -143,34 +142,15 @@ export default function About() {
                           {post.title}
                         </h2>
                       </header> */}
-                      
                       <div className="space-y-6">
-                        {media.images.length > 0 && (
-                          <div className="w-full">
-                            {media.images.length === 1 ? (
-                              <div className="relative w-full h-64 sm:h-96 rounded-lg overflow-hidden">
-                                <Image
-                                  src={media.images[0]}
-                                  alt={`Imagem do post: ${post.title}`}
-                                  fill
-                                  className="object-cover"
-                                  sizes="(max-width: 768px) 100vw, 100vw"
-                                  unoptimized
-                                />
-                              </div>
-                            ) : (
-                              <ProjectImageCarousel
-                                images={media.images.map((img, imgIndex) => ({ src: img, alt: `Imagem ${imgIndex + 1} do post: ${post.title}` }))}
-                              />
-                            )}
-                          </div>
-                        )}
-                        
+                        <Markdown images={media.images.map((img, imgIndex) => ({ src: img, alt: `Imagem ${imgIndex + 1} do post: ${post.title}` }))}>
+                          {post.body}
+                        </Markdown>
                         {media.videos.length > 0 && (
                           <div className="grid grid-cols-1 gap-4">
                             {media.videos.map((video, videoIndex) => (
                               <div key={videoIndex} className="relative w-full">
-                                <video 
+                                <video
                                   src={video}
                                   controls
                                   className="w-full rounded-lg"
@@ -182,12 +162,6 @@ export default function About() {
                             ))}
                           </div>
                         )}
-                        
-                        <Markdown>
-                          {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
-                        </Markdown>
-                        
-                      
                       </div>
                     </article>
                   );
@@ -195,13 +169,8 @@ export default function About() {
               </div>
             )}
           </div>
-          
           <div className="flex mt-8 mb-8 px-3 sm:px-8">
-            <a
-              href="/projects"
-            >
-              Ver Meus projetos →
-            </a>
+            <a href="/projects">Ver Meus projetos →</a>
           </div>
         </section>
       </div>

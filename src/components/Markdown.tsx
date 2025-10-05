@@ -1,11 +1,13 @@
 import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import ProjectImageCarousel, { ProjectImage } from './ProjectImageCarousel';
 
 interface MarkdownProps {
   children: string;
   className?: string;
   removeMedia?: boolean;
+  images?: ProjectImage[];
 }
 
 function removeImagesAndVideosFromMarkdown(markdown: string): string {
@@ -15,8 +17,11 @@ function removeImagesAndVideosFromMarkdown(markdown: string): string {
   return result;
 }
 
-export default function Markdown({ children, className = '', removeMedia = false }: MarkdownProps) {
+export default function Markdown({ children, className = '', removeMedia = false, images }: MarkdownProps) {
   const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
+  const hasMultipleImages = images && images.length > 1;
+  const hasSingleImage = images && images.length === 1;
+
   const components: Components = {
     h1: (props) => (
       <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />
@@ -50,13 +55,35 @@ export default function Markdown({ children, className = '', removeMedia = false
         </pre>
       );
     },
-    img: (props) => (
-      <img
-        className="rounded-lg max-w-full h-auto my-4 mx-auto"
-        alt={props.alt || ''}
-        {...props}
-      />
-    ),
+    img: (props) => {
+      if (hasMultipleImages && images) {
+        // Renderiza o carrossel apenas na primeira imagem encontrada
+        if (props.src === images[0].src) {
+          return <ProjectImageCarousel images={images} />;
+        }
+        // Não renderiza as outras imagens
+        return null;
+      } else if (hasSingleImage && images) {
+        // Renderiza a imagem única normalmente
+        return (
+          <img
+            className="rounded-lg max-w-full h-auto my-4 mx-auto"
+            alt={props.alt || ''}
+            src={images[0].src}
+            {...props}
+          />
+        );
+      } else {
+        // Comportamento padrão
+        return (
+          <img
+            className="rounded-lg max-w-full h-auto my-4 mx-auto"
+            alt={props.alt || ''}
+            {...props}
+          />
+        );
+      }
+    },
   };
   return (
     <div
