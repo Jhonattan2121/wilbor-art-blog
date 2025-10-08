@@ -293,7 +293,7 @@ const MediaItem = ({
         </div>
         {media.title && (
           <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
-            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
+            <div className="text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
               {media.title}
             </div>
             {media.tags && media.tags.length > 0 && (
@@ -301,7 +301,7 @@ const MediaItem = ({
                 {media.tags.map(tag => (
                   <span
                     key={tag}
-                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
+                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
                   >
                     {tag}
                   </span>
@@ -359,7 +359,7 @@ const MediaItem = ({
                     />
                   </div>
                   <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
-                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
+                    <div className="text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
@@ -367,7 +367,7 @@ const MediaItem = ({
                         {mainItem.tags.map(tag => (
                           <span
                             key={tag}
-                            className="text-xs text-gray-400 px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
+                            className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
                           >
                             {tag}
                           </span>
@@ -401,7 +401,7 @@ const MediaItem = ({
                             />
                           </div>
                           <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 group-hover:bg-white transition-colors duration-100">
-                            <div className="text-gray-400 text-xs sm:text-sm md:text-base font-medium line-clamp-1 group-hover:text-black transition-colors duration-100">
+                            <div className="text-xs sm:text-sm md:text-base font-medium line-clamp-1 group-hover:text-black transition-colors duration-100">
                               {mainItem.title}
                             </div>
                             {mainItem.tags && mainItem.tags.length > 0 && (
@@ -412,14 +412,14 @@ const MediaItem = ({
                                 {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
                                   <span
                                     key={tag}
-                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
+                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
                                   >
                                     {tag}
                                   </span>
                                 ))}
                                 {!showAllTags && mainItem.tags.length > 3 && (
                                   <span
-                                    className="text-xs text-gray-400 px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    className="text-xs px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
                                     onClick={e => {
                                       e.stopPropagation();
                                       setShowAllTags(true);
@@ -430,7 +430,7 @@ const MediaItem = ({
                                 )}
                                 {showAllTags && (
                                   <span
-                                    className="text-xs text-gray-400  px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
+                                    className="text-xs px-1.5 py-0.5 rounded cursor-pointer hover:bg-gray-700"
                                     onClick={e => {
                                       e.stopPropagation();
                                       setShowAllTags(false);
