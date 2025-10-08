@@ -16,16 +16,11 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
   return (
     <div className="relative w-full flex flex-col items-center my-6">
       <div
-        className="w-full flex justify-center items-center"
+        className="w-full flex justify-center items-center max-w-full sm:max-w-[700px] relative overflow-hidden"
         style={{
-          width: '100%',
-          maxWidth: 1400, 
-          maxHeight: 700,
-          minHeight: 300,
+          minHeight: 220,
           margin: '0 auto',
           background: 'rgba(0,0,0,0.02)',
-          position: 'relative',
-          overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -37,20 +32,20 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
             <button
               onClick={prev}
               aria-label="Anterior"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-20 h-20 flex items-center justify-center transition"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 flex items-center justify-center transition"
               style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
             >
-              <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <polyline points="38,12 18,30 38,48" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </svg>
             </button>
             <button
               onClick={next}
               aria-label="Próxima"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-20 h-20 flex items-center justify-center transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 flex items-center justify-center transition"
               style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
             >
-              <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <polyline points="22,12 42,30 22,48" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </svg>
             </button>
@@ -59,35 +54,32 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         <img
           src={images[current].src}
           alt={images[current].alt || ''}
-          className="rounded-lg shadow-lg"
+          className="rounded-lg shadow-lg w-full max-w-full sm:max-w-[700px]"
           style={{
-            width: '100%',
-            maxWidth: 1400,
-            maxHeight: 700,
             objectFit: 'contain',
             display: 'block',
             margin: '0 auto',
             background: 'transparent',
           }}
         />
+        {/* Bolinhas de navegação */}
+        {images.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1">
+            {images.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goTo(idx)}
+                aria-label={`Ir para imagem ${idx + 1}`}
+                className={`w-3 h-3 sm:w-5 sm:h-5 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-red-500 ${
+                  current === idx
+                    ? 'bg-red-500 border-red-500'
+                    : 'bg-gray-200 border-gray-400 hover:bg-gray-400'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
-      {/* Bolinhas de navegação */}
-      {images.length > 1 && (
-        <div className="flex items-center justify-center gap-1 mt-4">
-          {images.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => goTo(idx)}
-              aria-label={`Ir para imagem ${idx + 1}`}
-              className={`w-5 h-5 rounded-full  transition-all focus:outline-none focus:ring-2 focus:ring-red-500 ${
-                current === idx
-                  ? 'bg-red-500 border-red-500'
-                  : 'bg-gray-200 border-gray-400 hover:bg-gray-400'
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
