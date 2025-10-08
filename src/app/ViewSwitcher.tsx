@@ -62,7 +62,7 @@ export default function ViewSwitcher({
               key={index}
               href={item.href}
               className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 font-sans 
-                ${item.active ? 'text-red-500' : 'text-gray-500'}`}
+                ${item.active ? 'text-red-500' : ''}`}
             >
               {item.mobileText}
             </a>
@@ -88,7 +88,7 @@ export default function ViewSwitcher({
               key={index}
               href={item.href}
               className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 font-sans 
-                ${item.active ? 'text-red-500' : 'text-gray-500'}`}
+                ${item.active ? 'text-red-500' : ''}`}
             >
               {item.text}
             </a>
