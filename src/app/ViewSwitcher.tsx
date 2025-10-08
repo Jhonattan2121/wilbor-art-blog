@@ -82,14 +82,13 @@ export default function ViewSwitcher({
         </div>
       </div>
 
-      <div className="hidden sm:flex sm:flex-row items-center gap-4 w-full mt-4 mb-4" style={{ marginLeft: '56px' }}>
-        <div className="flex flex-row gap-4 flex-1 items-center">
+      <div className="hidden sm:flex sm:flex-row items-center gap-6 w-full mt-4 mb-4" style={{ marginLeft: '56px' }}>
+        <div className="flex flex-row gap-6 flex-1 items-center">
           {menuItems.map((item, index) => (
             <a
               key={index}
               href={item.href}
-              className={`px-2 py-1 text-center text-base whitespace-nowrap transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 font-sans 
-                ${item.active ? 'text-red-500' : ''}`}
+              className={`px-4 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-sans font-medium hover:underline hover:text-red-400 dark:hover:text-red-400 ${item.active ? 'text-red-500 underline' : ''}`}
             >
               {item.text}
             </a>
