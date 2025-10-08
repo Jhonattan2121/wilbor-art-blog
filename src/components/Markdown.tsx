@@ -178,7 +178,7 @@ export default function Markdown({ children, className = '', removeMedia = false
 
   return (
     <div
-      className={`prose prose-lg dark:prose-invert max-w-none text-left text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg ${className}`}
+      className={`prose prose-lg dark:prose-invert max-w-none text-left leading-relaxed text-base sm:text-lg ${className}`}
     >
       {blocks.map((block, idx) => {
         if (block.type === 'carousel' && block.images && block.images.length > 0) {
