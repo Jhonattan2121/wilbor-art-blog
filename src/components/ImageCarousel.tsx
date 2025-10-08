@@ -19,7 +19,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         className="w-full flex justify-center items-center"
         style={{
           width: '100%',
-          maxWidth: 1200,
+          maxWidth: 1400, 
           maxHeight: 700,
           minHeight: 300,
           margin: '0 auto',
@@ -61,7 +61,8 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
           alt={images[current].alt || ''}
           className="rounded-lg shadow-lg"
           style={{
-            maxWidth: '100%',
+            width: '100%',
+            maxWidth: 1400,
             maxHeight: 700,
             objectFit: 'contain',
             display: 'block',
