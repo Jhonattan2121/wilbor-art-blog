@@ -79,7 +79,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
               key={idx}
               onClick={() => goTo(idx)}
               aria-label={`Ir para imagem ${idx + 1}`}
-              className={`w-2 h-2 rounded-full border-2 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 ${
+              className={`w-5 h-5 rounded-full  transition-all focus:outline-none focus:ring-2 focus:ring-red-500 ${
                 current === idx
                   ? 'bg-red-500 border-red-500'
                   : 'bg-gray-200 border-gray-400 hover:bg-gray-400'
