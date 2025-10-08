@@ -2,7 +2,6 @@
 
 import { IconX } from '@/components/IconX';
 import Markdown from '@/components/Markdown';
-import ProjectImageCarousel from '@/components/ProjectImageCarousel';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
@@ -294,7 +293,7 @@ const MediaItem = ({
         </div>
         {media.title && (
           <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
-            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left group-hover:text-black transition-colors duration-100">
+            <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
               {media.title}
             </div>
             {media.tags && media.tags.length > 0 && (
@@ -360,7 +359,7 @@ const MediaItem = ({
                     />
                   </div>
                   <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
-                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-left group-hover:text-black transition-colors duration-100">
+                    <div className="text-gray-400 text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
@@ -476,46 +475,10 @@ const MediaItem = ({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
-              {(() => {
-                const videoRegex = /<video[^>]*src=["']([^"'>]+)["'][^>]*>/g;
-                const videos: string[] = [];
-                let match;
-                if (mainItem.hiveMetadata?.body) {
-                  while ((match = videoRegex.exec(mainItem.hiveMetadata.body)) !== null) {
-                    videos.push(match[1]);
-                  }
-                }
-                if (videos.length > 0) {
-                  return (
-                    <div className="w-full max-w-3xl mx-auto mb-6">
-                      {videos.map((src, idx) => (
-                        <video
-                          key={src + idx}
-                          src={src}
-                          controls
-                          poster={updatedThumbnail || thumbnailUrl || undefined} // thumbnail como poster
-                          className="w-full my-4 rounded-lg bg-black"
-                        />
-                      ))}
-                    </div>
-                  );
-                }
-                return null;
-              })()}
               {images.length > 0 && (
-                (() => {
-                  const projectImages = images.map((img, idx) => ({ src: img, url: img, alt: `Imagem ${idx + 1}` }));
-                  return (
-                    <div className="w-full max-w-3xl mx-auto p-0 m-0 mt-3 sm:mt-0">
-                      <ProjectImageCarousel images={projectImages} />
-                    </div>
-                  );
-                })()
-              )}
-              {mainItem.hiveMetadata?.body && (
-                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-left pl-4 sm:pl-12 sm:ml-[-3rem]">
-                  <Markdown removeMedia>
-                    {mainItem.hiveMetadata.body}
+                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-center">
+                  <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
+                    {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
                 </div>
               )}

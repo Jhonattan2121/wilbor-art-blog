@@ -1,13 +1,14 @@
 import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import ProjectImageCarousel, { ProjectImage } from './ProjectImageCarousel';
+import ImageCarousel from './ImageCarousel';
 
 interface MarkdownProps {
   children: string;
   className?: string;
   removeMedia?: boolean;
-  images?: ProjectImage[];
+  images?: { src: string; alt?: string; }[];
+  videoPoster?: string; // thumbnail para vídeos
 }
 
 function removeImagesAndVideosFromMarkdown(markdown: string): string {
@@ -17,10 +18,93 @@ function removeImagesAndVideosFromMarkdown(markdown: string): string {
   return result;
 }
 
-export default function Markdown({ children, className = '', removeMedia = false, images }: MarkdownProps) {
+function extractImageParagraphs(markdown: string) {
+  // Regex para encontrar <p><img ... /></p> ou ![]()
+  const imgParagraphRegex = /(<p>\s*<img [^>]+>\s*<\/p>|!\[[^\]]*\]\([^\)]+\))/g;
+  let match;
+  // let lastIndex = 0; // Removido pois não é usado
+  let result = '';
+  const images: { src: string; alt?: string }[] = [];
+  let found = false;
+
+  while ((match = imgParagraphRegex.exec(markdown)) !== null) {
+    found = true;
+    // Pega o src e alt
+    let src = '';
+    let alt = '';
+    const htmlImg = /<img [^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/;
+    const mdImg = /!\[([^\]]*)\]\(([^\)]+)\)/;
+    if (match[0].startsWith('<p>')) {
+      const m = htmlImg.exec(match[0]);
+      if (m) {
+        src = m[1];
+        alt = m[2];
+      }
+    } else {
+      const m = mdImg.exec(match[0]);
+      if (m) {
+        alt = m[1];
+        src = m[2];
+      }
+    }
+    images.push({ src, alt });
+  }
+
+  if (found && images.length > 0) {
+    // Substitui todos os <p><img/></p> ou ![]() por um marcador especial
+    result = markdown.replace(imgParagraphRegex, '[[CAROUSEL_MARKER]]');
+    return { markdown: result, images };
+  }
+  return { markdown, images: [] };
+}
+
+function splitMarkdownWithImageBlocks(markdown: string) {
+  // Divide o markdown em linhas para facilitar
+  const lines = markdown.split(/\n+/);
+  const blocks: Array<{ type: 'carousel' | 'markdown'; content: string[]; images?: { src: string; alt?: string }[] }> = [];
+  let currentBlock: string[] = [];
+  let currentImages: { src: string; alt?: string }[] = [];
+  const imgMdRegex = /^!\[([^\]]*)\]\(([^\)]+)\)$/;
+  const imgHtmlRegex = /^<img [^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/>$/;
+
+  function pushMarkdownBlock() {
+    if (currentBlock.length > 0) {
+      blocks.push({ type: 'markdown', content: currentBlock });
+      currentBlock = [];
+    }
+  }
+  function pushCarouselBlock() {
+    if (currentImages.length > 0) {
+      blocks.push({ type: 'carousel', content: [], images: currentImages });
+      currentImages = [];
+    }
+  }
+
+  for (const line of lines) {
+    const mdMatch = imgMdRegex.exec(line.trim());
+    const htmlMatch = imgHtmlRegex.exec(line.trim());
+    if (mdMatch) {
+      pushMarkdownBlock();
+      currentImages.push({ src: mdMatch[2], alt: mdMatch[1] });
+    } else if (htmlMatch) {
+      pushMarkdownBlock();
+      currentImages.push({ src: htmlMatch[1], alt: htmlMatch[2] });
+    } else {
+      pushCarouselBlock();
+      currentBlock.push(line);
+    }
+  }
+  pushMarkdownBlock();
+  pushCarouselBlock();
+  return blocks;
+}
+
+export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster }: MarkdownProps) {
   const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
-  const hasMultipleImages = images && images.length > 1;
   const hasSingleImage = images && images.length === 1;
+
+  // Divide o markdown em blocos de markdown e blocos de imagens consecutivas
+  const blocks = splitMarkdownWithImageBlocks(content);
 
   const components: Components = {
     h1: (props) => (
@@ -56,18 +140,12 @@ export default function Markdown({ children, className = '', removeMedia = false
       );
     },
     img: (props) => {
-      if (hasMultipleImages && images) {
-        // Renderiza o carrossel apenas na primeira imagem encontrada
-        if (props.src === images[0].src) {
-          return <ProjectImageCarousel images={images} />;
-        }
-        // Não renderiza as outras imagens
-        return null;
-      } else if (hasSingleImage && images) {
+      if (hasSingleImage && images) {
         // Renderiza a imagem única normalmente
         return (
           <img
-            className="rounded-lg max-w-full h-auto my-4 mx-auto"
+            className="rounded-lg max-w-full h-auto my-4"
+            style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
             alt={props.alt || ''}
             src={images[0].src}
             {...props}
@@ -77,25 +155,47 @@ export default function Markdown({ children, className = '', removeMedia = false
         // Comportamento padrão
         return (
           <img
-            className="rounded-lg max-w-full h-auto my-4 mx-auto"
+            className="rounded-lg max-w-full h-auto my-4"
+            style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
             alt={props.alt || ''}
             {...props}
           />
         );
       }
     },
+    video: (props) => {
+      // Usa a prop videoPoster do componente para o poster
+      return (
+        <video
+          controls
+          poster={videoPoster || props.poster}
+          className="w-full my-4 rounded-lg bg-black"
+          {...props}
+        />
+      );
+    },
   };
+
   return (
     <div
-      className={`prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg ${className}`}
+      className={`prose prose-lg dark:prose-invert max-w-none text-left text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg ${className}`}
     >
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
-        components={components}
-      >
-        {content}
-      </ReactMarkdown>
+      {blocks.map((block, idx) => {
+        if (block.type === 'carousel' && block.images && block.images.length > 0) {
+          return <ImageCarousel key={idx} images={block.images} />;
+        }
+        // Renderiza bloco markdown normalmente
+        return (
+          <ReactMarkdown
+            key={idx}
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            components={components}
+          >
+            {block.content.join('\n')}
+          </ReactMarkdown>
+        );
+      })}
     </div>
   );
 }
