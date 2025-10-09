@@ -6,12 +6,40 @@ interface ImageCarouselProps {
 
 export default function ImageCarousel({ images }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   if (images.length === 0) return null;
 
-  const prev = () => setCurrent((c) => (c === 0 ? images.length - 1 : c - 1));
-  const next = () => setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
+  const prev = () => {
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 300);
+    setCurrent((c) => (c === 0 ? images.length - 1 : c - 1));
+  };
+  const next = () => {
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 300);
+    setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
+  };
   const goTo = (idx: number) => setCurrent(idx);
+
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEndX(e.touches[0].clientX);
+  };
+  const handleTouchEnd = () => {
+    if (touchStartX !== null && touchEndX !== null) {
+      const distance = touchStartX - touchEndX;
+      if (distance > 40) next();
+      if (distance < -40) prev();
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
 
   return (
     <div className="relative w-full flex flex-col items-center my-6">
@@ -25,14 +53,17 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
           alignItems: 'center',
           justifyContent: 'center',
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        {/* Setas laterais */}
+        {/* Setas laterais - só desktop */}
         {images.length > 1 && (
           <>
             <button
               onClick={prev}
               aria-label="Anterior"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 flex items-center justify-center transition"
+              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition"
               style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
             >
               <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,7 +73,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
             <button
               onClick={next}
               aria-label="Próxima"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 flex items-center justify-center transition"
+              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition"
               style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
             >
               <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +85,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         <img
           src={images[current].src}
           alt={images[current].alt || ''}
-          className="rounded-lg shadow-lg w-full max-w-full sm:max-w-[700px]"
+          className={`rounded-lg shadow-lg w-full max-w-full sm:max-w-[700px] transition-transform duration-300 ${isAnimating ? 'scale-95' : 'scale-100'}`}
           style={{
             objectFit: 'contain',
             display: 'block',
@@ -64,7 +95,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         />
         {/* Bolinhas de navegação */}
         {images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2">
+          <div className="absolute bottom-1 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2">
             {images.map((_, idx) => (
               <button
                 key={idx}
