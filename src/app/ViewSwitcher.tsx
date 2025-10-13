@@ -66,11 +66,13 @@ export default function ViewSwitcher({
               {item.mobileText}
             </a>
           ))}
-          <DrawerTagsMobile
-            tags={drawerTagsProps?.tags || []}
-            selectedTag={drawerTagsProps?.selectedTag || null}
-            setSelectedTag={drawerTagsProps?.setSelectedTag || (() => {})}
-          />
+          {drawerTagsProps && (
+            <DrawerTagsMobile
+              tags={drawerTagsProps.tags}
+              selectedTag={drawerTagsProps.selectedTag}
+              setSelectedTag={drawerTagsProps.setSelectedTag}
+            />
+          )}
         </div>
       </div>
 
