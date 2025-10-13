@@ -22,16 +22,12 @@ export default function ProjectsClient({ posts, tags, photosCount, cameras, simu
   }, [searchParams, tags]);
 
   const handleTagChange = useCallback((tag: string | null) => {
-    setSelectedTag(tag);
-    
     const url = new URL(window.location.href);
-    
     if (tag) {
       url.searchParams.set('tag', tag);
     } else {
       url.searchParams.delete('tag');
     }
-    
     window.history.pushState({}, '', url.toString());
   }, []);
 

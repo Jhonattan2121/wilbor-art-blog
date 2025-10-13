@@ -15,10 +15,10 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
 
   useEffect(() => {
     const tagFromUrl = searchParams.get('tag');
-    if (tagFromUrl && tags.includes(tagFromUrl) && tagFromUrl !== selectedTag) {
+    if (tagFromUrl && tags.includes(tagFromUrl)) {
       setSelectedTag(tagFromUrl);
     }
-  }, [searchParams, tags, selectedTag, setSelectedTag]);
+  }, [searchParams, tags, setSelectedTag]);
 
   useEffect(() => {
     if (showDrawer) {
@@ -33,8 +33,6 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
 
   const handleTagSelection = (tag: string | null) => {
     setSelectedTag(tag);
-    setShowDrawer(false);
-
     if (tag) {
       const url = new URL(window.location.href);
       url.searchParams.set('tag', tag);
@@ -42,6 +40,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
     } else {
       window.location.href = window.location.pathname;
     }
+    setShowDrawer(false);
   };
 
   if (!tags || tags.length === 0) return null;
