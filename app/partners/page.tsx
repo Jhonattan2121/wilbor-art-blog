@@ -42,7 +42,7 @@ interface HivePost {
 function extractMediaFromPost(post: any) {
   const images: string[] = [];
   const videos: string[] = [];
-  
+
   if (post.json_metadata) {
     let meta;
     try {
@@ -53,23 +53,23 @@ function extractMediaFromPost(post: any) {
       if (meta && Array.isArray(meta.video)) {
         videos.push(...meta.video);
       }
-    } catch {}
+    } catch { }
   }
-  
+
   if (post.body) {
     const imgRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
     let match;
     while ((match = imgRegex.exec(post.body))) {
       images.push(match[1]);
     }
-    
+
     const videoRegex = /<video[^>]*src=["']([^"'>\s]+)["'][^>]*>/g;
     while ((match = videoRegex.exec(post.body))) {
       videos.push(match[1]);
     }
   }
-  
-  return { 
+
+  return {
     images: Array.from(new Set(images)),
     videos: Array.from(new Set(videos))
   };
@@ -79,25 +79,25 @@ function formatPartnerBody(body: string): string {
   if (!body.includes('#') && !body.includes('---')) {
     const lines = body.trim().split('\n');
     let formattedBody = '';
-    
+
     if (lines.length >= 3) {
       const title = lines[0];
       formattedBody = `## ${title}\n\n`;
-      
+
       for (let i = 1; i < lines.length; i++) {
         if (lines[i].trim()) {
           formattedBody += `${lines[i]}\n`;
         }
       }
-      
+
       formattedBody += '\n---\n';
     } else {
       formattedBody = body;
     }
-    
+
     return formattedBody;
   }
-  
+
   return body;
 }
 
@@ -109,30 +109,30 @@ function useDynamicPartnersPost(username: string) {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    
+
     (async () => {
       try {
         console.log(`Buscando posts de parceiros para o usuário: ${username}`);
-        
+
         const userAccount = await getUserAccount(username);
         if (!userAccount) {
           setError(`Usuário '${username}' não encontrado no Hive.`);
           setLoading(false);
           return;
         }
-        
+
         console.log(`Usuário ${username} encontrado, buscando posts...`);
         const allPosts = await getPostsByBlog(username);
         console.log(`Total de posts encontrados: ${allPosts.length}`);
-        
+
         const matchingPosts = allPosts.filter((post: any) =>
           post.title && TITLE_KEYWORDS.some(keyword =>
             post.title.toLowerCase().includes(keyword.toLowerCase())
           )
         );
-        
+
         console.log(`Posts filtrados: ${matchingPosts.length}`);
-        
+
         if (matchingPosts.length > 0) {
           setPosts(matchingPosts);
         } else {
@@ -158,10 +158,10 @@ export default function PartnersPage() {
       <ViewSwitcher currentSelection="partners" />
       <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
         <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
-          
+
           {!loading && !error && hivePosts.length > 0 && (
             <div className="space-y-3 mb-8">
-             
+
               {hivePosts.map((post, index) => {
                 const media = extractMediaFromPost(post);
                 return (
@@ -212,7 +212,7 @@ export default function PartnersPage() {
                         <div className="grid grid-cols-1 gap-4">
                           {media.videos.map((video, videoIndex) => (
                             <div key={videoIndex} className="relative w-full">
-                              <video 
+                              <video
                                 src={video}
                                 controls
                                 className="w-full rounded-lg"
@@ -224,9 +224,9 @@ export default function PartnersPage() {
                           ))}
                         </div>
                       )}
-                      <Markdown>
-                                               {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
-                                             </Markdown>
+                      <Markdown columns>
+                        {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
+                      </Markdown>
                       {index < hivePosts.length - 1 && (
                         <hr className="border-t border-gray-200 dark:border-gray-700 my-4" />
                       )}

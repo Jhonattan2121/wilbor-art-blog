@@ -9,6 +9,7 @@ interface MarkdownProps {
   removeMedia?: boolean;
   images?: { src: string; alt?: string; }[];
   videoPoster?: string; // thumbnail para vídeos
+  columns?: boolean; 
 }
 
 function removeImagesAndVideosFromMarkdown(markdown: string): string {
@@ -99,13 +100,11 @@ function splitMarkdownWithImageBlocks(markdown: string) {
   return blocks;
 }
 
-export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster }: MarkdownProps) {
+export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster, columns = false }: MarkdownProps) {
   const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
   const hasSingleImage = images && images.length === 1;
 
-  // Divide o markdown em blocos de markdown e blocos de imagens consecutivas
-  const blocks = splitMarkdownWithImageBlocks(content);
-
+  // Mover components para cima!
   const components: Components = {
     h1: (props) => (
       <h1 className="text-3xl font-bold mt-8 mb-4" {...props} />
@@ -175,6 +174,33 @@ export default function Markdown({ children, className = '', removeMedia = false
       );
     },
   };
+
+  // só divide em colunas se columns for true
+  if (columns) {
+    const columnBlocks = content.split(/\n---+\n/);
+    if (columnBlocks.length > 1) {
+      return (
+        <div className={`w-full flex flex-col sm:flex-row sm:items-start gap-8 sm:gap-12 ${className}`}>
+          {columnBlocks.map((block, idx) => (
+            <div key={idx} className="flex-1 min-w-[220px] max-w-xs sm:max-w-sm md:max-w-md">
+              <div className="prose prose-lg dark:prose-invert max-w-none text-left leading-relaxed text-base sm:text-lg">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={components}
+                >
+                  {block.trim()}
+                </ReactMarkdown>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+  }
+
+  // Divide o markdown em blocos de markdown e blocos de imagens consecutivas
+  const blocks = splitMarkdownWithImageBlocks(content);
 
   return (
     <div
