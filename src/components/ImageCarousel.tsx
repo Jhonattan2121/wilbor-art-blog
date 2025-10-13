@@ -63,9 +63,10 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
             <button
               onClick={prev}
               aria-label="Anterior"
-              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition"
-              style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
+              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition bg-transparent"
+              style={{ opacity: 0, pointerEvents: 'auto', background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
             >
+              {/* Setas invisíveis, mas clicáveis */}
               <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <polyline points="38,12 18,30 38,48" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </svg>
@@ -73,13 +74,31 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
             <button
               onClick={next}
               aria-label="Próxima"
-              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition"
-              style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
+              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition bg-transparent"
+              style={{ opacity: 0, pointerEvents: 'auto', background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
             >
+              {/* Setas invisíveis, mas clicáveis */}
               <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <polyline points="22,12 42,30 22,48" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </svg>
             </button>
+          </>
+        )}
+        {/* Áreas clicáveis invisíveis para navegação */}
+        {images.length > 1 && (
+          <>
+            <div
+              className="hidden sm:block absolute left-0 top-0 h-full w-1/2 cursor-pointer z-20"
+              style={{ background: 'transparent' }}
+              onClick={prev}
+              aria-label="Anterior"
+            />
+            <div
+              className="hidden sm:block absolute right-0 top-0 h-full w-1/2 cursor-pointer z-20"
+              style={{ background: 'transparent' }}
+              onClick={next}
+              aria-label="Próxima"
+            />
           </>
         )}
         <img
