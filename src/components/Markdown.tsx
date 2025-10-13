@@ -60,9 +60,8 @@ function extractImageParagraphs(markdown: string) {
 }
 
 function splitMarkdownWithImageBlocks(markdown: string) {
-  // Divide o markdown em linhas para facilitar
   const lines = markdown.split(/\n+/);
-  const blocks: Array<{ type: 'carousel' | 'markdown'; content: string[]; images?: { src: string; alt?: string }[] }> = [];
+  const blocks: Array<{ type: 'carousel' | 'markdown' | 'single-image'; content: string[]; images?: { src: string; alt?: string }[] }> = [];
   let currentBlock: string[] = [];
   let currentImages: { src: string; alt?: string }[] = [];
   const imgMdRegex = /^!\[([^\]]*)\]\(([^\)]+)\)$/;
@@ -81,18 +80,35 @@ function splitMarkdownWithImageBlocks(markdown: string) {
     }
   }
 
-  for (const line of lines) {
-    const mdMatch = imgMdRegex.exec(line.trim());
-    const htmlMatch = imgHtmlRegex.exec(line.trim());
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    const mdMatch = imgMdRegex.exec(line);
+    const htmlMatch = imgHtmlRegex.exec(line);
     if (mdMatch) {
       pushMarkdownBlock();
-      currentImages.push({ src: mdMatch[2], alt: mdMatch[1] });
+      // Se a próxima linha for apenas '-', trata como imagem única
+      if (lines[i + 1] && lines[i + 1].trim() === '-') {
+        blocks.push({ type: 'single-image', content: [], images: [{ src: mdMatch[2], alt: mdMatch[1] }] });
+        i++; // pula o traço
+        pushCarouselBlock(); // encerra carrossel anterior
+      } else {
+        currentImages.push({ src: mdMatch[2], alt: mdMatch[1] });
+      }
     } else if (htmlMatch) {
       pushMarkdownBlock();
-      currentImages.push({ src: htmlMatch[1], alt: htmlMatch[2] });
+      if (lines[i + 1] && lines[i + 1].trim() === '-') {
+        blocks.push({ type: 'single-image', content: [], images: [{ src: htmlMatch[1], alt: htmlMatch[2] }] });
+        i++;
+        pushCarouselBlock();
+      } else {
+        currentImages.push({ src: htmlMatch[1], alt: htmlMatch[2] });
+      }
+    } else if (line === '-') {
+      // ignora traço isolado
+      continue;
     } else {
       pushCarouselBlock();
-      currentBlock.push(line);
+      currentBlock.push(lines[i]);
     }
   }
   pushMarkdownBlock();
@@ -209,6 +225,19 @@ export default function Markdown({ children, className = '', removeMedia = false
       {blocks.map((block, idx) => {
         if (block.type === 'carousel' && block.images && block.images.length > 0) {
           return <ImageCarousel key={idx} images={block.images} />;
+        }
+        if (block.type === 'single-image' && block.images && block.images.length > 0) {
+          // Renderiza imagem única separada
+          const img = block.images[0];
+          return (
+            <img
+              key={idx}
+              className="rounded-lg max-w-full h-auto my-4"
+              style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+              alt={img.alt || ''}
+              src={img.src}
+            />
+          );
         }
         // Renderiza bloco markdown normalmente
         return (
