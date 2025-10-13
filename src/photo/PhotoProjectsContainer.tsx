@@ -292,23 +292,28 @@ const MediaItem = ({
           />
         </div>
         {media.title && (
-          <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
-            <div className="text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
-              {media.title}
-            </div>
-            {media.tags && media.tags.length > 0 && (
-              <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
-                {media.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+          <div
+  className={clsx(
+    'bg-white dark:bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
+    'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
+  )}
+>
+  <div className="text-xl font-bold line-clamp-2 text-center transition-colors duration-100">
+    {media.title}
+  </div>
+  {media.tags && media.tags.length > 0 && (
+    <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
+      {media.tags.map(tag => (
+        <span
+          key={tag}
+          className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
         )}
       </div>
     );
@@ -326,8 +331,9 @@ const MediaItem = ({
   return (
     <div
       className={clsx(
-        'rounded-lg overflow-hidden h-full group transition-colors duration-100 bg-black text-white',
-        !isExpanded && 'border-t-8 border-l-8 border-r-8 border-b-0 border-black hover:bg-white hover:text-black hover:border-t-white hover:border-l-white hover:border-r-white',
+        'rounded-lg overflow-hidden h-full group transition-colors duration-100',
+        'bg-white text-black dark:bg-black dark:text-white',
+        !isExpanded && 'border-t-8 border-l-8 border-r-8 border-b-0 border-white dark:border-black hover:bg-black hover:text-white hover:border-t-black hover:border-l-black hover:border-r-black dark:hover:bg-white dark:hover:text-black dark:hover:border-t-white dark:hover:border-l-white dark:hover:border-r-white',
         isExpanded && 'p-2'
       )}
       onClick={e => {
@@ -358,23 +364,28 @@ const MediaItem = ({
                       style={{ objectFit: 'cover', objectPosition: 'center' }}
                     />
                   </div>
-                  <div className="bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg group-hover:bg-white transition-colors duration-100">
-                    <div className="text-xl font-bold line-clamp-2 text-center group-hover:text-black transition-colors duration-100">
-                      {mainItem.title}
-                    </div>
-                    {mainItem.tags && mainItem.tags.length > 0 && (
-                      <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
-                        {mainItem.tags.map(tag => (
-                          <span
-                            key={tag}
-                            className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <div className={
+  clsx(
+    'bg-white dark:bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
+    'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
+  )
+}>
+  <div className="text-xl font-bold line-clamp-2 text-center transition-colors duration-100">
+    {mainItem.title}
+  </div>
+  {mainItem.tags && mainItem.tags.length > 0 && (
+    <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
+      {mainItem.tags.map(tag => (
+        <span
+          key={tag}
+          className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
                 </div>
               ) : (
                 <div className="flex-1 relative group h-full">
@@ -400,19 +411,24 @@ const MediaItem = ({
                               unoptimized={true}
                             />
                           </div>
-                          <div className="bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 group-hover:bg-white transition-colors duration-100">
-                            <div className="text-xs sm:text-sm md:text-base font-medium line-clamp-1 group-hover:text-black transition-colors duration-100">
+                          <div className={
+  clsx(
+    'bg-white dark:bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 transition-colors duration-100',
+    'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
+  )
+}>
+                            <div className="text-xs sm:text-sm md:text-base font-medium line-clamp-1 transition-colors duration-100">
                               {mainItem.title}
                             </div>
                             {mainItem.tags && mainItem.tags.length > 0 && (
                               <div className={clsx(
-                                "flex flex-wrap gap-1 mt-1",
-                                showAllTags ? "max-h-none pb-2" : "min-h-[24px] max-h-[24px] overflow-hidden"
+                                'flex flex-wrap gap-1 mt-1',
+                                showAllTags ? 'max-h-none pb-2' : 'min-h-[24px] max-h-[24px] overflow-hidden'
                               )}>
                                 {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
                                   <span
                                     key={tag}
-                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 group-hover:text-black"
+                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
                                   >
                                     {tag}
                                   </span>
