@@ -56,29 +56,21 @@ export default function ViewSwitcher({
   return (
     <>
       <div className="sm:hidden w-fit mb-0 flex justify-center mx-auto"> 
-        <div className="flex flex-col items-center justify-center gap-2 px-2 py-2">
-          <div className="flex flex-row items-center justify-center gap-6 w-full">
-            {menuItems.map((item, index) => (
-              <a
-                key={index}
-                href={item.href}
-                className={`px-3 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-sans font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`}
-              >
-                {item.mobileText}
-              </a>
-            ))}
-            <div style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
-              {drawerTagsProps ? (
-                <DrawerTagsMobile
-                  tags={drawerTagsProps.tags}
-                  selectedTag={drawerTagsProps.selectedTag}
-                  setSelectedTag={drawerTagsProps.setSelectedTag}
-                />
-              ) : (
-                <div style={{ width: 22, height: 22, opacity: 0 }} />
-              )}
-            </div>
-          </div>
+        <div className="flex flex-row items-center justify-center gap-2 px-2 py-2 w-full">
+          {menuItems.map((item, index) => (
+            <a
+              key={index}
+              href={item.href}
+              className={`px-3 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-sans font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`}
+            >
+              {item.mobileText}
+            </a>
+          ))}
+          <DrawerTagsMobile
+            tags={drawerTagsProps?.tags || []}
+            selectedTag={drawerTagsProps?.selectedTag || null}
+            setSelectedTag={drawerTagsProps?.setSelectedTag || (() => {})}
+          />
         </div>
       </div>
 

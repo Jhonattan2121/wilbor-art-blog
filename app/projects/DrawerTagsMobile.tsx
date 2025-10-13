@@ -47,7 +47,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
     if (!tags || tags.length === 0) return null;
 
     return (
-        <div className="sm:hidden flex items-center">
+        <div className="flex items-center">
             <button
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
                 style={{ outline: 'none', boxShadow: 'none' }}
