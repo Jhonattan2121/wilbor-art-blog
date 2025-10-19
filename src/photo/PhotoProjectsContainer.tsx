@@ -478,8 +478,8 @@ const MediaItem = ({
         )}
         {isExpanded && (
           <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
-            <div className="flex items-center px-3 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-black shadow-md">
-              <h2 className="flex-1 text-lg sm:text-3xl font-bold text-white tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
+            <div className="flex items-center px-3 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-white dark:bg-black shadow-md">
+              <h2 className="flex-1 text-lg sm:text-3xl font-bold  tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
                   onClick={e => { e.stopPropagation(); onExpand(); }}
                   className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
@@ -490,9 +490,9 @@ const MediaItem = ({
                 <IconX size={35} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-black/90 flex flex-col items-start">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-white dark:bg-black flex flex-col items-start">
               {images.length > 0 && (
-                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-black/80 rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-center">
+                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-white dark:bg-black rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-center">
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
