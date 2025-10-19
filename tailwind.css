@@ -200,7 +200,7 @@
   /* Forms */
   label {
     @apply
-      font-sans font-medium block uppercase text-xs
+      font-mono font-medium block uppercase text-xs
       text-medium
       tracking-wider
   }
