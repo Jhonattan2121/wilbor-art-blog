@@ -82,7 +82,7 @@ export default function ViewSwitcher({
             <a
               key={index}
               href={item.href}
-              className={`px-4 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-sans font-medium hover:underline hover:text-red-400 dark:hover:text-red-400 ${item.active ? 'text-red-500' : ''}`}
+              className={`px-4 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-sans font-medium hover:text-red-400 dark:hover:text-red-400 ${item.active ? 'text-red-500' : ''}`}
             >
               {item.text}
             </a>
