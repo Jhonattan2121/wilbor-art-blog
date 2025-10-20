@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { Metadata } from 'next/types';
 import BannerWilborSwitcher from '../src/components/BannerWilborSwitcher';
 import '../tailwind.css';
+import '../styles/markdown-contact.css';
 import JsonLd from './components/JsonLd';
 
 export const metadata: Metadata = {

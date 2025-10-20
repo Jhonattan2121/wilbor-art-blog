@@ -1,0 +1,23 @@
+/* Estilo para links do markdown na página de contato */
+.markdown-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.markdown-contact a:hover {
+  text-decoration: none;
+  color: #e53e3e;
+}
+
+.markdown-contact li {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.markdown-contact li img {
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
