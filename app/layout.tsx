@@ -5,10 +5,6 @@ import {
   SITE_TITLE
 } from '@/app/config';
 import Footer from '@/app/Footer';
-import PhotoEscapeHandler from '@/photo/PhotoEscapeHandler';
-import ShareModals from '@/share/ShareModals';
-import AppStateProvider from '@/state/AppStateProvider';
-import SwrConfigClient from '@/state/SwrConfigClient';
 import ToasterWithThemes from '@/toast/ToasterWithThemes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -92,9 +88,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon.png" />
       </head>
       <body className="bg-main">
-        <AppStateProvider>
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
-            <SwrConfigClient>
               <div className="w-full px-4 sm:px-8 pt-4">
                 <div className="w-full flex justify-start">
                   <Link href="/projects">
@@ -107,20 +101,16 @@ export default function RootLayout({
                 </div>
                 {/* <Nav siteDomainOrTitle="" /> */}
                 <div >
-                  <ShareModals />
                   {children}
                 </div>
                 <Footer />
               </main>
               {/* <CommandK /> */}
-            </SwrConfigClient>
             <Analytics debug={false} />
             <SpeedInsights debug={false} />
-            <PhotoEscapeHandler />
             <ToasterWithThemes />
             <JsonLd type="website" />
           </ThemeProvider>
-        </AppStateProvider>
       </body>
     </html>
   );

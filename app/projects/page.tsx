@@ -2,7 +2,6 @@ import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { Photo } from '@/photo/components/types';
 import PhotosEmptyState from '@/photo/PhotosEmptyState';
-import { Tags } from '@/tag';
 import { createMetadata } from '@/utility/metadata';
 import { Discussion } from '@hiveio/dhive';
 import { Metadata } from 'next/types';
@@ -177,7 +176,13 @@ async function retryOperation<T>(operation: () => Promise<T>, maxRetries = 3): P
 }
 
 // Modify the extractAndCountTags function to receive paginated posts
-function extractAndCountTags(posts: Discussion[], paginatedPosts: Photo[]): Tags {
+type Tag = { tag: string; count: number };
+type Tags = Tag[];
+
+function extractAndCountTags(
+  posts: Discussion[],
+  paginatedPosts: Photo[]
+): Tags {
   const tagCount = new Map<string, number>();
 
   // Filter only posts from the current page

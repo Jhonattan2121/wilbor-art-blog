@@ -1,12 +1,6 @@
-import { IS_PRODUCTION, STATICALLY_OPTIMIZED_PHOTO_CATEGORIES } from '@/app/config';
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
-import { INFINITE_SCROLL_GRID_INITIAL } from '@/photo';
 import { Photo } from '@/photo/components/types';
-import { getUniqueTags } from '@/photo/db/query';
-import { generateMetaForTag } from '@/tag';
-import { getPhotosTagDataCached } from '@/tag/data';
-import type { Metadata } from 'next';
 import { cache } from 'react';
 import PhotoGridPageClient from './PhotoGridPageClient';
 
@@ -18,42 +12,9 @@ interface PageProps {
   params: Promise<TagPageParams>;
 }
 
-const getPhotosTagDataCachedCached = cache((tag: string) =>
-  getPhotosTagDataCached({ tag, limit: INFINITE_SCROLL_GRID_INITIAL }));
 
-export let generateStaticParams:
-  (() => Promise<{ tag: string }[]>) | undefined = undefined;
 
-if (STATICALLY_OPTIMIZED_PHOTO_CATEGORIES && IS_PRODUCTION) {
-  generateStaticParams = async () => {
-    const tags = await getUniqueTags();
-    return tags.map(({ tag }) => ({ tag }));
-  };
-}
 
-export async function generateMetadata({ 
-  params 
-}: PageProps): Promise<Metadata> {
-  const { tag } = await params;
-  const decodedTag = decodeURIComponent(tag);
-  
-  const [photos, { count, dateRange }] = await getPhotosTagDataCachedCached(decodedTag);
-
-  if (photos.length === 0) return {};
-
-  const { url, title, description, images } = generateMetaForTag(decodedTag, photos, count, dateRange);
-
-  return {
-    title,
-    openGraph: { title, description, images, url },
-    twitter: {
-      images,
-      description,
-      card: 'summary_large_image',
-    },
-    description,
-  };
-}
 
 const getMediaType = (url: string, mediaType?: string) => {
   if (url.includes('3speak.tv/embed')) {

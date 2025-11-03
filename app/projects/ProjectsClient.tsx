@@ -43,9 +43,6 @@ export default function ProjectsClient({ posts, tags, photosCount, cameras, simu
       <PhotoGridPage
         photos={posts}
         photosCount={photosCount}
-        tags={tags}
-        cameras={cameras}
-        simulations={simulations}
         selectedTag={selectedTag}
         setSelectedTag={handleTagChange}
       />
