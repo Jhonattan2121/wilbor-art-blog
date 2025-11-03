@@ -8,7 +8,6 @@ import {
   PREFIX_PHOTO,
   PREFIX_TAG,
 } from './src/app/paths';
-import { auth } from './src/auth';
 
 export function middleware(request: NextRequest) {
   // If on root route, redirect to /projects
@@ -48,10 +47,7 @@ export function middleware(request: NextRequest) {
     ));
   }
 
-  return auth(
-    request as unknown as NextApiRequest,
-    NextResponse as unknown as NextApiResponse,
-  );
+  
 }
 
 export async function GET(request: Request) {

@@ -22,9 +22,6 @@ export default function PhotoGridPageClient({
     <PhotoGridPage
       photos={photos}
       photosCount={photosCount}
-      tags={tags}
-      cameras={cameras}
-      simulations={simulations}
       selectedTag={selectedTag}
       setSelectedTag={setSelectedTag}
     />
