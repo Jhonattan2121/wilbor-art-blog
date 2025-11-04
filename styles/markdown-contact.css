@@ -12,12 +12,35 @@
   color: #e53e3e;
 }
 
+.markdown-contact ul {
+  list-style: none;
+  padding-left: 0;
+}
+
 .markdown-contact li {
   display: flex;
   align-items: center;
-  gap: 0.5em;
+  margin-bottom: 18px;
 }
-.markdown-contact li img {
-  margin-right: 0.5em;
-  vertical-align: middle;
+
+.markdown-contact img {
+  margin-right: 12px;
+  filter: grayscale(1) brightness(0.8) contrast(0.8) opacity(0.6);
+  transition: filter 0.2s, opacity 0.2s;
+}
+
+.markdown-contact .contato-texto {
+  font-family: 'Fira Mono', monospace;
+  color: #8d99ae;
+  font-size: 1.1em;
+  transition: color 0.2s;
+}
+
+.markdown-contact li:hover .contato-texto {
+  color: #EA4335;
+}
+
+.markdown-contact li:hover img {
+  filter: none;
+  opacity: 1;
 }
