@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 interface ImageCarouselProps {
   images: { src: string; alt?: string }[];
@@ -7,39 +7,103 @@ interface ImageCarouselProps {
 export default function ImageCarousel({ images }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchEndX, setTouchEndX] = useState<number | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [transition, setTransition] = useState(true);
+  const [translateX, setTranslateX] = useState(0);
+  const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
 
   if (images.length === 0) return null;
 
-  const prev = () => {
-    setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 300);
-    setCurrent((c) => (c === 0 ? images.length - 1 : c - 1));
-  };
-  const next = () => {
-    setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 300);
-    setCurrent((c) => (c === images.length - 1 ? 0 : c + 1));
-  };
-  const goTo = (idx: number) => setCurrent(idx);
+  // Próxima imagem
+  const getNextIndex = () => (current === images.length - 1 ? 0 : current + 1);
+  // Imagem anterior
+  const getPrevIndex = () => (current === 0 ? images.length - 1 : current - 1);
 
-  // Swipe handlers
+  // Eventos de swipe
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);
+    setTouchMoveX(null);
+    setIsDragging(true);
+    setTransition(false);
+    if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
   };
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    setTouchEndX(e.touches[0].clientX);
+    if (!isDragging) return;
+    const moveX = e.touches[0].clientX;
+    setTouchMoveX(moveX);
+    const delta = moveX - (touchStartX ?? 0);
+    setTranslateX(delta);
   };
   const handleTouchEnd = () => {
-    if (touchStartX !== null && touchEndX !== null) {
-      const distance = touchStartX - touchEndX;
-      if (distance > 40) next();
-      if (distance < -40) prev();
+    if (transitionTimeout.current) {
+      clearTimeout(transitionTimeout.current);
+      transitionTimeout.current = null;
     }
-    setTouchStartX(null);
-    setTouchEndX(null);
+    if (!isDragging || touchStartX === null || touchMoveX === null) {
+      setIsDragging(false);
+      setTransition(true);
+      setTranslateX(0);
+      return;
+    }
+    const distance = touchMoveX - touchStartX;
+    setIsDragging(false);
+    setTransition(true);
+    // Se arrastar o suficiente, troca a imagem
+    if (distance < -60) {
+      setTranslateX(-window.innerWidth);
+      transitionTimeout.current = setTimeout(() => {
+        setTransition(false);
+        setCurrent(getNextIndex());
+        setTranslateX(window.innerWidth); // começa fora da tela à direita
+        setTimeout(() => {
+          setTransition(true);
+          setTranslateX(0); // anima para o centro
+        }, 20);
+      }, 300);
+    } else if (distance > 60) {
+      setTranslateX(window.innerWidth);
+      transitionTimeout.current = setTimeout(() => {
+        setTransition(false);
+        setCurrent(getPrevIndex());
+        setTranslateX(-window.innerWidth); // começa fora da tela à esquerda
+        setTimeout(() => {
+          setTransition(true);
+          setTranslateX(0); // anima para o centro
+        }, 20);
+      }, 300);
+    } else {
+      // Volta para o centro
+      setTransition(true);
+      setTranslateX(0);
+    }
   };
+
+  // Troca imagem ao clicar nos cantos no desktop
+  const handleDesktopClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Só ativa em telas maiores que 640px (sm)
+    if (window.innerWidth < 640) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if (x < rect.width / 3) {
+      // Clique no lado esquerdo
+      setCurrent(getPrevIndex());
+    } else if (x > (rect.width * 2) / 3) {
+      // Clique no lado direito
+      setCurrent(getNextIndex());
+    }
+  };
+
+  // Sempre mostra a anterior, atual e próxima
+  const imagesToShow = [images[getPrevIndex()], images[current], images[getNextIndex()]];
+  const slideWidth = 100; // porcentagem
+  // Offset do slide
+  let offset = -slideWidth;
+  if (isDragging && touchStartX !== null && touchMoveX !== null) {
+    offset = -slideWidth + ((touchMoveX - touchStartX) / window.innerWidth) * slideWidth;
+  } else if (transition && translateX !== 0) {
+    offset = translateX < 0 ? -2 * slideWidth : 0;
+  }
 
   return (
     <div className="relative w-full flex flex-col items-center my-6">
@@ -56,69 +120,41 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onClick={handleDesktopClick}
       >
-        {/* Setas laterais - só desktop */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prev}
-              aria-label="Anterior"
-              className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition bg-transparent"
-              style={{ opacity: 0, pointerEvents: 'auto', background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
-            >
-              {/* Setas invisíveis, mas clicáveis */}
-              <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <polyline points="38,12 18,30 38,48" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
-            </button>
-            <button
-              onClick={next}
-              aria-label="Próxima"
-              className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-20 sm:h-20 items-center justify-center transition bg-transparent"
-              style={{ opacity: 0, pointerEvents: 'auto', background: 'none', border: 'none', boxShadow: 'none', padding: 0 }}
-            >
-              {/* Setas invisíveis, mas clicáveis */}
-              <svg width="40" height="40" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <polyline points="22,12 42,30 22,48" stroke="#ef4444" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
-            </button>
-          </>
-        )}
-        {/* Áreas clicáveis invisíveis para navegação */}
-        {images.length > 1 && (
-          <>
-            <div
-              className="hidden sm:block absolute left-0 top-0 h-full w-1/2 cursor-pointer z-20"
-              style={{ background: 'transparent' }}
-              onClick={prev}
-              aria-label="Anterior"
-            />
-            <div
-              className="hidden sm:block absolute right-0 top-0 h-full w-1/2 cursor-pointer z-20"
-              style={{ background: 'transparent' }}
-              onClick={next}
-              aria-label="Próxima"
-            />
-          </>
-        )}
-        <img
-          src={images[current].src}
-          alt={images[current].alt || ''}
-          className={`rounded-lg shadow-lg w-full max-w-full sm:max-w-[700px] transition-transform duration-300 ${isAnimating ? 'scale-95' : 'scale-100'}`}
+        <div
           style={{
-            objectFit: 'contain',
-            display: 'block',
-            margin: '0 auto',
-            background: 'transparent',
+            display: 'flex',
+            width: '300%',
+            maxWidth: '2100px',
+            transform: `translateX(${offset}%)`,
+            transition: transition ? 'transform 0.3s' : 'none',
           }}
-        />
-        {/* Bolinhas de navegação */}
+        >
+          {imagesToShow.map((img, idx) => (
+            <img
+              key={idx}
+              src={img.src}
+              alt={img.alt || ''}
+              className="rounded-lg shadow-lg w-full max-w-full sm:max-w-[700px]"
+              style={{
+                objectFit: 'contain',
+                display: 'block',
+                margin: '0 auto',
+                background: 'transparent',
+                minWidth: '100%',
+                width: '100%',
+              }}
+            />
+          ))}
+        </div>
+        {/* Navegação por bolinhas */}
         {images.length > 1 && (
           <div className="absolute bottom-1 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2">
             {images.map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => goTo(idx)}
+                onClick={() => setCurrent(idx)}
                 aria-label={`Ir para imagem ${idx + 1}`}
                 className="rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
                 style={{ width: 13, height: 13, minWidth: 13, minHeight: 13, padding: 0, borderWidth: 0, background: current === idx ? '#ef4444' : '#e5e7eb', borderColor: current === idx ? '#ef4444' : '#9ca3af', borderStyle: 'solid', borderRadius: '50%' }}
@@ -130,3 +166,5 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
     </div>
   );
 }
+
+

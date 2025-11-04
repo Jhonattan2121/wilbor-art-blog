@@ -9,8 +9,6 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { extractImagesFromMarkdown } from './components/markdownUtils';
 import { Media, PhotoGridContainerProps } from './components/types';
 
@@ -138,7 +136,6 @@ const MediaItem = ({
   const [fullscreenImg, setFullscreenImg] = useState<string | null>(null);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
   const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
-  const [isMobile, setIsMobile] = useState(false);
   function getThumbnailUrl(item: Media): string | null {
     try {
       if (item.hiveMetadata) {
@@ -221,11 +218,7 @@ const MediaItem = ({
       onContentSizeChange(false);
     }
   }, [isExpanded, mainItem.hiveMetadata?.body, mainItem.src]);
-  const formatPostContent = (content: string): string => {
-    if (!content) return '';
-    const formattedContent = content.replace(/!\[([^\]]*)\]\(([^)]+)\)\s*!\[/g, '![$1]($2)\n\n![');
-    return formattedContent;
-  };
+
   const renderMedia = (media: Media, isMainVideo: boolean = false) => {
     if (media.src?.includes(SKATEHIVE_URL)) {
       return (
@@ -318,16 +311,7 @@ const MediaItem = ({
       </div>
     );
   };
-  useEffect(() => {
-    setIsMobile(typeof window !== 'undefined' && window.innerWidth < 640);
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
-    };
-  }, []);
+
   return (
     <div
       className={clsx(
@@ -501,57 +485,7 @@ const MediaItem = ({
             </div>
           </div>
         )}
-        {fullscreenImg && isMobile && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
-            <button
-              className="absolute top-4 right-4 text-white bg-black/60 rounded-full p-2 z-50 flex items-center justify-center border-2 border-gray-300 shadow-lg hover:border-red-500 hover:rotate-90 transition-all"
-              onClick={() => setFullscreenImg(null)}
-              aria-label="Fechar imagem em tela cheia"
-              style={{  background: 'transparent', border: 'none', boxShadow: 'none' }}
-              >
-              <IconX size={38} />
-            </button>
-            <div className="relative w-full max-w-xl flex flex-col items-center">
-              <div className="w-full">
-                <Swiper
-                  pagination={{ clickable: true }}
-                  modules={[Pagination]}
-                  initialSlide={fullscreenIndex}
-                  onSlideChange={swiper => setFullscreenIndex(swiper.activeIndex)}
-                  className="w-full h-[80vh]"
-                >
-                  {images.map((img, idx) => (
-                    <SwiperSlide key={img}>
-                      <div className="flex items-center justify-center w-full h-[80vh] select-none">
-                        <img
-                          src={img}
-                          alt={`Imagem ${idx + 1}`}
-                          className="max-w-full max-h-[80vh] rounded-lg shadow-lg object-contain select-none"
-                          style={{ objectFit: 'contain' }}
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-                <style jsx global>{`
-                  .swiper-pagination-bullet {
-                    width: 10px !important;
-                    height: 10px !important;
-                    margin: 0 3px !important;
-                    background: #fff;
-                    opacity: 0.6;
-                    border: none !important;
-                    transition: all 0.2s;
-                  }
-                  .swiper-pagination-bullet-active {
-                    background: #e11d48 !important;
-                    opacity: 1 !important;
-                  }
-                `}</style>
-              </div>
-            </div>
-          </div>
-        )}
+     
       </div>
     </div>
   );
