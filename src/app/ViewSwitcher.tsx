@@ -67,11 +67,13 @@ export default function ViewSwitcher({
               {item.mobileText}
             </a>
           ))}
+          {drawerTagsProps && (
             <DrawerTagsMobile
               tags={drawerTagsProps.tags}
               selectedTag={drawerTagsProps.selectedTag}
               setSelectedTag={drawerTagsProps.setSelectedTag}
             />
+          )}
       </div>
 
       <div className="hidden sm:flex sm:flex-row items-center gap-6 w-full mt-4 mb-4" style={{ marginLeft: '56px' }}>
