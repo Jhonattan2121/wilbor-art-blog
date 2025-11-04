@@ -55,25 +55,23 @@ export default function ViewSwitcher({
 
   return (
     <>
-      <div className="sm:hidden w-fit mb-0 flex justify-center mx-auto"> 
-        <div className="flex flex-row items-center justify-center gap-2 px-2 py-2 w-full">
+      <div className="md:hidden w-fit mb-0 flex justify-center mx-auto"> 
           {menuItems.map((item, index) => (
             <a
               key={index}
               href={item.href}
-              className={`px-3 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`}
+              className={
+                `px-3 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`
+              }
             >
               {item.mobileText}
             </a>
           ))}
-          {drawerTagsProps && (
             <DrawerTagsMobile
               tags={drawerTagsProps.tags}
               selectedTag={drawerTagsProps.selectedTag}
               setSelectedTag={drawerTagsProps.setSelectedTag}
             />
-          )}
-        </div>
       </div>
 
       <div className="hidden sm:flex sm:flex-row items-center gap-6 w-full mt-4 mb-4" style={{ marginLeft: '56px' }}>
