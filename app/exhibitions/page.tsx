@@ -153,9 +153,8 @@ export default function ExhibitionsPage() {
   return (
     <>
       <ViewSwitcher currentSelection="exhibitions" />
-      <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
-      
-        <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
+      <div className="w-full px-2 sm:px-8 pt-2 md:px-12 py-6 sm:py-8 dark:text-gray-200 text-left">
+        <div className="max-w-full sm:max-w-4xl w-full text-left space-y-4 sm:space-y-3 mx-0">
           
           {!loading && !error && hivePosts.length > 0 && (
             <div className="space-y-3">
@@ -163,12 +162,12 @@ export default function ExhibitionsPage() {
                 const media = extractMediaFromPost(post);
                 
                 return (
-                  <article key={post.permlink} className="mb-6 p-3">
-                    <div className="space-y-0">
+                  <article key={post.permlink} className="mb-4 sm:mb-6 p-2 sm:p-3">
+                    <div className="space-y-1 sm:space-y-0">
                       {media.images.length > 0 && (
                         <div className="w-full mb-2">
                           {media.images.length === 1 ? (
-                            <div className="relative w-full h-60 sm:h-80 rounded-lg overflow-hidden">
+                            <div className="relative w-full h-48 sm:h-60 md:h-80 rounded-lg overflow-hidden">
                               <Image
                                 src={media.images[0]}
                                 alt={`Imagem do post: ${post.title}`}
@@ -181,12 +180,12 @@ export default function ExhibitionsPage() {
                           ) : (
                             <Swiper
                               modules={[Navigation, Pagination, Scrollbar, A11y]}
-                              spaceBetween={10}
+                              spaceBetween={6}
                               slidesPerView={1}
                               navigation
                               pagination={{ clickable: true }}
                               scrollbar={{ draggable: true }}
-                              className="w-full h-60 sm:h-80 rounded-lg overflow-hidden"
+                              className="w-full h-48 sm:h-60 md:h-80 rounded-lg overflow-hidden"
                             >
                               {media.images.map((img, imgIndex) => (
                                 <SwiperSlide key={imgIndex}>
@@ -239,7 +238,7 @@ export default function ExhibitionsPage() {
           )}
         </div>
 
-        <div className="flex mt-8 mb-8">
+        <div className="flex mt-6 mb-8 sm:mt-8">
           <a
             href="/about"
           >
