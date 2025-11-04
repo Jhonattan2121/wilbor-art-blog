@@ -117,7 +117,7 @@ export default function Markdown({ children, className = '', removeMedia = false
     ),
     a: (props) => (
       <a
-        className="text-blue-600 underline hover:text-blue-800 transition-colors"
+        className="text-red-600 hover:text-red-800 transition-colors"
         target="_blank"
         rel="noopener noreferrer"
         {...props}
