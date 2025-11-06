@@ -317,7 +317,7 @@ const MediaItem = ({
       className={clsx(
         'rounded-lg overflow-hidden h-full group transition-colors duration-100',
         'bg-white text-black dark:bg-black dark:text-white',
-        !isExpanded && 'border-t-8 border-l-8 border-r-8 border-b-0 border-white dark:border-black hover:bg-black hover:text-white hover:border-t-black hover:border-l-black hover:border-r-black dark:hover:bg-white dark:hover:text-black dark:hover:border-t-white dark:hover:border-l-white dark:hover:border-r-white',
+        !isExpanded && 'md:border-t-8 md:border-l-8 md:border-r-8 md:border-b-0 md:border-white md:dark:border-black md:hover:bg-black md:hover:text-white md:hover:border-t-black md:hover:border-l-black md:hover:border-r-black md:dark:hover:bg-white md:dark:hover:text-black md:dark:hover:border-t-white md:dark:hover:border-l-white md:dark:hover:border-r-white',
         isExpanded && 'p-2'
       )}
       onClick={e => {
@@ -461,22 +461,22 @@ const MediaItem = ({
           </>
         )}
         {isExpanded && (
-          <div className="flex flex-col h-full overflow-hidden" ref={contentRef}>
-            <div className="flex items-center px-3 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-white dark:bg-black shadow-md">
-              <h2 className="flex-1 text-lg sm:text-3xl font-bold  tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
+          <div className="flex flex-col h-full overflow-hidden w-full" ref={contentRef}>
+            <div className="flex items-center px-2 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-white dark:bg-black shadow-md">
+              <h2 className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               <button
-                  onClick={e => { e.stopPropagation(); onExpand(); }}
-                  className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
-                  aria-label="Fechar"
-                  title="Fechar"
-                  style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
-                  >
+                onClick={e => { e.stopPropagation(); onExpand(); }}
+                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+                aria-label="Fechar"
+                title="Fechar"
+                style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
+              >
                 <IconX size={35} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-1.5 sm:px-8 py-3 sm:py-8 bg-white dark:bg-black flex flex-col items-start">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-0 sm:px-8 py-1 sm:py-8 bg-white dark:bg-black flex flex-col items-start w-full">
               {images.length > 0 && (
-                <div className="prose prose-invert prose-base sm:prose-lg max-w-3xl mx-auto bg-white dark:bg-black rounded-xl p-4 sm:p-8 shadow-lg mt-0 sm:mt-6 text-center">
+                <div className="prose prose-invert prose-base sm:prose-lg w-full bg-white dark:bg-black rounded-xl p-2 sm:p-8 shadow-lg mt-0 sm:mt-6 text-center">
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
