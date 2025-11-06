@@ -4,6 +4,7 @@ import { IconX } from '@/components/IconX';
 import Markdown from '@/components/Markdown';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
+import ImageCarousel from '@/components/ImageCarousel';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -133,9 +134,26 @@ const MediaItem = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const [imageError, setImageError] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
-  const [fullscreenImg, setFullscreenImg] = useState<string | null>(null);
-  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
+
+  // Fecha fullscreen com ESC e bloqueia scroll do body enquanto aberto
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsFullscreen(false);
+    };
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', onKey);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [isFullscreen]);
   function getThumbnailUrl(item: Media): string | null {
     try {
       if (item.hiveMetadata) {
@@ -464,6 +482,17 @@ const MediaItem = ({
           <div className="flex flex-col h-full overflow-hidden w-full" ref={contentRef}>
             <div className="flex items-center px-2 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-white dark:bg-black shadow-md">
               <h2 className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
+              {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
+              {images.length > 0 && (
+                <button
+                  onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
+                  className="mr-2 inline-flex items-center justify-center p-2 rounded-md border border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-900"
+                  aria-label="Abrir em tela cheia"
+                  title="Abrir em tela cheia"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                </button>
+              )}
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
                 className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
@@ -480,6 +509,36 @@ const MediaItem = ({
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
+                </div>
+              )}
+              {/* Modal fullscreen reutilizando ImageCarousel */}
+              {isFullscreen && (
+                <div
+                  className="fixed inset-0 z-50 flex items-start justify-center bg-black/90 p-0 sm:p-6"
+                  onClick={() => setIsFullscreen(false)}
+                >
+                  {/* Header do overlay: garante espaçamento e área para o botão fechar */}
+                  <div
+                    className="absolute top-3 sm:top-0 left-0 right-0 z-50 flex justify-end items-center h-12 sm:h-16 px-3 sm:px-6 bg-gradient-to-b from-black/70 to-transparent backdrop-blur-sm"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => setIsFullscreen(false)}
+                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white shadow-lg mr-2 sm:mr-4 border border-white/10 transform translate-y-1 sm:translate-y-0"
+                      aria-label="Fechar fullscreen"
+                      title="Fechar"
+                    >
+                      <IconX size={28} />
+                    </button>
+                  </div>
+
+                  <div className="w-full h-auto pt-12 sm:pt-20 max-w-[1400px] max-h-[95vh] flex items-center justify-center relative overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageCarousel
+                        images={images.map(src => ({ src, alt: mainItem.title || '' }))}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
