@@ -19,45 +19,6 @@ function removeImagesAndVideosFromMarkdown(markdown: string): string {
   return result;
 }
 
-function extractImageParagraphs(markdown: string) {
-  // Regex para encontrar <p><img ... /></p> ou ![]()
-  const imgParagraphRegex = /(<p>\s*<img [^>]+>\s*<\/p>|!\[[^\]]*\]\([^\)]+\))/g;
-  let match;
-  // let lastIndex = 0; // Removido pois não é usado
-  let result = '';
-  const images: { src: string; alt?: string }[] = [];
-  let found = false;
-
-  while ((match = imgParagraphRegex.exec(markdown)) !== null) {
-    found = true;
-    // Pega o src e alt
-    let src = '';
-    let alt = '';
-    const htmlImg = /<img [^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/;
-    const mdImg = /!\[([^\]]*)\]\(([^\)]+)\)/;
-    if (match[0].startsWith('<p>')) {
-      const m = htmlImg.exec(match[0]);
-      if (m) {
-        src = m[1];
-        alt = m[2];
-      }
-    } else {
-      const m = mdImg.exec(match[0]);
-      if (m) {
-        alt = m[1];
-        src = m[2];
-      }
-    }
-    images.push({ src, alt });
-  }
-
-  if (found && images.length > 0) {
-    // Substitui todos os <p><img/></p> ou ![]() por um marcador especial
-    result = markdown.replace(imgParagraphRegex, '[[CAROUSEL_MARKER]]');
-    return { markdown: result, images };
-  }
-  return { markdown, images: [] };
-}
 
 function splitMarkdownWithImageBlocks(markdown: string) {
   // Divide o markdown em linhas para facilitar

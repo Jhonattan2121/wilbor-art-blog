@@ -148,21 +148,21 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
             />
           ))}
         </div>
-        {/* Navegação por bolinhas */}
-        {images.length > 1 && (
-          <div className="absolute bottom-1 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2">
-            {images.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrent(idx)}
-                aria-label={`Ir para imagem ${idx + 1}`}
-                className="rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
-                style={{ width: 13, height: 13, minWidth: 13, minHeight: 13, padding: 0, borderWidth: 0, background: current === idx ? '#ef4444' : '#e5e7eb', borderColor: current === idx ? '#ef4444' : '#9ca3af', borderStyle: 'solid', borderRadius: '50%' }}
-              />
-            ))}
-          </div>
-        )}
       </div>
+      {/* Navegação por bolinhas abaixo da imagem */}
+      {images.length > 1 && (
+        <div className="mt-2 flex items-center justify-center gap-2">
+          {images.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              aria-label={`Ir para imagem ${idx + 1}`}
+              className="rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
+              style={{ width: 13, height: 13, minWidth: 13, minHeight: 13, padding: 0, borderWidth: 0, background: current === idx ? '#ef4444' : '#e5e7eb', borderColor: current === idx ? '#ef4444' : '#9ca3af', borderStyle: 'solid', borderRadius: '50%' }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
