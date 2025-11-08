@@ -55,14 +55,14 @@ export default function ViewSwitcher({
 
   return (
     <>
-      <div className="md:hidden w-full mb-4 flex justify-center mx-auto">
+      <div className="md:hidden w-full mb-8 flex justify-center mx-auto">
           <div className="flex gap-2 px-2 overflow-x-auto no-scrollbar">
             {menuItems.map((item, index) => (
               <a
                 key={index}
                 href={item.href}
                 className={
-                  `px-2 py-1 text-center text-sm whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : 'text-white'}`
+                  `px-2 py-1 text-center text-xs whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : 'text-white'}`
                 }
               >
                 {item.mobileText}
