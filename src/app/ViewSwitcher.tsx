@@ -55,28 +55,29 @@ export default function ViewSwitcher({
 
   return (
     <>
-      <div className="md:hidden w-fit mb-0 flex justify-center mx-auto"> 
-          {menuItems.map((item, index) => (
-            <a
-              key={index}
-              href={item.href}
-              className={
-                `px-3 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`
-              }
-            >
-              {item.mobileText}
-            </a>
-          ))}
-          {drawerTagsProps && (
+      <div className="md:hidden w-full mb-4 flex justify-center mx-auto">
+          <div className="flex gap-2 px-2 overflow-x-auto no-scrollbar">
+            {menuItems.map((item, index) => (
+              <a
+                key={index}
+                href={item.href}
+                className={
+                  `px-2 py-1 text-center text-sm whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : 'text-white'}`
+                }
+              >
+                {item.mobileText}
+              </a>
+            ))}
             <DrawerTagsMobile
-              tags={drawerTagsProps.tags}
-              selectedTag={drawerTagsProps.selectedTag}
-              setSelectedTag={drawerTagsProps.setSelectedTag}
+              tags={drawerTagsProps?.tags ?? []}
+              selectedTag={drawerTagsProps?.selectedTag ?? null}
+              setSelectedTag={drawerTagsProps?.setSelectedTag ?? (() => {})}
             />
-          )}
+          </div>
       </div>
 
-      <div className="hidden sm:flex sm:flex-row items-center gap-6 w-full mt-4 mb-4" style={{ marginLeft: '56px' }}>
+      {/* Desktop menu unchanged but keep spacing consistent */}
+      <div className="hidden sm:flex sm:flex-row items-center gap-6 w-full mt-4 mb-6" style={{ marginLeft: '56px' }}>
         <div className="flex flex-row gap-6 flex-1 items-center">
           {menuItems.map((item, index) => (
             <a
@@ -87,13 +88,11 @@ export default function ViewSwitcher({
               {item.text}
             </a>
           ))}
-          {drawerTagsProps && (
-            <DrawerTagsDesktop
-              tags={drawerTagsProps.tags}
-              selectedTag={drawerTagsProps.selectedTag}
-              setSelectedTag={drawerTagsProps.setSelectedTag}
-            />
-          )}
+          <DrawerTagsDesktop
+            tags={drawerTagsProps?.tags ?? []}
+            selectedTag={drawerTagsProps?.selectedTag ?? null}
+            setSelectedTag={drawerTagsProps?.setSelectedTag ?? (() => {})}
+          />
         </div>
       </div>
     </>

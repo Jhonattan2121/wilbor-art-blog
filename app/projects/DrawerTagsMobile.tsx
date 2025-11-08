@@ -44,19 +44,20 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
         }
     };
 
-    if (!tags || tags.length === 0) return null;
+
+    const hasTags = Array.isArray(tags) && tags.length > 0;
 
     return (
         <div className="flex items-center">
             <button
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
-                style={{ outline: 'none', boxShadow: 'none' }}
-                onClick={() => setShowMobileTags(true)}
-                aria-label="Abrir menu de tags"
-                title="Abrir menu de tags"
+                style={{ outline: 'none', boxShadow: 'none', opacity: hasTags ? 1 : 0.6, cursor: hasTags ? 'pointer' : 'not-allowed' }}
+                onClick={() => hasTags && setShowMobileTags(true)}
+                aria-label={hasTags ? 'Abrir menu de tags' : 'Sem tags disponíveis'}
+                title={hasTags ? 'Abrir menu de tags' : 'Sem tags disponíveis'}
+                aria-disabled={!hasTags}
             >
                 <IconMenu width={22} />
-
             </button>
             {showMobileTags && (
                 <>
