@@ -68,11 +68,13 @@ export default function ViewSwitcher({
                 {item.mobileText}
               </a>
             ))}
-            <DrawerTagsMobile
-              tags={drawerTagsProps?.tags ?? []}
-              selectedTag={drawerTagsProps?.selectedTag ?? null}
-              setSelectedTag={drawerTagsProps?.setSelectedTag ?? (() => {})}
-            />
+            {typeof drawerTagsProps?.setSelectedTag === 'function' && (
+              <DrawerTagsMobile
+                tags={drawerTagsProps?.tags ?? []}
+                selectedTag={drawerTagsProps?.selectedTag ?? null}
+                setSelectedTag={drawerTagsProps?.setSelectedTag}
+              />
+            )}
           </div>
       </div>
 
@@ -88,11 +90,13 @@ export default function ViewSwitcher({
               {item.text}
             </a>
           ))}
-          <DrawerTagsDesktop
-            tags={drawerTagsProps?.tags ?? []}
-            selectedTag={drawerTagsProps?.selectedTag ?? null}
-            setSelectedTag={drawerTagsProps?.setSelectedTag ?? (() => {})}
-          />
+          {typeof drawerTagsProps?.setSelectedTag === 'function' && (
+            <DrawerTagsDesktop
+              tags={drawerTagsProps?.tags ?? []}
+              selectedTag={drawerTagsProps?.selectedTag ?? null}
+              setSelectedTag={drawerTagsProps?.setSelectedTag}
+            />
+          )}
         </div>
       </div>
     </>

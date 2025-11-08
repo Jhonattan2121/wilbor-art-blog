@@ -8,11 +8,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import ViewSwitcher from '../../src/app/ViewSwitcher';
 
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
 
-import '@/styles/exhibitions.css';
 import Markdown from "@/components/Markdown";
 
 const TITLE_KEYWORDS = [
