@@ -304,19 +304,21 @@ const MediaItem = ({
         </div>
         {media.title && (
           <div
-            className="flex flex-col items-start px-1 py-1 w-auto"
-            style={{ justifyContent: 'flex-start', minHeight: 'unset' }}
+            className={clsx(
+              'bg-white dark:bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
+              'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
+            )}
+
           >
-            <span className="text-sm font-medium text-left truncate" style={{ lineHeight: '1.2', marginTop: 0, marginBottom: 0 }}>
+            <div className="text-xl font-bold line-clamp-2 text-center transition-colors duration-100">
               {media.title}
-            </span>
+            </div>
             {media.tags && media.tags.length > 0 && (
-              <div className="mt-0.5 flex flex-wrap gap-0.5">
+              <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
                 {media.tags.map(tag => (
                   <span
                     key={tag}
-                    className="text-[10px] px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-normal"
-                    style={{ lineHeight: '1.1' }}
+                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
                   >
                     {tag}
                   </span>
@@ -367,7 +369,7 @@ const MediaItem = ({
                   </div>
                   <div className={
                     clsx(
-                      'bg-white dark:bg-black flex flex-col justify-start items-start px-2 py-3 w-full rounded-b-lg transition-colors duration-100',
+                      'bg-white dark:bg-black flex flex-col justify-start items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
                       'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
                     )
                   }>
@@ -489,7 +491,7 @@ const MediaItem = ({
                   aria-label="Abrir em tela cheia"
                   title="Abrir em tela cheia"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/></svg>
                 </button>
               )}
               <button
@@ -606,13 +608,12 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        // Remove padding lateral no mobile para o título encostar na borda
-        'max-w-[2000px] mx-auto px-0 sm:px-6 md:px-8',
+        'max-w-[2000px] mx-auto px-3.5 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
 
-        <div className="grid gap-y-6 gap-x-2 sm:gap-y-6 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
+      <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
             const isOdd = idx % 2 === 1;
@@ -624,10 +625,12 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden w-full shadow-sm',
                   'transition-all duration-300',
                   'rounded-none sm:rounded-lg',
+
                   isExpanded
-                    ? 'col-span-2 justify-self-center sm:col-span-2 md:col-span-3 lg:col-span-3 h-auto'
-                    : 'col-span-1',
-                  !isExpanded && 'max-w-[170px] sm:max-w-full'
+                    ? (hasLargeContentMap[permlink]
+                      ? 'col-span-2 justify-self-center sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
+                     : 'col-span-1')
+                    : 'max-w-[170px] sm:max-w-full'
                 )}
                 tabIndex={0}
                 aria-label={`Projeto ${group[0]?.title || ''}`}
@@ -661,4 +664,3 @@ export default function PhotoGridContainer({
     </div>
   );
 }
-
