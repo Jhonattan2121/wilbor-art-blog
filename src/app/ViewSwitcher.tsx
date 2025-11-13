@@ -62,7 +62,7 @@ export default function ViewSwitcher({
                 key={index}
                 href={item.href}
                 className={
-                  `px-2 py-1 text-center text-xs whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : 'text-white'}`
+                  `px-2 py-1 text-center text-xs whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`
                 }
               >
                 {item.mobileText}
