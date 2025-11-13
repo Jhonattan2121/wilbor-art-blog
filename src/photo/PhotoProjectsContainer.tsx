@@ -613,7 +613,7 @@ export default function PhotoGridContainer({
       )}>
         {header}
 
-        <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
+  <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
             const isOdd = idx % 2 === 1;
@@ -626,8 +626,8 @@ export default function PhotoGridContainer({
                   'transition-all duration-300',
                   isExpanded
                     ? (hasLargeContentMap[permlink]
-                      ? 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                      : 'sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
+                      ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
+                      : 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
                     : 'col-span-1'
                 )}
                 tabIndex={0}
