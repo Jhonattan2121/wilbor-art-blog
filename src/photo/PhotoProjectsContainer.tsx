@@ -607,7 +607,8 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        'max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8',
+        // Reduz o padding lateral no mobile para aproximar os cards das bordas
+        'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
