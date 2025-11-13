@@ -624,12 +624,10 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden w-full shadow-sm',
                   'transition-all duration-300',
                   'rounded-none sm:rounded-lg',
-                  'max-w-[170px] sm:max-w-full', // deixa o card mais estreito no mobile
                   isExpanded
-                    ? (hasLargeContentMap[permlink]
-                      ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                      : 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-2 h-auto')
-                    : 'col-span-1'
+                    ? 'col-span-2 justify-self-center sm:col-span-2 md:col-span-3 lg:col-span-3 h-auto'
+                    : 'col-span-1',
+                  !isExpanded && 'max-w-[170px] sm:max-w-full'
                 )}
                 tabIndex={0}
                 aria-label={`Projeto ${group[0]?.title || ''}`}
