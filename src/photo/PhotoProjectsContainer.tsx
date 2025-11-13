@@ -304,27 +304,26 @@ const MediaItem = ({
         </div>
         {media.title && (
           <div
-  className={clsx(
-    'bg-white dark:bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
-    'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
-  )}
->
-  <div className="text-xl font-bold line-clamp-2 text-center transition-colors duration-100">
-    {media.title}
-  </div>
-  {media.tags && media.tags.length > 0 && (
-    <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
-      {media.tags.map(tag => (
-        <span
-          key={tag}
-          className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
-</div>
+            className="flex flex-col items-start px-1 py-1 w-auto"
+            style={{ justifyContent: 'flex-start', minHeight: 'unset' }}
+          >
+            <span className="text-sm font-medium text-left truncate" style={{ lineHeight: '1.2', marginTop: 0, marginBottom: 0 }}>
+              {media.title}
+            </span>
+            {media.tags && media.tags.length > 0 && (
+              <div className="mt-0.5 flex flex-wrap gap-0.5">
+                {media.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="text-[10px] px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-normal"
+                    style={{ lineHeight: '1.1' }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
@@ -367,27 +366,27 @@ const MediaItem = ({
                     />
                   </div>
                   <div className={
-  clsx(
-    'bg-white dark:bg-black flex flex-col justify-center items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
-    'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
-  )
-}>
-  <div className="text-xl font-bold line-clamp-2 text-center transition-colors duration-100">
-    {mainItem.title}
-  </div>
-  {mainItem.tags && mainItem.tags.length > 0 && (
-    <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
-      {mainItem.tags.map(tag => (
-        <span
-          key={tag}
-          className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
-</div>
+                    clsx(
+                      'bg-white dark:bg-black flex flex-col justify-start items-start px-2 py-3 w-full rounded-b-lg transition-colors duration-100',
+                      'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
+                    )
+                  }>
+                    <div className="text-xl font-bold line-clamp-2 text-left transition-colors duration-100">
+                      {mainItem.title}
+                    </div>
+                    {mainItem.tags && mainItem.tags.length > 0 && (
+                      <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
+                        {mainItem.tags.map(tag => (
+                          <span
+                            key={tag}
+                            className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="flex-1 relative group h-full">
@@ -414,11 +413,11 @@ const MediaItem = ({
                             />
                           </div>
                           <div className={
-  clsx(
-    'bg-white dark:bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 transition-colors duration-100',
-    'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
-  )
-}>
+                            clsx(
+                              'bg-white dark:bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 transition-colors duration-100',
+                              'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
+                            )
+                          }>
                             <div className="text-xs sm:text-sm md:text-base font-medium line-clamp-1 transition-colors duration-100">
                               {mainItem.title}
                             </div>
@@ -490,7 +489,7 @@ const MediaItem = ({
                   aria-label="Abrir em tela cheia"
                   title="Abrir em tela cheia"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /></svg>
                 </button>
               )}
               <button
@@ -544,7 +543,7 @@ const MediaItem = ({
             </div>
           </div>
         )}
-     
+
       </div>
     </div>
   );
@@ -607,13 +606,13 @@ export default function PhotoGridContainer({
   return (
     <div className="w-full">
       <div className={clsx(
-        // Reduz o padding lateral no mobile para aproximar os cards das bordas
-        'max-w-[2000px] mx-auto px-1 sm:px-6 md:px-8',
+        // Remove padding lateral no mobile para o título encostar na borda
+        'max-w-[2000px] mx-auto px-0 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2'
       )}>
         {header}
 
-  <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
+        <div className="grid gap-y-6 gap-x-2 sm:gap-y-6 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense">
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
             const isOdd = idx % 2 === 1;
@@ -622,8 +621,10 @@ export default function PhotoGridContainer({
                 key={permlink}
                 ref={el => { cardRefs.current[permlink] = el; }}
                 className={clsx(
-                  'relative overflow-hidden rounded-lg w-full shadow-sm',
+                  'relative overflow-hidden w-full shadow-sm',
                   'transition-all duration-300',
+                  'rounded-none sm:rounded-lg',
+                  'max-w-[170px] sm:max-w-full', // deixa o card mais estreito no mobile
                   isExpanded
                     ? (hasLargeContentMap[permlink]
                       ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
