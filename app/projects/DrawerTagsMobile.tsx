@@ -11,6 +11,8 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
     setSelectedTag: (tag: string | null) => void;
 }) {
     const [showMobileTags, setShowMobileTags] = useState(false);
+    const [drawerVisible, setDrawerVisible] = useState(false);
+    const [drawerActive, setDrawerActive] = useState(false);
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -22,9 +24,15 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
 
     useEffect(() => {
         if (showMobileTags) {
+            setDrawerVisible(true);
             document.body.style.overflow = 'hidden';
+            // Ativa animação de entrada após montagem
+            setTimeout(() => setDrawerActive(true), 20);
         } else {
+            setDrawerActive(false);
             document.body.style.overflow = '';
+            const timeout = setTimeout(() => setDrawerVisible(false), 350);
+            return () => clearTimeout(timeout);
         }
         return () => {
             document.body.style.overflow = '';
@@ -34,7 +42,6 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
     const handleTagSelection = (tag: string | null) => {
         setSelectedTag(tag);
         setShowMobileTags(false);
-
         if (tag) {
             const currentUrl = new URL(window.location.href);
             currentUrl.searchParams.set('tag', tag);
@@ -48,76 +55,84 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag }: 
     const hasTags = Array.isArray(tags) && tags.length > 0;
 
     return (
-        <div className="flex items-center">
-            <button
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
-                style={{ outline: 'none', boxShadow: 'none', opacity: hasTags ? 1 : 0.6, cursor: hasTags ? 'pointer' : 'not-allowed' }}
-                onClick={() => hasTags && setShowMobileTags(true)}
-                aria-label={hasTags ? 'Abrir menu de tags' : 'Sem tags disponíveis'}
-                title={hasTags ? 'Abrir menu de tags' : 'Sem tags disponíveis'}
-                aria-disabled={!hasTags}
-            >
-                <IconMenu width={22} />
-            </button>
-            {showMobileTags && (
-                <>
-                    <div
-                        className="fixed inset-0 z-40 transition-opacity animate-fade-in bg-black/30 dark:bg-black/60"
-                        style={{ backdropFilter: 'blur(2px)' }}
-                        onClick={() => setShowMobileTags(false)}
-                        aria-label="Fechar menu de tags"
-                        title="Fechar menu de tags"
-                    />
-                    <aside
-                        id="mobile-tags-drawer"
-                        className="fixed top-0 left-0 h-full w-64 shadow-2xl z-50 flex flex-col animate-slide-in-left bg-white dark:bg-black"
-                        style={{ maxWidth: '80vw' }}
-                        aria-label="Menu lateral de tags"
-                    >
-                        <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black">
-                            <button
-                                onClick={() => setShowMobileTags(false)}
-                                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
-                                aria-label="Fechar"
-                                title="Fechar"
-                                style={{ width: 56, height: 56, background: 'transparent', border: 'none', boxShadow: 'none' }}
+    <div className="flex items-center">
+        <button
+            className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
+            style={{ outline: 'none', boxShadow: 'none', opacity: hasTags ? 1 : 0.6, cursor: hasTags ? 'pointer' : 'not-allowed' }}
+            onClick={() => hasTags && setShowMobileTags(true)}
+            aria-label={hasTags ? 'Abrir menu de tags' : 'Sem tags disponíveis'}
+            title={hasTags ? 'Abrir menu de tags' : 'Sem tags disponíveis'}
+            aria-disabled={!hasTags}
+        >
+            <IconMenu width={22} />
+        </button>
+        {drawerVisible && (
+            <>
+                <div
+                    className={clsx(
+                        'fixed inset-0 z-40 bg-black/30 dark:bg-black/60 transition-opacity duration-300',
+                        showMobileTags ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    )}
+                    style={{ backdropFilter: 'blur(2px)' }}
+                    onClick={() => setShowMobileTags(false)}
+                    aria-label="Fechar menu de tags"
+                    title="Fechar menu de tags"
+                ></div>
+                <aside
+                    id="mobile-tags-drawer"
+                    className={clsx(
+                        'fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-900 w-screen h-screen shadow-2xl border border-gray-200 dark:border-neutral-800 rounded-xl transition-transform duration-300',
+                        drawerActive ? 'translate-x-0' : 'translate-x-full'
+                    )}
+                    aria-label="Menu lateral de tags"
+                    style={{ fontFamily: 'Inter, Arial, sans-serif' }}
+                >
+                    <div className="flex items-center justify-end px-4 py-4 bg-white dark:bg-neutral-900 rounded-t-xl border-b border-gray-100 dark:border-neutral-800">
+                        <button
+                            onClick={() => setShowMobileTags(false)}
+                            className="rounded-full transition-colors p-2 flex items-center justify-center focus:outline-none hover:bg-gray-200 dark:hover:bg-neutral-800"
+                            aria-label="Fechar"
+                            title="Fechar"
+                            style={{ width: 44, height: 44, background: 'transparent', border: 'none', boxShadow: 'none' }}
+                        >
+                            <IconX size={28} />
+                        </button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900 px-4 pt-2 pb-24">
+                        <div className="flex flex-col gap-4 w-full max-w-sm mx-auto">
+                            {tags.map(tag => (
+                                <button
+                                    key={tag}
+                                    onClick={() => handleTagSelection(tag)}
+                                    className={clsx(
+                                        'w-full text-left px-4 py-3 text-lg transition font-medium border-0 rounded-lg',
+                                        selectedTag === tag
+                                            ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
+                                            : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                                    )}
+                                    style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                                    aria-label={`Filtrar por tag ${tag}`}
+                                    title={`Filtrar por tag ${tag}`}
                                 >
-                                <IconX size={35} />
-                            </button>
+                                    {tag}
+                                </button>
+                            ))}
                         </div>
-                        <div className="flex-1 overflow-y-auto py-2 bg-white dark:bg-black">
-                            <div className="flex flex-col gap-2 px-1">
-                                {tags.map(tag => (
-                                    <button
-                                        key={tag}
-                                        onClick={() => handleTagSelection(tag)}
-                                        className={clsx(
-                                            'w-full text-left px-5 py-2 text-base transition font-medium border-0',
-                                            selectedTag === tag
-                                                ? 'text-red-600 dark:text-red-400'
-                                                : 'text-gray-800 dark:text-gray-200 hover:text-black dark:hover:text-white'
-                                        )}
-                                        style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
-                                        aria-label={`Filtrar por tag ${tag}`}
-                                        title={`Filtrar por tag ${tag}`}
-                                    >
-                                        {tag}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                    </div>
+                    <div className="w-full px-4 pb-4 pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
                         <button
                             onClick={() => handleTagSelection(null)}
-                            className="w-full px-5 py-3 text-left font-semibold bg-white dark:bg-black transition border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
+                            className="w-full px-4 py-3 text-center font-semibold bg-red-50 dark:bg-neutral-800 text-red-700 dark:text-red-300 rounded-lg transition border-none shadow focus:outline-none hover:bg-red-100 dark:hover:bg-neutral-700"
                             style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
                             aria-label="Limpar filtro de tags"
                             title="Limpar filtro de tags"
                         >
                             Limpar filtro
                         </button>
-                    </aside>
-                </>
-            )}
-        </div>
-    );
+                    </div>
+                </aside>
+            </>
+        )}
+    </div>
+    )
 }
