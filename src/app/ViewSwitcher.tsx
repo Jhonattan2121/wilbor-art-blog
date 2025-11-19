@@ -1,7 +1,9 @@
+"use client";
 import {
   Path_Contact,
   Path_Exhibitions,
   PATH_FEED_INFERRED,
+  PATH_GRID,
   Path_Partners
 } from '@/app/paths';
 import DrawerTagsDesktop from '../../app/projects/DrawerTagsDesktop';
@@ -9,9 +11,9 @@ import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
 
 export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
 
+
 export default function ViewSwitcher({
   currentSelection,
-  showAdmin,
   drawerTagsProps,
   tags
 }: {
@@ -21,82 +23,66 @@ export default function ViewSwitcher({
   drawerTagsProps?: {
     tags: string[];
     selectedTag: string | null;
-    setSelectedTag: (tag: string | null) => void;
+    setSelectedTag?: (tag: string | null) => void;
   }
 }) {
-  
   const menuItems = [
     {
-      text: "sobre",
-      mobileText: "sobre",
+      text: "SOBRE WILBOR",
+      mobileText: "SOBRE WILBOR",
       href: PATH_FEED_INFERRED,
       active: currentSelection === 'about',
     },
+     {
+      text: "PROJETOS",
+      mobileText: "PROJETOS",
+      href: PATH_GRID,
+      active: currentSelection === 'projects',
+    },
     {
-      text: "exposições/exibições",
-      mobileText: "expo",
+      text: "EXPOSIÇÕES / EXIBIÇÕES",
+      mobileText: "EXPOSIÇÕES / EXIBIÇÕES",
       href: Path_Exhibitions,
       active: currentSelection === 'exhibitions',
     },
-  
     {
-      text: "parceiros",
-      mobileText: "parceiros",
+      text: "PARCEIROS",
+      mobileText: "PARCEIROS",
       href: Path_Partners,
       active: currentSelection === 'partners',
     },
     {
-      text: "contato",
-      mobileText: "contato",
+      text: "CONTATO",
+      mobileText: "CONTATO",
       href: Path_Contact,
       active: currentSelection === 'contact',
-    }
+    },
+   
   ];
 
   return (
     <>
-      <div className="md:hidden w-full mb-8 flex justify-center mx-auto">
-          <div className="flex gap-2 px-2 overflow-x-auto no-scrollbar">
-            {menuItems.map((item, index) => (
-              <a
-                key={index}
-                href={item.href}
-                className={
-                  `px-2 py-1 text-center text-xs whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:bg-gray-100 dark:hover:bg-gray-800 ${item.active ? 'text-red-500' : ''}`
-                }
-              >
-                {item.mobileText}
-              </a>
-            ))}
-            {typeof drawerTagsProps?.setSelectedTag === 'function' && (
-              <DrawerTagsMobile
-                tags={drawerTagsProps?.tags ?? []}
-                selectedTag={drawerTagsProps?.selectedTag ?? null}
-                setSelectedTag={drawerTagsProps?.setSelectedTag}
-              />
-            )}
-          </div>
+      {/* Mobile: botão Drawer alinhado à esquerda */}
+      <div className="md:hidden w-full mb-8 flex items-center mx-auto">
+        <div className="flex items-center w-auto ml-2">
+          <DrawerTagsMobile
+            tags={drawerTagsProps?.tags ?? []}
+            selectedTag={drawerTagsProps?.selectedTag ?? null}
+            setSelectedTag={drawerTagsProps?.setSelectedTag}
+            menuItems={menuItems}
+          />
+        </div>
       </div>
 
-      {/* Desktop menu unchanged but keep spacing consistent */}
-      <div className="hidden sm:flex sm:flex-row items-center gap-6 w-full mt-4 mb-6" style={{ marginLeft: '56px' }}>
-        <div className="flex flex-row gap-6 flex-1 items-center">
-          {menuItems.map((item, index) => (
-            <a
-              key={index}
-              href={item.href}
-              className={`px-4 py-2 text-center text-lg whitespace-nowrap transition-colors rounded-md font-ibmplexmono font-medium hover:text-red-400 dark:hover:text-red-400 ${item.active ? 'text-red-500' : ''}`}
-            >
-              {item.text}
-            </a>
-          ))}
-          {typeof drawerTagsProps?.setSelectedTag === 'function' && (
-            <DrawerTagsDesktop
-              tags={drawerTagsProps?.tags ?? []}
-              selectedTag={drawerTagsProps?.selectedTag ?? null}
-              setSelectedTag={drawerTagsProps?.setSelectedTag}
-            />
-          )}
+      {/* Desktop: botão Drawer alinhado à esquerda */}
+      <div className="hidden sm:flex w-full mt-4 mb-6 items-center">
+        <div className="flex items-center w-auto ml-14">
+          <DrawerTagsDesktop
+            tags={drawerTagsProps?.tags ?? []}
+            selectedTag={drawerTagsProps?.selectedTag ?? null}
+            setSelectedTag={drawerTagsProps?.setSelectedTag}
+            menuItems={menuItems}
+          />
         </div>
       </div>
     </>

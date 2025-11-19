@@ -5,10 +5,11 @@ import { clsx } from 'clsx/lite';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }: {
+export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, menuItems }: {
   tags: string[];
-  selectedTag: string | null;
-  setSelectedTag: (tag: string | null) => void;
+  selectedTag?: string | null;
+  setSelectedTag?: (tag: string | null) => void;
+  menuItems: { text: string; href: string; active: boolean }[];
 }) {
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -18,7 +19,9 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
   useEffect(() => {
     const tagFromUrl = searchParams.get('tag');
     if (tagFromUrl && tags.includes(tagFromUrl)) {
-      setSelectedTag(tagFromUrl);
+      if (typeof setSelectedTag === 'function') {
+        setSelectedTag(tagFromUrl);
+      }
     }
   }, [searchParams, tags, setSelectedTag]);
 
@@ -39,18 +42,19 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
   }, [showDrawer]);
 
   const handleTagSelection = (tag: string | null) => {
-    setSelectedTag(tag);
-    if (tag) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tag', tag);
-      window.history.pushState({}, '', url.toString());
-    } else {
-      window.location.href = window.location.pathname;
+    if (typeof setSelectedTag === 'function') {
+      setSelectedTag(tag);
+      if (tag) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('tag', tag);
+        window.history.pushState({}, '', url.toString());
+      } else {
+        window.location.href = window.location.pathname;
+      }
     }
     setShowDrawer(false);
   };
 
-  if (!tags || tags.length === 0) return null;
 
   return (
     <div className="inline-flex items-center ml-2">
@@ -97,23 +101,53 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag }:
             </div>
             <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900 px-4 pt-2 pb-24">
               <div className="flex flex-col gap-4 w-full max-w-xs mx-auto">
-                {tags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => handleTagSelection(tag)}
+                {/* Navegação */}
+                {menuItems.map((item, idx) => (
+                  <a
+                    key={item.text + idx}
+                    href={item.href}
                     className={clsx(
-                      'w-full text-left px-4 py-3 text-lg transition font-medium border-0 rounded-lg',
-                      selectedTag === tag
-                        ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow font-bold'
+                      'w-full text-left px-4 py-3 text-lg transition font-bold border-0 rounded-lg',
+                      item.active
+                        ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                         : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                     )}
                     style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
-                    aria-label={`Filtrar por tag ${tag}`}
-                    title={`Filtrar por tag ${tag}`}
+                    aria-label={item.text}
+                    title={item.text}
                   >
-                    {tag}
-                  </button>
+                    {item.text}
+                  </a>
                 ))}
+                {/* Separador visual elegante */}
+                {Array.isArray(tags) && tags.length > 0 && (
+                  <div className="flex items-center justify-center my-4">
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-neutral-700" />
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-neutral-700" />
+                  </div>
+                )}
+                {/* Tags */}
+                {Array.isArray(tags) && tags.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    {tags.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => handleTagSelection(tag)}
+                        className={clsx(
+                          'w-full text-left px-4 py-3 text-lg transition font-medium border-0 rounded-lg',
+                          selectedTag === tag
+                            ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow font-bold'
+                            : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
+                        )}
+                        style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                        aria-label={`Filtrar por tag ${tag}`}
+                        title={`Filtrar por tag ${tag}`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <div className="w-full px-4 pb-4 pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
