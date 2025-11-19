@@ -11,6 +11,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 import Markdown from "@/components/Markdown";
+import React from "react";
 
 const TITLE_KEYWORDS = [
   'parceiros',
@@ -152,13 +153,13 @@ export default function PartnersPage() {
 
   return (
     <>
-      <ViewSwitcher currentSelection="partners" />
+      <React.Suspense fallback={null}>
+        <ViewSwitcher currentSelection="partners" />
+      </React.Suspense>
       <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
         <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
-
           {!loading && !error && hivePosts.length > 0 && (
             <div className="space-y-3 mb-8">
-
               {hivePosts.map((post, index) => {
                 const media = extractMediaFromPost(post);
                 return (

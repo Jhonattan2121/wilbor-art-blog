@@ -11,6 +11,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 import Markdown from "@/components/Markdown";
+import React from "react";
 
 const TITLE_KEYWORDS = [
   'exposições',
@@ -147,17 +148,18 @@ function useDynamicExhibitionsPost(username: string) {
 export default function ExhibitionsPage() {
   const { posts: hivePosts, loading, error } = useDynamicExhibitionsPost(process.env.NEXT_PUBLIC_HIVE_USERNAME || '');
 
+  // Suspense para ViewSwitcher (Drawer usa useSearchParams)
   return (
     <>
-      <ViewSwitcher currentSelection="exhibitions" />
+      <React.Suspense fallback={null}>
+        <ViewSwitcher currentSelection="exhibitions" />
+      </React.Suspense>
       <div className="w-full px-2 sm:px-8 pt-2 md:px-12 py-6 sm:py-8 dark:text-gray-200 text-left">
         <div className="max-w-full sm:max-w-4xl w-full text-left space-y-4 sm:space-y-3 mx-0">
-          
           {!loading && !error && hivePosts.length > 0 && (
             <div className="space-y-3">
               {hivePosts.map((post, index) => {
                 const media = extractMediaFromPost(post);
-                
                 return (
                   <article key={post.permlink} className="mb-4 sm:mb-6 p-2 sm:p-3">
                     <div className="space-y-1 sm:space-y-0">
@@ -202,7 +204,6 @@ export default function ExhibitionsPage() {
                           )}
                         </div>
                       )}
-                      
                       {media.videos.length > 0 && (
                         <div className="grid grid-cols-1 gap-4">
                           {media.videos.map((video, videoIndex) => (
@@ -219,11 +220,9 @@ export default function ExhibitionsPage() {
                           ))}
                         </div>
                       )}
-                      
                       <Markdown>
-                                               {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
-                                             </Markdown>
-                      
+                        {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
+                      </Markdown>
                       {index < hivePosts.length - 1 && (
                         <hr className="border-t border-gray-200 dark:border-gray-700 my-4" />
                       )}
@@ -234,7 +233,6 @@ export default function ExhibitionsPage() {
             </div>
           )}
         </div>
-
         <div className="flex mt-6 mb-8 sm:mt-8">
           <a
             href="/about"

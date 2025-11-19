@@ -3,6 +3,7 @@ import { getPostsByBlog, getUserAccount } from '@/../lib/hive/hive-client';
 import Markdown from '@/components/Markdown';
 import { useEffect, useState } from 'react';
 import ViewSwitcher from '../../src/app/ViewSwitcher';
+import React from 'react';
 
 const CONTACT_KEYWORDS = [
   'contato',
@@ -72,7 +73,9 @@ export default function ContactPage() {
 
   return (
     <>
-      <ViewSwitcher currentSelection="contact" />
+      <React.Suspense fallback={null}>
+        <ViewSwitcher currentSelection="contact" />
+      </React.Suspense>
       <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
         <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
           {!loading && !error && post && (
