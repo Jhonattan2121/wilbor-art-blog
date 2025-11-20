@@ -8,6 +8,7 @@ import {
 } from '@/app/paths';
 import DrawerTagsDesktop from '../../app/projects/DrawerTagsDesktop';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
+import BannerWilborSwitcher from '@/components/BannerWilborSwitcher';
 
 export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
 
@@ -62,9 +63,13 @@ export default function ViewSwitcher({
 
   return (
     <>
-      {/* Mobile: botão Drawer alinhado à esquerda */}
-      <div className="md:hidden w-full mb-8 flex items-center mx-auto">
-        <div className="flex items-center w-auto ml-2">
+      {/* Mobile: logo à esquerda e Drawer à direita */}
+      <div className="md:hidden w-full mb-8 flex items-center justify-between px-4">
+        {/* Logo/thumbnail reduzido */}
+        <div className="h-8 flex items-center">
+          <BannerWilborSwitcher />
+        </div>
+        <div className="flex items-center">
           <DrawerTagsMobile
             tags={drawerTagsProps?.tags ?? []}
             selectedTag={drawerTagsProps?.selectedTag ?? null}
@@ -74,9 +79,12 @@ export default function ViewSwitcher({
         </div>
       </div>
 
-      {/* Desktop: botão Drawer alinhado à esquerda */}
-      <div className="hidden sm:flex w-full mt-4 mb-6 items-center">
-        <div className="flex items-center w-auto ml-14">
+      {/* Desktop: logo acima e Drawer abaixo, ambos à esquerda */}
+      <div className="hidden sm:block w-full mt-4 mb-6">
+        <div className="ml-14">
+          <BannerWilborSwitcher />
+        </div>
+        <div className="ml-14 mt-2">
           <DrawerTagsDesktop
             tags={drawerTagsProps?.tags ?? []}
             selectedTag={drawerTagsProps?.selectedTag ?? null}

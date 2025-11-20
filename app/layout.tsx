@@ -12,7 +12,6 @@ import { ThemeProvider, useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next/types';
-import BannerWilborSwitcher from '../src/components/BannerWilborSwitcher';
 import '../tailwind.css';
 import '../styles/markdown-contact.css';
 import JsonLd from './components/JsonLd';
@@ -90,11 +89,6 @@ export default function RootLayout({
       <body className="bg-main">
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
               <div className="w-full px-4 sm:px-8 pt-4">
-                <div className="w-full flex justify-start">
-                  <Link href="/projects">
-                    <BannerWilborSwitcher />
-                  </Link>
-                </div>
               </div>
               <main >
                 <div className="flex flex-col items-center">
