@@ -60,13 +60,13 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
     return (
         <div className="flex items-center">
             <button
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
-                style={{ outline: 'none', boxShadow: 'none', cursor: 'pointer' }}
+                className="flex items-center justify-center gap-2 rounded-md text-base font-bold transition-colors bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
+                style={{ outline: 'none', boxShadow: 'none', cursor: 'pointer', width: 64, height: 44, padding: 0 }}
                 onClick={() => setShowMobileTags(true)}
                 aria-label="Abrir menu lateral"
                 title="Abrir menu lateral"
             >
-                <IconMenu width={22} />
+                <IconMenu width={44} />
             </button>
             {drawerVisible && (
                 <>
