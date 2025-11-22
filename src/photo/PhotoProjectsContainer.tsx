@@ -310,7 +310,7 @@ const MediaItem = ({
             )}
 
           >
-            <div className="text-xl font-bold line-clamp-2 text-center transition-colors duration-100">
+            <div className="text-sm font-normal line-clamp-2 text-center text-gray-700 dark:text-gray-300 mt-0 mb-1 transition-colors duration-100">
               {media.title}
             </div>
             {media.tags && media.tags.length > 0 && (
@@ -373,7 +373,7 @@ const MediaItem = ({
                       'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
                     )
                   }>
-                    <div className="text-xl font-bold line-clamp-2 text-left transition-colors duration-100">
+                    <div className="text-sm font-normal line-clamp-2 text-left text-gray-700 dark:text-gray-300 mt-0 mb-1 transition-colors duration-100">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
