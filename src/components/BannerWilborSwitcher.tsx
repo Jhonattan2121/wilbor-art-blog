@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import BannerWilbor from '../../public/wilborPhotos/bannerWilbor.png';
+import BannerWilbor from '../../public/wilborPhotos/Wilbor_Studio_Site_head.png';
 import BannerWilborLight from '../../public/wilborPhotos/bannerWilbor-light.png';
 
 export default function BannerWilborSwitcher() {
