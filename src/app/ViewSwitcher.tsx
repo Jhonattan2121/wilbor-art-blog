@@ -7,11 +7,11 @@ import {
   Path_Partners
 } from '@/app/paths';
 import BannerWilborSwitcher from '@/components/BannerWilborSwitcher';
+import { useEffect, useState } from 'react';
 import DrawerTagsDesktop from '../../app/projects/DrawerTagsDesktop';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
 
 export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
-
 
 export default function ViewSwitcher({
   currentSelection,
@@ -27,6 +27,23 @@ export default function ViewSwitcher({
     setSelectedTag?: (tag: string | null) => void;
   }
 }) {
+  const [fetchedTags, setFetchedTags] = useState<string[]>([]);
+
+  // If the page didn't provide tags, fetch them from the API so other routes also
+  // show the same tags as the projects page.
+  useEffect(() => {
+    if (!drawerTagsProps?.tags || drawerTagsProps?.tags.length === 0) {
+      fetch('/api/tags')
+        .then(res => res.ok ? res.json() : [])
+        .then((data: any[]) => {
+          if (Array.isArray(data)) setFetchedTags(data.map(d => d.tag));
+        })
+        .catch(() => {
+          // ignore errors silently
+        });
+    }
+  }, [drawerTagsProps?.tags]);
+
   const menuItems = [
     {
       text: "SOBRE WILBOR",
@@ -60,6 +77,9 @@ export default function ViewSwitcher({
     },
    
   ];
+  const tagsToUse = (drawerTagsProps?.tags && drawerTagsProps.tags.length > 0)
+    ? drawerTagsProps.tags
+    : (Array.isArray(tags) && tags.length > 0) ? tags : fetchedTags;
 
   return (
     <>
@@ -71,7 +91,7 @@ export default function ViewSwitcher({
         </div>
         <div className="flex items-center flex-shrink-0 mr-0">
           <DrawerTagsMobile
-            tags={drawerTagsProps?.tags ?? []}
+            tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}
             setSelectedTag={drawerTagsProps?.setSelectedTag}
             menuItems={menuItems}
@@ -88,7 +108,7 @@ export default function ViewSwitcher({
         </div>
         <div className="ml-14 mt-2">
           <DrawerTagsDesktop
-            tags={drawerTagsProps?.tags ?? []}
+            tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}
             setSelectedTag={drawerTagsProps?.setSelectedTag}
             menuItems={menuItems}

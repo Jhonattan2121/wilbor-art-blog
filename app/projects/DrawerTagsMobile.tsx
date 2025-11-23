@@ -52,6 +52,12 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
             } else {
                 window.location.href = window.location.pathname;
             }
+        } else {
+            if (tag) {
+                window.location.href = `/projects?tag=${encodeURIComponent(tag)}`;
+            } else {
+                window.location.href = '/projects';
+            }
         }
         setShowMobileTags(false);
     };

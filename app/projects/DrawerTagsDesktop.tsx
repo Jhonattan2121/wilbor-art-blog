@@ -51,6 +51,14 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
       } else {
         window.location.href = window.location.pathname;
       }
+    } else {
+      // Se não houver setSelectedTag (usando ViewSwitcher em outras rotas),
+      // navegamos para a página de projetos com o query param 'tag'
+      if (tag) {
+        window.location.href = `/projects?tag=${encodeURIComponent(tag)}`;
+      } else {
+        window.location.href = '/projects';
+      }
     }
     setShowDrawer(false);
   };
