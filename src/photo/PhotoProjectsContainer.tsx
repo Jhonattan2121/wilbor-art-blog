@@ -367,21 +367,25 @@ const MediaItem = ({
                       style={{ objectFit: 'cover', objectPosition: 'center' }}
                     />
                   </div>
-                  <div className={
-                    clsx(
-                      'bg-white dark:bg-black flex flex-col justify-start items-start px-4 py-6 w-full rounded-b-lg transition-colors duration-100',
-                      'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
-                    )
-                  }>
-                    <div className="text-sm font-normal line-clamp-2 text-left text-gray-700 dark:text-gray-300 mt-0 mb-1 transition-colors duration-100">
+                  <div
+                    className={
+                      clsx(
+                        'bg-white dark:bg-black flex flex-col justify-start items-start w-full rounded-b-lg transition-colors duration-100',
+                        'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black',
+                        'px-3 py-2', // mobile compact
+                        'sm:px-4 sm:py-6' // desktop mantém espaçamento original
+                      )
+                    }
+                  >
+                    <div className="text-xs font-medium line-clamp-2 text-left text-gray-700 dark:text-gray-300 mt-0 mb-0.5 transition-colors duration-100">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
-                      <div className="mt-1 flex flex-wrap justify-start gap-x-2 gap-y-0.5">
+                      <div className="mt-0 flex flex-wrap justify-start gap-x-1 gap-y-0.5">
                         {mainItem.tags.map(tag => (
                           <span
                             key={tag}
-                            className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
+                            className="text-[10px] px-1 py-0.5 rounded transition-colors duration-100"
                           >
                             {tag}
                           </span>
