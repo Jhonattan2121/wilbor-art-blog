@@ -87,7 +87,7 @@ export default function ViewSwitcher({
       <div className="md:hidden fixed top-0 left-0 w-full z-50 bg-black flex items-center justify-between px-4 py-3" style={{ minHeight: '64px' }}>
         {/* Logo/thumbnail centralizado e contido no topo */}
         <div className="max-h-12 overflow-hidden flex-1 flex items-center">
-          <BannerWilborSwitcher />
+          <BannerWilborSwitcher forceWhiteLogo />
         </div>
         <div className="flex items-center flex-shrink-0 mr-0">
           <DrawerTagsMobile
