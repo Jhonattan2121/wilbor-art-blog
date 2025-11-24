@@ -25,7 +25,7 @@ export default function BannerWilborSwitcher() {
     <Image
       src={bannerSrc}
       alt="Wilbor Art Logo"
-      className="h-24 sm:h-32 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
+      className="h-32 sm:h-40 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
       style={imageStyle}
       priority
     />
