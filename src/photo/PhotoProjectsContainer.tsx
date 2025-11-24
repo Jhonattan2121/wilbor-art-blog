@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { IconX } from '@/components/IconX';
 import Markdown from '@/components/Markdown';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
@@ -489,13 +490,20 @@ const MediaItem = ({
               <h2 className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
               {images.length > 0 && (
-                <button
-                  onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
-                  className="mr-2 inline-flex items-center justify-center p-2 rounded-md border border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-900"
-                  aria-label="Abrir em tela cheia"
-                  title="Abrir em tela cheia"
+                  <button
+                    onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
+                    className="mr-2 p-0 bg-transparent border-none shadow-none flex items-center justify-center"
+                    aria-label="Abrir em tela cheia"
+                    title="Abrir em tela cheia"
+                    style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                  <Image
+                    src="/wilborPhotos/Full-Screen-Icon-Wilbor-site.png"
+                    alt="Abrir em tela cheia"
+                    width={28}
+                    height={28}
+                    style={{ display: 'inline-block' }}
+                  />
                 </button>
               )}
               <button
