@@ -358,7 +358,7 @@ const MediaItem = ({
             <div className="sm:hidden w-full">
               {mainItem.hiveMetadata?.body && updatedThumbnail ? (
                 <div className="flex flex-col h-full w-full">
-                  <div className="relative w-full aspect-[4/3]">
+                  <div className="relative w-full aspect-square">
                     <Image
                       src={updatedThumbnail}
                       alt={mainItem.title || ''}
@@ -490,12 +490,12 @@ const MediaItem = ({
               <h2 className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight" style={{ fontFamily: 'IBMPlexMono, monospace' }}>{mainItem.title}</h2>
               {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
               {images.length > 0 && (
-                  <button
-                    onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
-                    className="mr-2 p-0 bg-transparent border-none shadow-none flex items-center justify-center"
-                    aria-label="Abrir em tela cheia"
-                    title="Abrir em tela cheia"
-                    style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
+                <button
+                  onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
+                  className="mr-2 p-0 bg-transparent border-none shadow-none flex items-center justify-center"
+                  aria-label="Abrir em tela cheia"
+                  title="Abrir em tela cheia"
+                  style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
                 >
                   <Image
                     src="/wilborPhotos/Full-Screen-Icon-Wilbor-site.png"
@@ -625,7 +625,14 @@ export default function PhotoGridContainer({
       )}>
         {header}
 
-  <div className="grid gap-y-10 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 grid-flow-dense mt-12 sm:mt-0">
+        <div className={clsx(
+          'grid',
+          'gap-y-8 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5',
+          'grid-cols-2 sm:grid-cols-2 md:grid-cols-3',
+          'lg:grid-cols-4 xl:grid-cols-4',
+          'grid-flow-dense',
+          'mt-8 sm:mt-0',
+        )}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
             const isOdd = idx % 2 === 1;
@@ -639,10 +646,15 @@ export default function PhotoGridContainer({
                   'rounded-none sm:rounded-lg',
 
                   isExpanded
-                    ? (hasLargeContentMap[permlink]
-                      ? 'col-span-2 justify-self-center sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                     : 'col-span-1')
-                    : 'max-w-[170px] sm:max-w-full'
+                    ? (
+                      hasLargeContentMap[permlink]
+                        ? (
+                          'col-span-2 justify-self-center sm:col-span-2 '
+                          + 'md:col-span-3 lg:col-span-3 row-span-3 h-auto'
+                        )
+                        : 'col-span-1'
+                    )
+                    : 'w-full',
                 )}
                 tabIndex={0}
                 aria-label={`Projeto ${group[0]?.title || ''}`}
@@ -655,10 +667,12 @@ export default function PhotoGridContainer({
                     setExpandedPermlinks(prev =>
                       prev.includes(permlink)
                         ? []
-                        : [permlink]
+                        : [permlink],
                     );
                   }}
-                  onContentSizeChange={isLarge => handleContentSizeChange(permlink, isLarge)}
+                  onContentSizeChange={function onSizeChange(isLarge) {
+                    handleContentSizeChange(permlink, isLarge);
+                  }}
                   onTagClick={handleTagClick}
                   hasLargeContent={!!hasLargeContentMap[permlink]}
                   isReversedLayout={isOdd}
