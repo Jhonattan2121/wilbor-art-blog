@@ -16,10 +16,15 @@ export default function ThemeSwitcher () {
 
     // Apply custom styles when dark theme is selected
     const applyCustomDarkTheme = () => {
-      if (theme === 'dark') {
+      // Se o tema for dark OU se o tema for system e o sistema estiver em dark
+      const prefersDark = window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .matches;
+      const isDark =
+        theme === 'dark' || (theme === 'system' && prefersDark);
+      if (isDark) {
         document.documentElement.style.setProperty('--tw-bg-opacity', '1');
         document.documentElement.style.backgroundColor = '#000000';
-        // Aplica ao body também para cobertura total
         document.body.style.backgroundColor = '#000000';
       } else {
         document.documentElement.style.removeProperty('--tw-bg-opacity');
