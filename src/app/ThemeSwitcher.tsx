@@ -24,8 +24,8 @@ export default function ThemeSwitcher () {
         theme === 'dark' || (theme === 'system' && prefersDark);
       if (isDark) {
         document.documentElement.style.setProperty('--tw-bg-opacity', '1');
-        document.documentElement.style.backgroundColor = '#000000';
-        document.body.style.backgroundColor = '#000000';
+        document.documentElement.style.backgroundColor = '#222222';
+        document.body.style.backgroundColor = '#222222';
       } else {
         document.documentElement.style.removeProperty('--tw-bg-opacity');
         document.documentElement.style.backgroundColor = '';
