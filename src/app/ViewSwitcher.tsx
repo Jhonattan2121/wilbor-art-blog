@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import DrawerTagsDesktop from '../../app/projects/DrawerTagsDesktop';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
 
-export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact'; 
+export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners' | 'contact';
 
 export default function ViewSwitcher({
   currentSelection,
@@ -51,7 +51,7 @@ export default function ViewSwitcher({
       href: PATH_FEED_INFERRED,
       active: currentSelection === 'about',
     },
-     {
+    {
       text: "PROJETOS",
       mobileText: "PROJETOS",
       href: PATH_GRID,
@@ -75,7 +75,7 @@ export default function ViewSwitcher({
       href: Path_Contact,
       active: currentSelection === 'contact',
     },
-   
+
   ];
   const tagsToUse = (drawerTagsProps?.tags && drawerTagsProps.tags.length > 0)
     ? drawerTagsProps.tags
@@ -102,11 +102,11 @@ export default function ViewSwitcher({
       <div className="md:hidden" style={{ height: '44px' }} />
 
       {/* Desktop: logo acima e Drawer abaixo, ambos à esquerda */}
-      <div className="hidden sm:block w-full mt-4 mb-6">
-        <div className="ml-14">
+      <div className="hidden sm:flex w-full mt-4 mb-6 items-start ml-14">
+        <div className="mr-8">
           <BannerWilborSwitcher />
         </div>
-        <div className="ml-14 mt-2">
+        <div className="flex-1">
           <DrawerTagsDesktop
             tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}

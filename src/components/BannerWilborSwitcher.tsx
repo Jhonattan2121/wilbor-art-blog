@@ -27,7 +27,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
     <Image
       src={bannerSrc}
       alt="Wilbor Art Logo"
-      className="h-17 sm:h-40 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
+      className="h-10 sm:h-24 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
       priority
       onClick={() => router.push('/projects')}
       style={{ cursor: 'pointer' }}
