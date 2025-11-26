@@ -18,10 +18,9 @@ export default function ThemeSwitcher () {
     const applyCustomDarkTheme = () => {
       if (theme === 'dark') {
         document.documentElement.style.setProperty('--tw-bg-opacity', '1');
-        document.documentElement.style.backgroundColor = '#222222';
-        
-        // Apply to body too for full coverage
-        document.body.style.backgroundColor = '#222222';
+        document.documentElement.style.backgroundColor = '#000000';
+        // Aplica ao body também para cobertura total
+        document.body.style.backgroundColor = '#000000';
       } else {
         document.documentElement.style.removeProperty('--tw-bg-opacity');
         document.documentElement.style.backgroundColor = '';
