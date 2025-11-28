@@ -140,7 +140,8 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                                                 key={tag}
                                                 onClick={() => handleTagSelection(tag)}
                                                 className={clsx(
-                                                    'w-full text-left px-4 py-3 text-lg transition font-medium border-0 rounded-lg',
+                                                    // mesma “força” visual do menu: fonte em negrito (sem forçar maiúsculas)
+                                                    'w-full text-left px-4 py-3 text-lg transition font-bold border-0 rounded-lg',
                                                     selectedTag === tag
                                                         ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                                                         : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
