@@ -64,7 +64,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
 
 
     return (
-        <div className="flex items-center">
+        <div className="flex items-center -mr-4 bg-transparent">
             <button
                 className="flex items-center justify-center gap-2 rounded-md text-base font-bold transition-colors bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
                 style={{ outline: 'none', boxShadow: 'none', cursor: 'pointer', width: 64, height: 44, padding: 0 }}

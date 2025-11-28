@@ -48,7 +48,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
         alt=""
         fill
         priority
-        className="object-cover pointer-events-none select-none"
+        className="object-cover object-right md:object-center pointer-events-none select-none"
       />
 
       {/* Assinatura / logo por cima, encostada à borda esquerda */}
