@@ -18,8 +18,9 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
   const { theme, systemTheme } = useTheme();
   const resolvedTheme = theme === 'system' ? systemTheme : theme;
   const isDark = resolvedTheme === 'dark';
-  const inactiveDotBg = isDark ? '#4b5563' : '#e5e7eb';   // cinza escuro no dark, cinza claro no light
-  const inactiveDotBorder = isDark ? '#4b5563' : '#9ca3af';
+  // Mesma cor de cinza escuro usada no ícone de fechar (IconX) para seguir o layout no modo escuro
+  const inactiveDotBg = isDark ? '#626262' : '#e5e7eb';
+  const inactiveDotBorder = isDark ? '#626262' : '#9ca3af';
   const activeDotBg = '#ef4444';
   const activeDotBorder = '#ef4444';
 
