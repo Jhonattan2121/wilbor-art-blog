@@ -27,14 +27,19 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
 
   const backgroundSrc = isDarkHeader ? HeaderBgDark : HeaderBgLight;
   const signatureSrc = isDarkHeader ? SignatureLight : SignatureDark;
+  const backgroundColor = forceWhiteLogo
+    ? '#f3f3f5' // cinza claro especial para o header mobile
+    : isDarkHeader
+      ? '#000000'
+      : '#dddddd';
 
   return (
     <div
       onClick={() => router.push('/projects')}
-      className="relative h-16 sm:h-32 w-full max-w-[460px] cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
+      className="relative h-20 sm:h-32 w-full max-w-[460px] cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
       style={{
         cursor: 'pointer',
-        backgroundColor: isDarkHeader ? '#000000' : '#dddddd',
+        backgroundColor,
       }}
     >
       {/* Fundo com o grafite em grande, preenchendo toda a faixa */}
