@@ -4,34 +4,58 @@ import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import BannerWilborBlack from '../../public/wilborPhotos/Wilbor_Studio_Site_head_preto.png';
-import BannerWilborWhite from '../../public/wilborPhotos/wilbor.studio.new.png';
+import SignatureLight from '../../public/wilborPhotos/Assinatura Clara.png';
+import SignatureDark from '../../public/wilborPhotos/Assinatura Escura.png';
+import HeaderBgLight from '../../public/wilborPhotos/Fundo header claro 2.png';
+import HeaderBgDark from '../../public/wilborPhotos/Fundo header escuro 2.png';
 
 export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { forceWhiteLogo?: boolean } = {}) {
   const router = useRouter();
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
-  let bannerSrc = BannerWilborBlack;
+
+  // Define se o header deve seguir o modo escuro
+  let isDarkHeader = false;
   if (forceWhiteLogo) {
-    bannerSrc = BannerWilborWhite;
+    // No mobile, queremos sempre a versão de alto contraste (header escuro + assinatura clara)
+    isDarkHeader = true;
   } else if (mounted) {
     const resolvedTheme = theme === 'system' ? systemTheme : theme;
-    if (resolvedTheme === 'dark') {
-      bannerSrc = BannerWilborWhite;
-    } else {
-      bannerSrc = BannerWilborBlack;
-    }
+    isDarkHeader = resolvedTheme === 'dark';
   }
+
+  const backgroundSrc = isDarkHeader ? HeaderBgDark : HeaderBgLight;
+  const signatureSrc = isDarkHeader ? SignatureLight : SignatureDark;
+
   return (
-    <Image
-      src={bannerSrc}
-      alt="Wilbor Art Logo"
-      className="h-10 sm:h-24 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
-      priority
+    <div
       onClick={() => router.push('/projects')}
-      style={{ cursor: 'pointer' }}
-    />
+      className="relative h-16 sm:h-32 w-full max-w-[460px] cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
+      style={{
+        cursor: 'pointer',
+        backgroundColor: isDarkHeader ? '#000000' : '#dddddd',
+      }}
+    >
+      {/* Fundo com o grafite em grande, preenchendo toda a faixa */}
+      <Image
+        src={backgroundSrc}
+        alt=""
+        fill
+        priority
+        className="object-cover pointer-events-none select-none"
+      />
+
+      {/* Assinatura / logo por cima, encostada à borda esquerda */}
+      <div className="relative h-full flex items-center pl-0 sm:pl-1">
+        <Image
+          src={signatureSrc}
+          alt="Wilbor Studio logo"
+          className="h-12 sm:h-24 w-auto object-contain drop-shadow-[0_0_4px_rgba(0,0,0,0.4)]"
+          priority
+        />
+      </div>
+    </div>
   );
 }
 
