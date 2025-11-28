@@ -120,7 +120,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
                         ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                         : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                     )}
-                    style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                    style={{ outline: 'none', boxShadow: 'none', border: 'none', fontFamily: 'Inter, Arial, sans-serif' }}
                     aria-label={item.text}
                     title={item.text}
                   >
@@ -148,7 +148,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
                             ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                             : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                         )}
-                        style={{ outline: 'none', boxShadow: 'none', border: 'none', fontFamily: 'inherit' }}
+                        style={{ outline: 'none', boxShadow: 'none', border: 'none', fontFamily: 'Inter, Arial, sans-serif' }}
                         aria-label={`Filtrar por tag ${tag}`}
                         title={`Filtrar por tag ${tag}`}
                       >
