@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
 import { IconX } from '@/components/IconX';
+import ImageCarousel from '@/components/ImageCarousel';
 import Markdown from '@/components/Markdown';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
-import ImageCarousel from '@/components/ImageCarousel';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -612,7 +611,24 @@ export default function PhotoGridContainer({
       const ref = cardRefs.current[permlink];
       if (ref) {
         setTimeout(() => {
-          ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const isMobile = window.innerWidth < 768;
+          if (isMobile) {
+            // No mobile, queremos o card um pouco mais acima para aparecer título / começo do texto
+            const headerOffset = 90; // altura aproximada do header fixo + respiro
+            const rect = ref.getBoundingClientRect();
+            const targetY = rect.top + window.scrollY - headerOffset;
+            window.scrollTo({
+              top: targetY < 0 ? 0 : targetY,
+              behavior: 'smooth',
+            });
+          } else {
+            // Em telas maiores mantemos o alinhamento central
+            ref.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'nearest',
+            });
+          }
         }, 100);
       }
     }
