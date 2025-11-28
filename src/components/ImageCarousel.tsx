@@ -1,3 +1,4 @@
+import { useTheme } from 'next-themes';
 import { useRef, useState } from 'react';
 
 interface ImageCarouselProps {
@@ -12,6 +13,15 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
   const [transition, setTransition] = useState(true);
   const [translateX, setTranslateX] = useState(0);
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
+  const { theme, systemTheme } = useTheme();
+  const resolvedTheme = theme === 'system' ? systemTheme : theme;
+  const isDark = resolvedTheme === 'dark';
+  const inactiveDotBg = isDark ? '#4b5563' : '#e5e7eb';   // cinza escuro no dark, cinza claro no light
+  const inactiveDotBorder = isDark ? '#4b5563' : '#9ca3af';
+  const activeDotBg = '#ef4444';
+  const activeDotBorder = '#ef4444';
 
   if (images.length === 0) return null;
 
@@ -158,7 +168,18 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
               onClick={() => setCurrent(idx)}
               aria-label={`Ir para imagem ${idx + 1}`}
               className="rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
-              style={{ width: 13, height: 13, minWidth: 13, minHeight: 13, padding: 0, borderWidth: 0, background: current === idx ? '#ef4444' : '#e5e7eb', borderColor: current === idx ? '#ef4444' : '#9ca3af', borderStyle: 'solid', borderRadius: '50%' }}
+              style={{
+                width: 13,
+                height: 13,
+                minWidth: 13,
+                minHeight: 13,
+                padding: 0,
+                borderWidth: 0,
+                background: current === idx ? activeDotBg : inactiveDotBg,
+                borderColor: current === idx ? activeDotBorder : inactiveDotBorder,
+                borderStyle: 'solid',
+                borderRadius: '50%',
+              }}
             />
           ))}
         </div>
