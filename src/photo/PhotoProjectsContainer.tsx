@@ -336,10 +336,10 @@ const MediaItem = ({
       className={clsx(
         'rounded-lg overflow-hidden h-full group transition-colors duration-100',
         'bg-white text-black dark:bg-black dark:text-white',
+        'font-mono',
         !isExpanded && 'md:border-t-8 md:border-l-8 md:border-r-8 md:border-b-0 md:border-white md:dark:border-black md:hover:bg-black md:hover:text-white md:hover:border-t-black md:hover:border-l-black md:hover:border-r-black md:dark:hover:bg-white md:dark:hover:text-black md:dark:hover:border-t-white md:dark:hover:border-l-white md:dark:hover:border-r-white',
         isExpanded && 'p-2'
       )}
-      style={{ fontFamily: 'Inter, Arial, sans-serif' }}
       onClick={e => {
         if (!isExpanded) onExpand();
       }}
@@ -488,8 +488,7 @@ const MediaItem = ({
           <div className="flex flex-col h-full overflow-hidden w-full" ref={contentRef}>
             <div className="flex items-center px-2 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-white dark:bg-black shadow-md">
               <h2
-                className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight"
-                style={{ fontFamily: 'Inter, Arial, sans-serif' }}
+                className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight font-mono"
               >
                 {mainItem.title}
               </h2>
