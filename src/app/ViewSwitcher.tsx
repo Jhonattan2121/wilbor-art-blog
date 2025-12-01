@@ -92,9 +92,9 @@ export default function ViewSwitcher({
   return (
     <>
       {/* Mobile: logo à esquerda e Drawer à direita, fixos no topo */}
-      <div className="md:hidden fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 py-3" style={{ minHeight: '64px', backgroundColor: headerBgColor }}>
+      <div className="md:hidden fixed top-0 left-0 w-full z-50 flex items-center justify-between pr-4" style={{ height: '64px', backgroundColor: headerBgColor }}>
         {/* Logo/thumbnail centralizado e contido no topo */}
-        <div className="max-h-12 overflow-hidden flex-1 flex items-center">
+        <div className="h-full overflow-hidden flex-1 flex items-center">
           <BannerWilborSwitcher forceWhiteLogo />
         </div>
         <div className="flex items-center flex-shrink-0 mr-0">

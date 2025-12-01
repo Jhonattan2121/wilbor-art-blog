@@ -35,7 +35,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
   return (
     <div
       onClick={() => router.push('/projects')}
-      className="relative h-20 sm:h-32 w-full max-w-[460px] cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
+      className={`relative ${forceWhiteLogo ? 'h-full' : 'h-20 sm:h-32'} w-full max-w-[460px] cursor-pointer hover:opacity-90 transition-opacity overflow-hidden`}
       style={{
         cursor: 'pointer',
         backgroundColor,
