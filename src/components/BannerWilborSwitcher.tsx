@@ -55,7 +55,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
         <Image
           src={signatureSrc}
           alt="Wilbor Studio logo"
-          className={`${forceWhiteLogo ? 'h-14' : 'h-12'} sm:h-24 w-auto object-contain drop-shadow-[0_0_4px_rgba(0,0,0,0.4)]`}
+          className={`${forceWhiteLogo ? 'h-14' : 'h-12'} sm:h-24 w-auto object-contain`}
           priority
         />
       </div>
