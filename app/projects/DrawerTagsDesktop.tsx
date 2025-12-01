@@ -94,7 +94,6 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
               drawerActive ? 'translate-x-0' : '-translate-x-full'
             )}
             aria-label="Menu lateral de tags"
-            style={{ fontFamily: 'Inter, Arial, sans-serif' }}
           >
             <div className="flex items-center justify-end px-4 py-4 bg-white dark:bg-neutral-900 rounded-t-xl border-b border-gray-100 dark:border-neutral-800">
               <button
@@ -115,12 +114,12 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
                     key={item.text + idx}
                     href={item.href}
                     className={clsx(
-                      'w-full text-left px-4 py-3 text-lg transition font-bold border-0 rounded-lg',
+                      'w-full text-left px-4 py-3 text-lg transition font-mono border-0 rounded-lg',
                       item.active
                         ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                         : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                     )}
-                    style={{ outline: 'none', boxShadow: 'none', border: 'none', fontFamily: 'Inter, Arial, sans-serif' }}
+                    style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
                     aria-label={item.text}
                     title={item.text}
                   >
@@ -143,12 +142,12 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
                         onClick={() => handleTagSelection(tag)}
                         className={clsx(
                           // mesma força visual do menu e do drawer mobile: fonte em negrito
-                          'w-full text-left px-4 py-3 text-lg transition font-bold border-0 rounded-lg',
+                          'w-full text-left px-4 py-3 text-lg transition font-mono border-0 rounded-lg',
                           selectedTag === tag
                             ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                             : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                         )}
-                        style={{ outline: 'none', boxShadow: 'none', border: 'none', fontFamily: 'Inter, Arial, sans-serif' }}
+                        style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
                         aria-label={`Filtrar por tag ${tag}`}
                         title={`Filtrar por tag ${tag}`}
                       >
