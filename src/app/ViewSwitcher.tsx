@@ -27,7 +27,7 @@ export default function ViewSwitcher({
     selectedTag: string | null;
     setSelectedTag?: (tag: string | null) => void;
   }
-  }) {
+}) {
   const [fetchedTags, setFetchedTags] = useState<string[]>([]);
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -87,7 +87,8 @@ export default function ViewSwitcher({
     : (Array.isArray(tags) && tags.length > 0) ? tags : fetchedTags;
 
   const isDarkMode = mounted && (theme === 'dark' || (theme === 'system' && systemTheme === 'dark'));
-  const headerBgColor = isDarkMode ? '#1c1c1c' : '#ffffff';
+  const headerBgColor = isDarkMode ? '#000000' : '#ffffff';
+  const siteBgColor = isDarkMode ? '#222222' : '#ffffff';
 
   return (
     <>
@@ -107,14 +108,16 @@ export default function ViewSwitcher({
         </div>
       </div>
       {/* Espaço para não sobrepor conteúdo no mobile */}
-      <div className="md:hidden" style={{ height: '44px' }} />
+      <div className="md:hidden" style={{ height: '64px' }} />
 
-      {/* Desktop: logo acima e Drawer abaixo, ambos à esquerda */}
-      <div className="hidden sm:flex w-full mt-4 mb-6 items-start ml-14">
-        <div className="mr-8">
-          <BannerWilborSwitcher />
+      {/* Desktop: Header com faixa preta e menu separado */}
+      <div className="hidden md:flex fixed top-0 left-0 w-full z-50 items-center justify-between" style={{ height: '90px' }}>
+        {/* Faixa preta que vai até antes do menu */}
+        <div className="h-full flex items-center relative pr-8 sm:pr-10" style={{ backgroundColor: headerBgColor, flex: '1 1 auto' }}>
+          <BannerWilborSwitcher forceWhiteLogo />
         </div>
-        <div className="flex-1">
+        {/* Menu FORA da faixa preta, com fundo do site */}
+        <div className="flex items-center flex-shrink-0 pr-8 sm:pr-10 z-20" style={{ backgroundColor: siteBgColor, height: '100%', paddingLeft: '1rem' }}>
           <DrawerTagsDesktop
             tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}
@@ -123,6 +126,8 @@ export default function ViewSwitcher({
           />
         </div>
       </div>
+      {/* Espaço para não sobrepor conteúdo no desktop */}
+      <div className="hidden md:block" style={{ height: '90px' }} />
     </>
   );
 }

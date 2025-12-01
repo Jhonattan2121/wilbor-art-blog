@@ -24,38 +24,32 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
 
   const backgroundSrc = isDarkHeader ? HeaderBgDark : HeaderBgLight;
   const signatureSrc = isDarkHeader ? SignatureLight : SignatureDark;
-  const backgroundColor = forceWhiteLogo
-    ? isDarkHeader 
-      ? '#1c1c1c' // cinza escuro para o header mobile no modo dark
-      : '#ffffff' // branco para o header mobile no modo light
-    : isDarkHeader
-      ? '#000000'
-      : '#dddddd';
 
   return (
     <div
       onClick={() => router.push('/projects')}
-      className={`relative ${forceWhiteLogo ? 'h-full' : 'h-20 sm:h-32'} w-full max-w-[460px] cursor-pointer hover:opacity-90 transition-opacity overflow-hidden`}
+      className={`relative ${forceWhiteLogo ? 'h-full w-full' : 'h-20 sm:h-32 w-full max-w-[460px]'} cursor-pointer hover:opacity-90 transition-opacity`}
       style={{
         cursor: 'pointer',
-        backgroundColor,
       }}
     >
-      {/* Fundo com o grafite em grande, preenchendo toda a faixa */}
-      <Image
-        src={backgroundSrc}
-        alt=""
-        fill
-        priority
-        className="object-cover object-right md:object-center pointer-events-none select-none"
-      />
+      {/* Thumbnail do grafite como decoração de fundo - alinhada à direita */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={backgroundSrc}
+          alt=""
+          fill
+          priority
+          className="object-contain object-right pointer-events-none select-none opacity-60"
+        />
+      </div>
 
-      {/* Assinatura / logo por cima, encostada à borda esquerda */}
-      <div className={`relative h-full flex items-center ${forceWhiteLogo ? 'pl-5' : 'pl-0 sm:pl-1'}`}>
+      {/* Assinatura / logo por cima - continua à esquerda */}
+      <div className={`relative h-full flex items-center ${forceWhiteLogo ? 'pl-3 sm:pl-5' : 'pl-0 sm:pl-1'}`}>
         <Image
           src={signatureSrc}
           alt="Wilbor Studio logo"
-          className={`${forceWhiteLogo ? 'h-14' : 'h-12'} sm:h-24 w-auto object-contain`}
+          className={`${forceWhiteLogo ? 'h-16 sm:h-20' : 'h-12 sm:h-24'} w-auto object-contain`}
           priority
         />
       </div>

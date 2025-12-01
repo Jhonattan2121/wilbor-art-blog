@@ -73,7 +73,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
         aria-label="Abrir menu de tags"
         title="Abrir menu de tags"
       >
-        <IconMenu width={22} />
+        <IconMenu width={40} />
       </button>
       {drawerVisible && (
         <>
