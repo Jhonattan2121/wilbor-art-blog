@@ -51,7 +51,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
       />
 
       {/* Assinatura / logo por cima, encostada à borda esquerda */}
-      <div className="relative h-full flex items-center pl-0 sm:pl-1">
+      <div className={`relative h-full flex items-center ${forceWhiteLogo ? 'pl-5' : 'pl-0 sm:pl-1'}`}>
         <Image
           src={signatureSrc}
           alt="Wilbor Studio logo"
