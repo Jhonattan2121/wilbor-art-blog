@@ -7,6 +7,7 @@ import {
   Path_Partners
 } from '@/app/paths';
 import BannerWilborSwitcher from '@/components/BannerWilborSwitcher';
+import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import DrawerTagsDesktop from '../../app/projects/DrawerTagsDesktop';
 import DrawerTagsMobile from '../../app/projects/DrawerTagsMobile';
@@ -26,8 +27,12 @@ export default function ViewSwitcher({
     selectedTag: string | null;
     setSelectedTag?: (tag: string | null) => void;
   }
-}) {
+  }) {
   const [fetchedTags, setFetchedTags] = useState<string[]>([]);
+  const { theme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // If the page didn't provide tags, fetch them from the API so other routes also
   // show the same tags as the projects page.
@@ -81,10 +86,13 @@ export default function ViewSwitcher({
     ? drawerTagsProps.tags
     : (Array.isArray(tags) && tags.length > 0) ? tags : fetchedTags;
 
+  const isDarkMode = mounted && (theme === 'dark' || (theme === 'system' && systemTheme === 'dark'));
+  const headerBgColor = isDarkMode ? '#1c1c1c' : '#ffffff';
+
   return (
     <>
       {/* Mobile: logo à esquerda e Drawer à direita, fixos no topo */}
-      <div className="md:hidden fixed top-0 left-0 w-full z-50 bg-black flex items-center justify-between px-4 py-3" style={{ minHeight: '64px' }}>
+      <div className="md:hidden fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 py-3" style={{ minHeight: '64px', backgroundColor: headerBgColor }}>
         {/* Logo/thumbnail centralizado e contido no topo */}
         <div className="max-h-12 overflow-hidden flex-1 flex items-center">
           <BannerWilborSwitcher forceWhiteLogo />

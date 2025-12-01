@@ -17,10 +17,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
 
   // Define se o header deve seguir o modo escuro
   let isDarkHeader = false;
-  if (forceWhiteLogo) {
-    // No mobile, queremos sempre a versão de alto contraste (header escuro + assinatura clara)
-    isDarkHeader = true;
-  } else if (mounted) {
+  if (mounted) {
     const resolvedTheme = theme === 'system' ? systemTheme : theme;
     isDarkHeader = resolvedTheme === 'dark';
   }
@@ -28,7 +25,9 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
   const backgroundSrc = isDarkHeader ? HeaderBgDark : HeaderBgLight;
   const signatureSrc = isDarkHeader ? SignatureLight : SignatureDark;
   const backgroundColor = forceWhiteLogo
-    ? '#f3f3f5' // cinza claro especial para o header mobile
+    ? isDarkHeader 
+      ? '#1c1c1c' // cinza escuro para o header mobile no modo dark
+      : '#ffffff' // branco para o header mobile no modo light
     : isDarkHeader
       ? '#000000'
       : '#dddddd';
