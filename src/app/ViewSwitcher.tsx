@@ -107,12 +107,18 @@ export default function ViewSwitcher({
 
       {/* Desktop: Header com faixa preta e menu separado */}
       <div className="hidden md:flex fixed top-0 left-0 w-full z-50 items-center justify-between" style={{ height: '90px' }}>
-        {/* Faixa preta que vai até antes do menu */}
-        <div className="h-full flex items-center relative pr-8 sm:pr-10" style={{ backgroundColor: headerBgColor, flex: '1 1 auto' }}>
-          <BannerWilborSwitcher forceWhiteLogo />
+        {/* Faixa preta que ocupa 100% mas fica por trás do menu */}
+        <div className="absolute inset-0 z-10" style={{ backgroundColor: headerBgColor, right: '90px' }}>
+          <div className="h-full w-full flex items-center relative">
+            <BannerWilborSwitcher forceWhiteLogo />
+          </div>
         </div>
-        {/* Menu FORA da faixa preta, com fundo do site */}
-        <div className="flex items-center flex-shrink-0 pr-8 sm:pr-10 z-20" style={{ backgroundColor: siteBgColor, height: '100%', paddingLeft: '1rem' }}>
+
+        {/* Espaçador para empurrar o menu para a direita */}
+        <div className="flex-grow" />
+
+        {/* Menu quadrado na extrema direita, sobrepondo ou ao lado da faixa */}
+        <div className="flex items-center justify-center flex-shrink-0 z-20 bg-white dark:bg-[#222222]" style={{ width: '90px', height: '90px' }}>
           <DrawerTagsDesktop
             tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}

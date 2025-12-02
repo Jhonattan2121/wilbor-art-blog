@@ -65,15 +65,15 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
 
 
   return (
-    <div className="inline-flex items-center ml-2">
+    <div className="inline-flex items-center justify-center w-full h-full">
       <button
-        className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-base font-bold transition-colors w-auto bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
-        style={{ outline: 'none', boxShadow: 'none' }}
+        className="inline-flex items-center justify-center rounded-none transition-colors bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none hover:bg-black/5 dark:hover:bg-white/10"
+        style={{ width: '100%', height: '100%', outline: 'none', boxShadow: 'none' }}
         onClick={() => setShowDrawer(true)}
         aria-label="Abrir menu de tags"
         title="Abrir menu de tags"
       >
-        <IconMenu width={40} />
+        <IconMenu width={32} />
       </button>
       {drawerVisible && (
         <>
