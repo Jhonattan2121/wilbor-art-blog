@@ -627,11 +627,13 @@ export default function PhotoGridContainer({
               behavior: 'smooth',
             });
           } else {
-            // Em telas maiores mantemos o alinhamento central
-            ref.scrollIntoView({
+            // Em desktop, alinhar ao topo com um offset para o título ficar visível, ao invés de centralizar
+            const headerOffset = 90; 
+            const rect = ref.getBoundingClientRect();
+            const targetY = rect.top + window.scrollY - headerOffset;
+            window.scrollTo({
+              top: targetY < 0 ? 0 : targetY,
               behavior: 'smooth',
-              block: 'center',
-              inline: 'nearest',
             });
           }
         }, 100);
