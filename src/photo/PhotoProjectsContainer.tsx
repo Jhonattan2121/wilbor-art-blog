@@ -512,7 +512,7 @@ const MediaItem = ({
               )}
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+                className="ml-2 sm:ml-2 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                 aria-label="Fechar"
                 title="Fechar"
                 style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
@@ -520,9 +520,9 @@ const MediaItem = ({
                 <IconX size={35} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-0 sm:px-8 py-1 sm:py-8 bg-white dark:bg-black flex flex-col items-start w-full">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-0 sm:px-8 py-1 sm:pt-2 sm:pb-8 bg-white dark:bg-black flex flex-col items-start w-full">
               {images.length > 0 && (
-                <div className="prose prose-invert prose-base sm:prose-lg w-full bg-white dark:bg-black rounded-xl p-2 sm:p-8 shadow-lg mt-0 sm:mt-6 text-center">
+                <div className="prose prose-invert prose-base sm:prose-lg w-full bg-white dark:bg-black rounded-xl p-2 sm:p-8 shadow-lg mt-0 sm:mt-2 text-center">
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
