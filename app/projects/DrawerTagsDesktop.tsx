@@ -90,8 +90,8 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
           <aside
             id="desktop-tags-drawer"
             className={clsx(
-              'fixed top-0 left-0 h-full w-80 max-w-[90vw] shadow-2xl z-50 flex flex-col bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl transition-transform duration-300',
-              drawerActive ? 'translate-x-0' : '-translate-x-full'
+              'fixed top-0 right-0 h-full w-80 max-w-[90vw] shadow-2xl z-50 flex flex-col bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-l-xl transition-transform duration-300',
+              drawerActive ? 'translate-x-0' : 'translate-x-full'
             )}
             aria-label="Menu lateral de tags"
           >
