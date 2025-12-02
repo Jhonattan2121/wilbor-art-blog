@@ -74,12 +74,7 @@ export default function ViewSwitcher({
       href: Path_Partners,
       active: currentSelection === 'partners',
     },
-    {
-      text: "CONTATO",
-      mobileText: "CONTATO",
-      href: Path_Contact,
-      active: currentSelection === 'contact',
-    },
+   
 
   ];
   const tagsToUse = (drawerTagsProps?.tags && drawerTagsProps.tags.length > 0)
