@@ -125,52 +125,43 @@ export default function About() {
   );
 
   return (
-    <div className="w-full min-h-screen">
-      <div className="w-full flex flex-col items-start">
-        <section className="w-full flex flex-col items-start">
-          <div className="w-full text-left mx-0 px-0 sm:px-8 lg:max-w-4xl space-y-4 sm:space-y-6">
-            {!loading && !error && hivePosts.length > 0 && (
-              <div className="space-y-8">
-                {hivePosts.map((post, index) => {
-                  const media = extractMediaFromPost(post);
-                  return (
-                    <article key={post.permlink} className="mb-12 p-6">
-                      {/* <header className="mb-6">
-                        <h2 className="text-xl sm:text-2xl font-bold mb-3 text-gray-900 dark:text-white">
-                          {post.title}
-                        </h2>
-                      </header> */}
-                      <div className="space-y-6">
-                        <Markdown images={media.images.map((img, imgIndex) => ({ src: img, alt: `Imagem ${imgIndex + 1} do post: ${post.title}` }))}>
-                          {post.body}
-                        </Markdown>
-                        {media.videos.length > 0 && (
-                          <div className="grid grid-cols-1 gap-4">
-                            {media.videos.map((video, videoIndex) => (
-                              <div key={videoIndex} className="relative w-full">
-                                <video
-                                  src={video}
-                                  controls
-                                  className="w-full rounded-lg"
-                                  style={{ maxHeight: '400px' }}
-                                >
-                                  Seu navegador não suporta o elemento de vídeo.
-                                </video>
-                              </div>
-                            ))}
+    <div className="w-full px-2 sm:px-8 pt-2 md:px-12 py-6 sm:py-8 dark:text-gray-200 text-left">
+      <div className="max-w-full sm:max-w-4xl w-full text-left space-y-4 sm:space-y-3 mx-0">
+        {!loading && !error && hivePosts.length > 0 && (
+          <div className="space-y-3">
+            {hivePosts.map((post, index) => {
+              const media = extractMediaFromPost(post);
+              return (
+                <article key={post.permlink} className="mb-4 sm:mb-6 p-2 sm:p-3">
+                  <div className="space-y-1 sm:space-y-0">
+                    <Markdown images={media.images.map((img, imgIndex) => ({ src: img, alt: `Imagem ${imgIndex + 1} do post: ${post.title}` }))}>
+                      {post.body}
+                    </Markdown>
+                    {media.videos.length > 0 && (
+                      <div className="grid grid-cols-1 gap-4">
+                        {media.videos.map((video, videoIndex) => (
+                          <div key={videoIndex} className="relative w-full">
+                            <video
+                              src={video}
+                              controls
+                              className="w-full rounded-lg"
+                              style={{ maxHeight: '400px' }}
+                            >
+                              Seu navegador não suporta o elemento de vídeo.
+                            </video>
                           </div>
-                        )}
+                        ))}
                       </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
+                    )}
+                    {index < hivePosts.length - 1 && (
+                      <hr className="border-t border-gray-200 dark:border-gray-700 my-4" />
+                    )}
+                  </div>
+                </article>
+              );
+            })}
           </div>
-          <div className="flex mt-8 mb-8 px-3 sm:px-8">
-            <a href="/projects">Ver Meus projetos →</a>
-          </div>
-        </section>
+        )}
       </div>
     </div>
   );

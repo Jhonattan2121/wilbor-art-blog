@@ -1,10 +1,11 @@
 'use client';
 
+import React from 'react';
 import { IconX } from '@/components/IconX';
-import ImageCarousel from '@/components/ImageCarousel';
 import Markdown from '@/components/Markdown';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
+import ImageCarousel from '@/components/ImageCarousel';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -336,7 +337,6 @@ const MediaItem = ({
       className={clsx(
         'rounded-lg overflow-hidden h-full group transition-colors duration-100',
         'bg-white text-black dark:bg-black dark:text-white',
-        'font-mono',
         !isExpanded && 'md:border-t-8 md:border-l-8 md:border-r-8 md:border-b-0 md:border-white md:dark:border-black md:hover:bg-black md:hover:text-white md:hover:border-t-black md:hover:border-l-black md:hover:border-r-black md:dark:hover:bg-white md:dark:hover:text-black md:dark:hover:border-t-white md:dark:hover:border-l-white md:dark:hover:border-r-white',
         isExpanded && 'p-2'
       )}
@@ -349,8 +349,8 @@ const MediaItem = ({
         isExpanded && 'transition-all duration-300',
         isExpanded
           ? hasLargeContent
-            ? 'flex flex-col h-auto min-h-[550px] sm:min-h-[600px]'
-            : 'flex flex-col h-auto min-h-[200px] sm:min-h-[450px]'
+            ? 'flex flex-col h-auto min-h-[420px] sm:min-h-[460px]'
+            : 'flex flex-col h-auto min-h-[260px] sm:min-h-[340px]'
           : 'min-h-[200px]'
       )}>
         {!isExpanded && (
@@ -485,10 +485,14 @@ const MediaItem = ({
           </>
         )}
         {isExpanded && (
-          <div className="flex flex-col h-full overflow-hidden w-full" ref={contentRef}>
-            <div className="flex items-center px-2 sm:px-8 py-2 sm:py-5 sticky top-0 z-20 bg-white dark:bg-black shadow-md">
+          <div
+            className="flex flex-col h-full max-h-[80vh] sm:max-h-[85vh] overflow-hidden w-full"
+            ref={contentRef}
+          >
+            <div className="flex items-center px-3 sm:px-6 py-2 sm:py-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
               <h2
-                className="flex-1 text-lg sm:text-3xl font-bold tracking-wide leading-tight font-mono"
+                className="flex-1 text-base sm:text-xl md:text-2xl font-bold tracking-wide leading-tight"
+                style={{ fontFamily: 'IBMPlexMono, monospace' }}
               >
                 {mainItem.title}
               </h2>
@@ -512,7 +516,7 @@ const MediaItem = ({
               )}
               <button
                 onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-2 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                 aria-label="Fechar"
                 title="Fechar"
                 style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
@@ -520,9 +524,9 @@ const MediaItem = ({
                 <IconX size={35} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-0 sm:px-8 py-1 sm:pt-2 sm:pb-8 bg-white dark:bg-black flex flex-col items-start w-full">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black flex flex-col items-start w-full">
               {images.length > 0 && (
-                <div className="prose prose-invert prose-base sm:prose-lg w-full bg-white dark:bg-black rounded-xl p-2 sm:p-8 shadow-lg mt-0 sm:mt-2 text-center">
+                <div className="prose prose-invert prose-sm sm:prose-base w-full max-w-none text-left">
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
@@ -531,30 +535,31 @@ const MediaItem = ({
               {/* Modal fullscreen reutilizando ImageCarousel */}
               {isFullscreen && (
                 <div
-                  className="fixed inset-0 z-50 flex items-start justify-center bg-black/90 p-0 sm:p-6"
+                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm"
                   onClick={() => setIsFullscreen(false)}
                 >
-                  {/* Header do overlay: garante espaçamento e área para o botão fechar */}
-                  <div
-                    className="absolute top-3 sm:top-0 left-0 right-0 z-50 flex justify-end items-center h-12 sm:h-16 px-3 sm:px-6 bg-gradient-to-b from-black/70 to-transparent backdrop-blur-sm"
+                  {/* Botão de fechar no topo direito */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsFullscreen(false);
+                    }}
+                    className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[10000] rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+                    aria-label="Fechar fullscreen"
+                    title="Fechar (ESC)"
+                    style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
+                  >
+                    <IconX size={35} />
+                  </button>
+
+                  <div 
+                    className="w-full h-full max-w-7xl px-4 sm:px-8 py-16 sm:py-20 flex items-center justify-center"
                     onClick={e => e.stopPropagation()}
                   >
-                    <button
-                      onClick={() => setIsFullscreen(false)}
-                      className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white shadow-lg mr-2 sm:mr-4 border border-white/10 transform translate-y-1 sm:translate-y-0"
-                      aria-label="Fechar fullscreen"
-                      title="Fechar"
-                    >
-                      <IconX size={28} />
-                    </button>
-                  </div>
-
-                  <div className="w-full h-auto pt-12 sm:pt-20 max-w-[1400px] max-h-[95vh] flex items-center justify-center relative overflow-hidden" onClick={e => e.stopPropagation()}>
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ImageCarousel
-                        images={images.map(src => ({ src, alt: mainItem.title || '' }))}
-                      />
-                    </div>
+                    <ImageCarousel
+                      images={images.map(src => ({ src, alt: mainItem.title || '' }))}
+                      fullscreen
+                    />
                   </div>
                 </div>
               )}
@@ -616,26 +621,7 @@ export default function PhotoGridContainer({
       const ref = cardRefs.current[permlink];
       if (ref) {
         setTimeout(() => {
-          const isMobile = window.innerWidth < 768;
-          if (isMobile) {
-            // No mobile, queremos o card um pouco mais acima para aparecer título / começo do texto
-            const headerOffset = 90; // altura aproximada do header fixo + respiro
-            const rect = ref.getBoundingClientRect();
-            const targetY = rect.top + window.scrollY - headerOffset;
-            window.scrollTo({
-              top: targetY < 0 ? 0 : targetY,
-              behavior: 'smooth',
-            });
-          } else {
-            // Em desktop, alinhar ao topo com um offset para o título ficar visível, ao invés de centralizar
-            const headerOffset = 90; 
-            const rect = ref.getBoundingClientRect();
-            const targetY = rect.top + window.scrollY - headerOffset;
-            window.scrollTo({
-              top: targetY < 0 ? 0 : targetY,
-              behavior: 'smooth',
-            });
-          }
+          ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
       }
     }
@@ -655,6 +641,7 @@ export default function PhotoGridContainer({
           'lg:grid-cols-4 xl:grid-cols-4',
           'grid-flow-dense',
           'mt-8 sm:mt-0',
+          'auto-rows-fr'
         )}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
@@ -671,11 +658,8 @@ export default function PhotoGridContainer({
                   isExpanded
                     ? (
                       hasLargeContentMap[permlink]
-                        ? (
-                          'col-span-2 justify-self-center sm:col-span-2 '
-                          + 'md:col-span-3 lg:col-span-3 row-span-3 h-auto'
-                        )
-                        : 'col-span-1'
+                        ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3'
+                        : 'col-span-1 row-span-2'
                     )
                     : 'w-full',
                 )}
