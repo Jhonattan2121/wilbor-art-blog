@@ -3,9 +3,10 @@ import { useRef, useState } from 'react';
 
 interface ImageCarouselProps {
   images: { src: string; alt?: string }[];
+  fullscreen?: boolean;
 }
 
-export default function ImageCarousel({ images }: ImageCarouselProps) {
+export default function ImageCarousel({ images, fullscreen = false }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
@@ -117,16 +118,15 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
   }
 
   return (
-    <div className="relative w-full flex flex-col items-center my-6">
+    <div className={fullscreen ? "relative w-full h-full flex flex-col items-center justify-center" : "relative w-full flex flex-col items-center my-6"}>
       <div
-        className="w-full flex justify-center items-center max-w-full sm:max-w-[700px] relative overflow-hidden"
+        className={
+          fullscreen 
+            ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
+            : "w-full flex justify-center items-center max-w-5xl h-[260px] sm:h-[420px] md:h-[520px] mx-auto overflow-hidden"
+        }
         style={{
-          minHeight: 220,
-          margin: '0 auto',
-          background: 'rgba(0,0,0,0.02)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          background: fullscreen ? 'transparent' : 'rgba(0,0,0,0.02)',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -137,7 +137,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
           style={{
             display: 'flex',
             width: '300%',
-            maxWidth: '2100px',
+            height: '100%',
             transform: `translateX(${offset}%)`,
             transition: transition ? 'transform 0.3s' : 'none',
           }}
@@ -147,7 +147,7 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
               key={idx}
               src={img.src}
               alt={img.alt || ''}
-              className="rounded-lg shadow-lg w-full max-w-full sm:max-w-[700px]"
+              className={fullscreen ? "shadow-2xl" : "rounded-lg shadow-lg"}
               style={{
                 objectFit: 'contain',
                 display: 'block',
@@ -155,6 +155,9 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
                 background: 'transparent',
                 minWidth: '100%',
                 width: '100%',
+                height: '100%',
+                maxHeight: fullscreen ? '85vh' : '100%',
+                maxWidth: fullscreen ? '85vw' : '100%',
               }}
             />
           ))}
@@ -162,22 +165,25 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
       </div>
       {/* Navegação por bolinhas abaixo da imagem */}
       {images.length > 1 && (
-        <div className="mt-2 flex items-center justify-center gap-2">
+        <div className={fullscreen ? "absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2 sm:gap-3" : "mt-2 flex items-center justify-center gap-2"}>
           {images.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setCurrent(idx)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setCurrent(idx);
+              }}
               aria-label={`Ir para imagem ${idx + 1}`}
               className="rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-red-500"
               style={{
-                width: 13,
-                height: 13,
-                minWidth: 13,
-                minHeight: 13,
+                width: fullscreen ? 16 : 13,
+                height: fullscreen ? 16 : 13,
+                minWidth: fullscreen ? 16 : 13,
+                minHeight: fullscreen ? 16 : 13,
                 padding: 0,
-                borderWidth: 0,
-                background: current === idx ? activeDotBg : inactiveDotBg,
-                borderColor: current === idx ? activeDotBorder : inactiveDotBorder,
+                borderWidth: fullscreen ? 2 : 0,
+                background: current === idx ? activeDotBg : (fullscreen ? 'rgba(255,255,255,0.3)' : inactiveDotBg),
+                borderColor: current === idx ? activeDotBorder : (fullscreen ? 'rgba(255,255,255,0.5)' : inactiveDotBorder),
                 borderStyle: 'solid',
                 borderRadius: '50%',
               }}

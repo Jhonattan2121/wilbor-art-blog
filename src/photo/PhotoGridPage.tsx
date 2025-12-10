@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import PhotoGridContainer from './PhotoProjectsContainer';
 import { Photo } from './components/types';
 
@@ -17,14 +16,9 @@ export default function PhotoGridPage({
   selectedTag: string | null
   setSelectedTag: (tag: string | null) => void
 }) {
-
-  
-
-
-
   return (
     <>
-      <div >
+      <div>
         <PhotoGridContainer
           cacheKey={`page-${PATH_GRID_INFERRED}`}
           media={photos.map(photo => ({

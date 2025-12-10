@@ -4,42 +4,63 @@ import PhotoGridPage from '@/photo/PhotoGridPage';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-export default function ProjectsClient({ posts, tags, photosCount, cameras, simulations }: any) {
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+export default function ProjectsClient({ 
+  posts, 
+  tags, 
+  photosCount, 
+  cameras, 
+  simulations, 
+  hideSwitcher = false,
+  externalSelectedTag,
+  onTagChange
+}: any) {
+  const [internalSelectedTag, setInternalSelectedTag] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const selectedTag = externalSelectedTag !== undefined ? externalSelectedTag : internalSelectedTag;
+
   useEffect(() => {
+    if (externalSelectedTag !== undefined) return;
+
     const tagFromUrl = searchParams.get('tag');
     if (tagFromUrl) {
       const tagExists = tags.some((t: any) => t.tag === tagFromUrl);
       if (tagExists) {
-        setSelectedTag(tagFromUrl);
+        setInternalSelectedTag(tagFromUrl);
       }
     } else {
-      setSelectedTag(null);
+      setInternalSelectedTag(null);
     }
-  }, [searchParams, tags]);
+  }, [searchParams, tags, externalSelectedTag]);
 
   const handleTagChange = useCallback((tag: string | null) => {
-    const url = new URL(window.location.href);
-    if (tag) {
-      url.searchParams.set('tag', tag);
+    if (onTagChange) {
+      onTagChange(tag);
     } else {
-      url.searchParams.delete('tag');
+      const url = new URL(window.location.href);
+      if (tag) {
+        url.searchParams.set('tag', tag);
+      } else {
+        url.searchParams.delete('tag');
+      }
+      window.history.pushState({}, '', url.toString());
+      // Also update internal state directly for immediate feedback
+      setInternalSelectedTag(tag);
     }
-    window.history.pushState({}, '', url.toString());
-  }, []);
+  }, [onTagChange]);
 
   return (
     <>
-      <ViewSwitcher
-        drawerTagsProps={{
-          tags: tags.map((t: any) => t.tag),
-          selectedTag,
-          setSelectedTag: handleTagChange,
-        }}
-      />
+      {!hideSwitcher && (
+        <ViewSwitcher
+          drawerTagsProps={{
+            tags: tags.map((t: any) => t.tag),
+            selectedTag,
+            setSelectedTag: handleTagChange,
+          }}
+        />
+      )}
       <PhotoGridPage
         photos={posts}
         photosCount={photosCount}

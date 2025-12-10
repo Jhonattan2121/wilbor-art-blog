@@ -1,10 +1,6 @@
 "use client";
 import {
-  Path_Contact,
-  Path_Exhibitions,
-  PATH_FEED_INFERRED,
-  PATH_GRID,
-  Path_Partners
+    PATH_GRID
 } from '@/app/paths';
 import BannerWilborSwitcher from '@/components/BannerWilborSwitcher';
 import { useTheme } from 'next-themes';
@@ -17,11 +13,13 @@ export type SwitcherSelection = 'projects' | 'about' | 'exhibitions' | 'partners
 export default function ViewSwitcher({
   currentSelection,
   drawerTagsProps,
-  tags
+  tags,
+  isLandingPage = false,
 }: {
   currentSelection?: SwitcherSelection
   tags?: any
   showAdmin?: boolean
+  isLandingPage?: boolean
   drawerTagsProps?: {
     tags: string[];
     selectedTag: string | null;
@@ -53,7 +51,7 @@ export default function ViewSwitcher({
     {
       text: "SOBRE WILBOR",
       mobileText: "SOBRE WILBOR",
-      href: PATH_FEED_INFERRED,
+      href: `${PATH_GRID}#about`,
       active: currentSelection === 'about',
     },
     {
@@ -65,13 +63,13 @@ export default function ViewSwitcher({
     {
       text: "EXPOSIÇÕES / EXIBIÇÕES",
       mobileText: "EXPOSIÇÕES / EXIBIÇÕES",
-      href: Path_Exhibitions,
+      href: `${PATH_GRID}#exhibitions`,
       active: currentSelection === 'exhibitions',
     },
     {
       text: "PARCEIROS",
       mobileText: "PARCEIROS",
-      href: Path_Partners,
+      href: `${PATH_GRID}#partners`,
       active: currentSelection === 'partners',
     },
    
@@ -82,8 +80,8 @@ export default function ViewSwitcher({
     : (Array.isArray(tags) && tags.length > 0) ? tags : fetchedTags;
 
   const isDarkMode = mounted && (theme === 'dark' || (theme === 'system' && systemTheme === 'dark'));
-  const headerBgColor = isDarkMode ? '#000000' : '#ffffff';
-  const siteBgColor = isDarkMode ? '#222222' : '#ffffff';
+  // Header: preto no dark, uma faixa cinza-clara no light, com o restante da página permanecendo branco
+  const headerBgColor = isDarkMode ? '#000000' : '#e5e5e5'; // gray-200 aproximado do fundo cinza do header
 
   return (
     <>

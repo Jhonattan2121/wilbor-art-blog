@@ -14,6 +14,11 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === '/') {
     return NextResponse.redirect(new URL('/projects', request.url));
   }
+  
+  // Redirect section routes to /projects to ensure One Page experience
+  if (['/about', '/exhibitions', '/partners'].includes(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL('/projects', request.url));
+  }
 
   const pathname = request.nextUrl.pathname;
 

@@ -5,11 +5,12 @@ import { clsx } from 'clsx/lite';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, menuItems }: {
+export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, menuItems, onMenuItemClick }: {
   tags: string[];
   selectedTag?: string | null;
   setSelectedTag?: (tag: string | null) => void;
   menuItems: { text: string; href: string; active: boolean }[];
+  onMenuItemClick?: (href: string) => void;
 }) {
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -113,6 +114,14 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
                   <a
                     key={item.text + idx}
                     href={item.href}
+                    onClick={(e) => {
+                      if (onMenuItemClick) {
+                        e.preventDefault();
+                        onMenuItemClick(item.href);
+                      }
+                      // Sempre fechar o drawer, mesmo em navegação por âncora
+                      setShowDrawer(false);
+                    }}
                     className={clsx(
                       'w-full text-left px-4 py-3 text-lg transition font-mono border-0 rounded-lg',
                       item.active

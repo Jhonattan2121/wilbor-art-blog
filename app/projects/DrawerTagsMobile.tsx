@@ -5,11 +5,12 @@ import { clsx } from 'clsx/lite';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, menuItems }: {
+export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, menuItems, onMenuItemClick }: {
     tags: string[];
     selectedTag?: string | null;
     setSelectedTag?: (tag: string | null) => void;
     menuItems: { text: string; mobileText: string; href: string; active: boolean }[];
+    onMenuItemClick?: (href: string) => void;
 }) {
     const [showMobileTags, setShowMobileTags] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
@@ -107,23 +108,41 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                         </div>
                         <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-900 px-4 pt-2 pb-24">
                             <div className="flex flex-col gap-4 w-full max-w-sm mx-auto">
-                                {menuItems.map((item, idx) => (
-                                    <a
+                                {menuItems.map((item, idx) => {
+                                    const isLink = !onMenuItemClick;
+                                    const Component = isLink ? 'a' : 'button';
+                                    return (
+                                    <Component
                                         key={item.text + idx}
-                                        href={item.href}
+                                        href={isLink ? item.href : undefined}
+                                        onClick={(e: any) => {
+                                            if (onMenuItemClick) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setShowMobileTags(false);
+                                                requestAnimationFrame(() => {
+                                                    onMenuItemClick(item.href);
+                                                });
+                                            } else {
+                                                // Navegação normal (âncora /projects#rota) mas fechando o drawer
+                                                setShowMobileTags(false);
+                                            }
+                                        }}
                                         className={clsx(
                                             'w-full text-left px-4 py-3 text-lg transition font-mono border-0 rounded-lg',
                                             item.active
                                                 ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                                                 : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                                         )}
-                                        style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                                        style={{ outline: 'none', boxShadow: 'none', border: 'none', display: 'block' }}
                                         aria-label={item.mobileText}
                                         title={item.mobileText}
+                                        type={isLink ? undefined : "button"}
                                     >
                                         {item.mobileText}
-                                    </a>
-                                ))}
+                                    </Component>
+                                    );
+                                })}
                                 {/* Separador visual elegante */}
                                 {Array.isArray(tags) && tags.length > 0 && (
                                     <div className="flex items-center justify-center my-4">
