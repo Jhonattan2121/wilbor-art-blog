@@ -35,25 +35,40 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const getPrevIndex = () => (current === 0 ? images.length - 1 : current - 1);
 
   // Eventos de swipe
+  const touchStartY = useRef<number | null>(null);
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);
+    touchStartY.current = e.touches[0].clientY;
     setTouchMoveX(null);
     setIsDragging(true);
     setTransition(false);
     if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
   };
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging) return;
+    if (!isDragging || touchStartX === null || touchStartY.current === null) return;
     const moveX = e.touches[0].clientX;
-    setTouchMoveX(moveX);
-    const delta = moveX - (touchStartX ?? 0);
-    setTranslateX(delta);
+    const moveY = e.touches[0].clientY;
+    const deltaX = Math.abs(moveX - touchStartX);
+    const deltaY = Math.abs(moveY - touchStartY.current);
+    
+    // Só ativa o drag se o movimento horizontal for maior que o vertical (swipe horizontal)
+    if (deltaX > deltaY && deltaX > 10) {
+      setTouchMoveX(moveX);
+      const delta = moveX - touchStartX;
+      setTranslateX(delta);
+    } else if (deltaY > deltaX && deltaY > 10) {
+      // Se for movimento vertical maior, cancela o drag para permitir scroll
+      setIsDragging(false);
+      setTransition(true);
+      setTranslateX(0);
+    }
   };
   const handleTouchEnd = () => {
     if (transitionTimeout.current) {
       clearTimeout(transitionTimeout.current);
       transitionTimeout.current = null;
     }
+    touchStartY.current = null;
     if (!isDragging || touchStartX === null || touchMoveX === null) {
       setIsDragging(false);
       setTransition(true);

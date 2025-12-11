@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
 import { IconX } from '@/components/IconX';
+import ImageCarousel from '@/components/ImageCarousel';
 import Markdown from '@/components/Markdown';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
-import ImageCarousel from '@/components/ImageCarousel';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -524,7 +523,13 @@ const MediaItem = ({
                 <IconX size={35} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black flex flex-col items-start w-full">
+            <div 
+              className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-auto sm:overscroll-contain px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black flex flex-col items-start w-full"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-y'
+              }}
+            >
               {images.length > 0 && (
                 <div className="prose prose-invert prose-sm sm:prose-base w-full max-w-none text-left">
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined} inExpandedCard={true} hasLittleContent={!hasLargeContent}>
