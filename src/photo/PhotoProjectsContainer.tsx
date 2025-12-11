@@ -8,6 +8,7 @@ import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { extractImagesFromMarkdown } from './components/markdownUtils';
@@ -135,7 +136,12 @@ const MediaItem = ({
   const [imageError, setImageError] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Fecha fullscreen com ESC e bloqueia scroll do body enquanto aberto
   useEffect(() => {
@@ -527,45 +533,16 @@ const MediaItem = ({
               className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-auto sm:overscroll-contain px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black flex flex-col items-start w-full"
               style={{
                 WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-y'
+                touchAction: 'pan-y',
+                position: 'relative',
+                transform: 'translateZ(0)'
               }}
             >
               {images.length > 0 && (
-                <div className="prose prose-invert prose-sm sm:prose-base w-full max-w-none text-left">
+                <div className="w-full max-w-none text-left" style={{ margin: 0, padding: 0 }}>
                   <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined} inExpandedCard={true} hasLittleContent={!hasLargeContent}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
-                </div>
-              )}
-              {/* Modal fullscreen reutilizando ImageCarousel */}
-              {isFullscreen && (
-                <div
-                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm"
-                  onClick={() => setIsFullscreen(false)}
-                >
-                  {/* Botão de fechar no topo direito */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsFullscreen(false);
-                    }}
-                    className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[10000] rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
-                    aria-label="Fechar fullscreen"
-                    title="Fechar (ESC)"
-                    style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
-                  >
-                    <IconX size={35} />
-                  </button>
-
-                  <div 
-                    className="w-full h-full max-w-7xl px-4 sm:px-8 py-16 sm:py-20 flex items-center justify-center"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <ImageCarousel
-                      images={images.map(src => ({ src, alt: mainItem.title || '' }))}
-                      fullscreen
-                    />
-                  </div>
                 </div>
               )}
             </div>
@@ -573,6 +550,40 @@ const MediaItem = ({
         )}
 
       </div>
+      {/* Modal fullscreen renderizado via Portal fora do card */}
+      {mounted && isFullscreen && typeof window !== 'undefined' && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm"
+          onClick={() => setIsFullscreen(false)}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          {/* Botão de fechar no topo direito */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFullscreen(false);
+            }}
+            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[10000] rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+            aria-label="Fechar fullscreen"
+            title="Fechar (ESC)"
+            style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
+          >
+            <IconX size={35} />
+          </button>
+
+          <div 
+            className="w-full h-full max-w-7xl px-4 sm:px-8 py-16 sm:py-20 flex items-center justify-center"
+            onClick={e => e.stopPropagation()}
+            style={{ position: 'relative', zIndex: 1 }}
+          >
+            <ImageCarousel
+              images={images.map(src => ({ src, alt: mainItem.title || '' }))}
+              fullscreen={true}
+            />
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
