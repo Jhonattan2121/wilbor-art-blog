@@ -9,7 +9,9 @@ interface MarkdownProps {
   removeMedia?: boolean;
   images?: { src: string; alt?: string; }[];
   videoPoster?: string; // thumbnail para vídeos
-  columns?: boolean; 
+  columns?: boolean;
+  inExpandedCard?: boolean;
+  hasLittleContent?: boolean;
 }
 
 function removeImagesAndVideosFromMarkdown(markdown: string): string {
@@ -61,7 +63,7 @@ function splitMarkdownWithImageBlocks(markdown: string) {
   return blocks;
 }
 
-export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster, columns = false }: MarkdownProps) {
+export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster, columns = false, inExpandedCard = false, hasLittleContent = false }: MarkdownProps) {
   const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
   const hasSingleImage = images && images.length === 1;
 
@@ -169,7 +171,7 @@ export default function Markdown({ children, className = '', removeMedia = false
     >
       {blocks.map((block, idx) => {
         if (block.type === 'carousel' && block.images && block.images.length > 0) {
-          return <ImageCarousel key={idx} images={block.images} />;
+          return <ImageCarousel key={idx} images={block.images} inExpandedCard={inExpandedCard} hasLittleContent={hasLittleContent} />;
         }
         // Renderiza bloco markdown normalmente
         return (

@@ -4,9 +4,11 @@ import { useRef, useState } from 'react';
 interface ImageCarouselProps {
   images: { src: string; alt?: string }[];
   fullscreen?: boolean;
+  inExpandedCard?: boolean;
+  hasLittleContent?: boolean;
 }
 
-export default function ImageCarousel({ images, fullscreen = false }: ImageCarouselProps) {
+export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, hasLittleContent = false }: ImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
@@ -123,7 +125,11 @@ export default function ImageCarousel({ images, fullscreen = false }: ImageCarou
         className={
           fullscreen 
             ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
-            : "w-full flex justify-center items-center max-w-5xl h-[260px] sm:h-[420px] md:h-[520px] mx-auto overflow-hidden"
+            : inExpandedCard
+              ? hasLittleContent
+                ? "w-full flex justify-center items-center max-w-5xl h-[80vh] sm:h-[650px] md:h-[700px] mx-auto overflow-hidden"
+                : "w-full flex justify-center items-center max-w-5xl h-[500px] sm:h-[420px] md:h-[520px] mx-auto overflow-hidden"
+              : "w-full flex justify-center items-center max-w-5xl h-[260px] sm:h-[420px] md:h-[520px] mx-auto overflow-hidden"
         }
         style={{
           background: fullscreen ? 'transparent' : 'rgba(0,0,0,0.02)',
