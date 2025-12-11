@@ -621,7 +621,9 @@ export default function PhotoGridContainer({
       const ref = cardRefs.current[permlink];
       if (ref) {
         setTimeout(() => {
-          ref.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const yOffset = -80; // Offset para aparecer mais acima
+          const y = ref.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
         }, 100);
       }
     }
