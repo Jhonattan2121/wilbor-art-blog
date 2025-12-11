@@ -527,7 +527,7 @@ const MediaItem = ({
             <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black flex flex-col items-start w-full">
               {images.length > 0 && (
                 <div className="prose prose-invert prose-sm sm:prose-base w-full max-w-none text-left">
-                  <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined}>
+                  <Markdown videoPoster={updatedThumbnail || thumbnailUrl || undefined} inExpandedCard={true} hasLittleContent={!hasLargeContent}>
                     {mainItem.hiveMetadata?.body ?? ''}
                   </Markdown>
                 </div>
