@@ -15,6 +15,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
   const [showDrawer, setShowDrawer] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [drawerActive, setDrawerActive] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -28,19 +29,33 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
 
   useEffect(() => {
     if (showDrawer) {
+      setIsAnimating(true);
       setDrawerVisible(true);
       document.body.style.overflow = 'hidden';
-      setTimeout(() => setDrawerActive(true), 20);
+      // Força o browser a renderizar primeiro com translate-x-full antes de animar
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setDrawerActive(true);
+          setTimeout(() => setIsAnimating(false), 400);
+        });
+      });
     } else {
-      setDrawerActive(false);
-      document.body.style.overflow = '';
-      const timeout = setTimeout(() => setDrawerVisible(false), 350);
-      return () => clearTimeout(timeout);
+      if (drawerVisible) {
+        setIsAnimating(true);
+        setDrawerActive(false);
+        // Aguarda a animação de fechamento terminar antes de remover do DOM
+        const timeout = setTimeout(() => {
+          setDrawerVisible(false);
+          setIsAnimating(false);
+          document.body.style.overflow = '';
+        }, 400);
+        return () => clearTimeout(timeout);
+      }
     }
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showDrawer]);
+  }, [showDrawer, drawerVisible]);
 
   const handleTagSelection = (tag: string | null) => {
     if (typeof setSelectedTag === 'function') {
@@ -70,7 +85,12 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
       <button
         className="inline-flex items-center justify-center rounded-none transition-colors bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none hover:bg-black/5 dark:hover:bg-white/10"
         style={{ width: '100%', height: '100%', outline: 'none', boxShadow: 'none' }}
-        onClick={() => setShowDrawer(true)}
+        onClick={() => {
+          if (!isAnimating) {
+            setShowDrawer(true);
+          }
+        }}
+        disabled={isAnimating}
         aria-label="Abrir menu de tags"
         title="Abrir menu de tags"
       >
@@ -80,25 +100,38 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
         <>
           <div
             className={clsx(
-              'fixed inset-0 z-40 bg-black/30 dark:bg-black/60 transition-opacity duration-300',
-              showDrawer ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              'fixed inset-0 z-40 bg-black/30 dark:bg-black/60',
+              showDrawer && drawerActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
             )}
-            style={{ backdropFilter: 'blur(2px)' }}
-            onClick={() => setShowDrawer(false)}
+            style={{ 
+              backdropFilter: 'blur(4px)', 
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+            onClick={() => {
+              if (!isAnimating) {
+                setShowDrawer(false);
+              }
+            }}
             aria-label="Fechar menu de tags"
             title="Fechar menu de tags"
           ></div>
           <aside
             id="desktop-tags-drawer"
-            className={clsx(
-              'fixed top-0 right-0 h-full w-80 max-w-[90vw] shadow-2xl z-50 flex flex-col bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-l-xl transition-transform duration-300',
-              drawerActive ? 'translate-x-0' : 'translate-x-full'
-            )}
+            className="fixed top-0 right-0 h-full w-80 max-w-[90vw] shadow-2xl z-50 flex flex-col bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-l-xl"
+            style={{
+              transform: drawerActive ? 'translateX(0)' : 'translateX(100%)',
+              transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              willChange: 'transform'
+            }}
             aria-label="Menu lateral de tags"
           >
             <div className="flex items-center justify-end px-4 py-4 bg-white dark:bg-neutral-900 rounded-t-xl border-b border-gray-100 dark:border-neutral-800">
               <button
-                onClick={() => setShowDrawer(false)}
+                onClick={() => {
+                  if (!isAnimating) {
+                    setShowDrawer(false);
+                  }
+                }}
                 className="rounded-full transition-colors p-2 flex items-center justify-center focus:outline-none hover:bg-gray-200 dark:hover:bg-neutral-800"
                 aria-label="Fechar"
                 title="Fechar"

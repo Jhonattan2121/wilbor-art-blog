@@ -15,6 +15,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
     const [showMobileTags, setShowMobileTags] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [drawerActive, setDrawerActive] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -28,20 +29,33 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
 
     useEffect(() => {
         if (showMobileTags) {
+            setIsAnimating(true);
             setDrawerVisible(true);
             document.body.style.overflow = 'hidden';
-            // Ativa animação de entrada após montagem
-            setTimeout(() => setDrawerActive(true), 20);
+            // Força o browser a renderizar primeiro com translate-x-full antes de animar
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setDrawerActive(true);
+                    setTimeout(() => setIsAnimating(false), 400);
+                });
+            });
         } else {
-            setDrawerActive(false);
-            document.body.style.overflow = '';
-            const timeout = setTimeout(() => setDrawerVisible(false), 350);
-            return () => clearTimeout(timeout);
+            if (drawerVisible) {
+                setIsAnimating(true);
+                setDrawerActive(false);
+                // Aguarda a animação de fechamento terminar antes de remover do DOM
+                const timeout = setTimeout(() => {
+                    setDrawerVisible(false);
+                    setIsAnimating(false);
+                    document.body.style.overflow = '';
+                }, 400);
+                return () => clearTimeout(timeout);
+            }
         }
         return () => {
             document.body.style.overflow = '';
         };
-    }, [showMobileTags]);
+    }, [showMobileTags, drawerVisible]);
 
     const handleTagSelection = (tag: string | null) => {
         if (typeof setSelectedTag === 'function') {
@@ -69,7 +83,12 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
             <button
                 className="flex items-center justify-center gap-2 rounded-md text-base font-bold transition-colors bg-transparent border-none shadow-none outline-none ring-0 focus:ring-0 focus:outline-none focus:border-none"
                 style={{ outline: 'none', boxShadow: 'none', cursor: 'pointer', width: 64, height: 44, padding: 0 }}
-                onClick={() => setShowMobileTags(true)}
+                onClick={() => {
+                    if (!isAnimating) {
+                        setShowMobileTags(true);
+                    }
+                }}
+                disabled={isAnimating}
                 aria-label="Abrir menu lateral"
                 title="Abrir menu lateral"
             >
@@ -79,25 +98,38 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                 <>
                     <div
                         className={clsx(
-                            'fixed inset-0 z-40 bg-black/30 dark:bg-black/60 transition-opacity duration-300',
-                            showMobileTags ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                            'fixed inset-0 z-40 bg-black/30 dark:bg-black/60',
+                            showMobileTags && drawerActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         )}
-                        style={{ backdropFilter: 'blur(2px)' }}
-                        onClick={() => setShowMobileTags(false)}
+                        style={{ 
+                            backdropFilter: 'blur(4px)', 
+                            transition: 'opacity 0.3s ease-in-out'
+                        }}
+                        onClick={() => {
+                            if (!isAnimating) {
+                                setShowMobileTags(false);
+                            }
+                        }}
                         aria-label="Fechar menu de navegação"
                         title="Fechar menu de navegação"
                     ></div>
                     <aside
                         id="mobile-tags-drawer"
-                        className={clsx(
-                            'fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-900 w-screen h-screen shadow-2xl border border-gray-200 dark:border-neutral-800 rounded-xl transition-transform duration-300',
-                            drawerActive ? 'translate-x-0' : 'translate-x-full'
-                        )}
+                        className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-neutral-900 w-screen h-screen shadow-2xl border border-gray-200 dark:border-neutral-800 rounded-xl"
+                        style={{
+                            transform: drawerActive ? 'translateX(0)' : 'translateX(100%)',
+                            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                            willChange: 'transform'
+                        }}
                         aria-label="Menu lateral de navegação"
                     >
                         <div className="flex items-center justify-end px-4 py-4 bg-white dark:bg-neutral-900 rounded-t-xl border-b border-gray-100 dark:border-neutral-800">
                             <button
-                                onClick={() => setShowMobileTags(false)}
+                                onClick={() => {
+                                    if (!isAnimating) {
+                                        setShowMobileTags(false);
+                                    }
+                                }}
                                 className="rounded-full transition-colors p-2 flex items-center justify-center focus:outline-none hover:bg-gray-200 dark:hover:bg-neutral-800"
                                 aria-label="Fechar"
                                 title="Fechar"
@@ -129,12 +161,17 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                                             }
                                         }}
                                         className={clsx(
-                                            'w-full text-left px-4 py-3 text-lg transition font-mono border-0 rounded-lg',
+                                            'w-full text-left px-4 py-3 text-lg transition-colors font-mono border-0 rounded-lg',
                                             item.active
                                                 ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                                                 : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                                         )}
-                                        style={{ outline: 'none', boxShadow: 'none', border: 'none', display: 'block' }}
+                                        style={{ 
+                                            outline: 'none', 
+                                            boxShadow: 'none', 
+                                            border: 'none', 
+                                            display: 'block'
+                                        }}
                                         aria-label={item.mobileText}
                                         title={item.mobileText}
                                         type={isLink ? undefined : "button"}
@@ -153,18 +190,22 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                                 {/* Tags */}
                                 {Array.isArray(tags) && tags.length > 0 && (
                                     <div className="flex flex-col gap-2">
-                                        {tags.map(tag => (
+                                        {tags.map((tag) => (
                                             <button
                                                 key={tag}
                                                 onClick={() => handleTagSelection(tag)}
                                                 className={clsx(
-                                                    // mesma “força” visual do menu: fonte em negrito (sem forçar maiúsculas)
-                                                    'w-full text-left px-4 py-3 text-lg transition font-mono border-0 rounded-lg',
+                                                    // mesma "força" visual do menu: fonte em negrito (sem forçar maiúsculas)
+                                                    'w-full text-left px-4 py-3 text-lg transition-colors font-mono border-0 rounded-lg',
                                                     selectedTag === tag
                                                         ? 'text-red-600 dark:text-red-400 bg-gray-100 dark:bg-neutral-800 shadow'
                                                         : 'text-gray-900 dark:text-gray-100 hover:text-red-700 dark:hover:text-red-300 hover:bg-gray-50 dark:hover:bg-neutral-800'
                                                 )}
-                                                style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                                                style={{ 
+                                                    outline: 'none', 
+                                                    boxShadow: 'none', 
+                                                    border: 'none'
+                                                }}
                                                 aria-label={`Filtrar por tag ${tag}`}
                                                 title={`Filtrar por tag ${tag}`}
                                             >
