@@ -16,6 +16,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const [transition, setTransition] = useState(true);
   const [translateX, setTranslateX] = useState(0);
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
   const { theme, systemTheme } = useTheme();
@@ -35,7 +36,6 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const getPrevIndex = () => (current === 0 ? images.length - 1 : current - 1);
 
   // Eventos de swipe
-  const touchStartY = useRef<number | null>(null);
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);
     touchStartY.current = e.touches[0].clientY;
