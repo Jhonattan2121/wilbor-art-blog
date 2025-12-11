@@ -62,31 +62,38 @@ function useDynamicContactPost(username: string) {
   return { post, loading, error };
 }
 
-export default function ContactPage() {
+// Função para inserir <br> entre links, se estiverem juntos
+function formatContactBody(body: string) {
+  // Regex para links Markdown: [texto](url)
+  return body.replace(/\]\([^)]*\)\s+/g, "]($1)<br>").replace(/<br>\s*/g, '<br>');
+}
+
+// Componente de conteúdo de contato (sem ViewSwitcher)
+export function ContactContent() {
   const { post, loading, error } = useDynamicContactPost(process.env.NEXT_PUBLIC_HIVE_USERNAME || '');
 
-  // Função para inserir <br> entre links, se estiverem juntos
-  function formatContactBody(body: string) {
-    // Regex para links Markdown: [texto](url)
-    return body.replace(/\]\([^)]*\)\s+/g, "]($1)<br>").replace(/<br>\s*/g, '<br>');
-  }
+  return (
+    <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
+      <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
+        {!loading && !error && post && (
+          <article className="mb-6 p-3">
+            <Markdown className="markdown-contact" columns>{formatContactBody(post.body)}</Markdown>
+          </article>
+        )}
+        {loading && <div>Carregando...</div>}
+        {error && <div className="text-red-500">{error}</div>}
+      </div>
+    </div>
+  );
+}
 
+export default function ContactPage() {
   return (
     <>
       <React.Suspense fallback={null}>
         <ViewSwitcher currentSelection="contact" />
       </React.Suspense>
-      <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
-        <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
-          {!loading && !error && post && (
-            <article className="mb-6 p-3">
-              <Markdown className="markdown-contact" columns>{formatContactBody(post.body)}</Markdown>
-            </article>
-          )}
-          {loading && <div>Carregando...</div>}
-          {error && <div className="text-red-500">{error}</div>}
-        </div>
-      </div>
+      <ContactContent />
     </>
   );
 }

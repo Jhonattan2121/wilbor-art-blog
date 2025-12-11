@@ -54,6 +54,25 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
     setSelectedTag(tag);
   }, []);
 
+  // Handler para navegação por hash (scroll suave até a seção)
+  const handleMenuItemClick = useCallback((href: string) => {
+    if (typeof window === 'undefined') return;
+    
+    const url = new URL(href, window.location.origin);
+    if (url.hash) {
+      const targetId = url.hash.substring(1); // Remove o #
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        const headerHeight = 90; // Altura do header
+        const yOffset = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+        window.scrollTo({ top: yOffset, behavior: 'smooth' });
+        window.history.pushState(null, '', href);
+      }
+    } else {
+      window.location.href = href;
+    }
+  }, []);
+
   // Atualiza rota /projects#secao conforme o usuário rola (scroll spy baseado na seção mais próxima do centro)
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -66,19 +85,31 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
     const updateActiveSection = () => {
       ticking = false;
       const viewportCenter = window.innerHeight / 2;
+      const viewportTop = 0;
+      const viewportBottom = window.innerHeight;
 
       let closestId: SwitcherSelection = 'projects';
       let minDistance = Infinity;
 
       sections.forEach((sec) => {
         const rect = sec.getBoundingClientRect();
-        const sectionCenter = rect.top + rect.height / 2;
-        const distance = Math.abs(sectionCenter - viewportCenter);
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestId = sec.id as SwitcherSelection;
+        // Só considera seções que estão visíveis na viewport (pelo menos parcialmente)
+        const isVisible = rect.bottom > viewportTop && rect.top < viewportBottom;
+        
+        if (isVisible) {
+          const sectionCenter = rect.top + rect.height / 2;
+          const distance = Math.abs(sectionCenter - viewportCenter);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestId = sec.id as SwitcherSelection;
+          }
         }
       });
+
+      // Se nenhuma seção visível foi encontrada, volta para projects
+      if (minDistance === Infinity) {
+        closestId = 'projects';
+      }
 
       setActiveSection(closestId);
 
@@ -117,6 +148,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
           selectedTag,
           setSelectedTag: handleTagChange,
         }}
+        onMenuItemClick={handleMenuItemClick}
       />
 
       <div className="flex flex-col w-full">

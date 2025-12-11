@@ -15,6 +15,7 @@ export default function ViewSwitcher({
   drawerTagsProps,
   tags,
   isLandingPage = false,
+  onMenuItemClick,
 }: {
   currentSelection?: SwitcherSelection
   tags?: any
@@ -25,6 +26,7 @@ export default function ViewSwitcher({
     selectedTag: string | null;
     setSelectedTag?: (tag: string | null) => void;
   }
+  onMenuItemClick?: (href: string) => void;
 }) {
   const [fetchedTags, setFetchedTags] = useState<string[]>([]);
   const { theme, systemTheme } = useTheme();
@@ -72,6 +74,12 @@ export default function ViewSwitcher({
       href: `${PATH_GRID}#partners`,
       active: currentSelection === 'partners',
     },
+    {
+      text: "CONTATO",
+      mobileText: "CONTATO",
+      href: `${PATH_GRID}#contact`,
+      active: currentSelection === 'contact',
+    },
    
 
   ];
@@ -97,6 +105,7 @@ export default function ViewSwitcher({
             selectedTag={drawerTagsProps?.selectedTag ?? null}
             setSelectedTag={drawerTagsProps?.setSelectedTag}
             menuItems={menuItems}
+            onMenuItemClick={onMenuItemClick}
           />
         </div>
       </div>
@@ -122,6 +131,7 @@ export default function ViewSwitcher({
             selectedTag={drawerTagsProps?.selectedTag ?? null}
             setSelectedTag={drawerTagsProps?.setSelectedTag}
             menuItems={menuItems}
+            onMenuItemClick={onMenuItemClick}
           />
         </div>
       </div>
