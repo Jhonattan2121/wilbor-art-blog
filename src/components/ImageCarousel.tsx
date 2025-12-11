@@ -135,7 +135,10 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }
 
   return (
-    <div className={fullscreen ? "relative w-full h-full flex flex-col items-center justify-center" : "relative w-full flex flex-col items-center my-6"}>
+    <div 
+      className={fullscreen ? "relative w-full h-full flex flex-col items-center justify-center" : inExpandedCard ? "relative w-full flex flex-col items-center" : "relative w-full flex flex-col items-center my-6"}
+      style={inExpandedCard && !fullscreen ? { marginTop: '0', marginBottom: '0' } : undefined}
+    >
       <div
         className={
           fullscreen 
@@ -148,6 +151,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
         }
         style={{
           background: fullscreen ? 'transparent' : 'rgba(0,0,0,0.02)',
+          position: fullscreen ? 'relative' : 'relative',
+          isolation: fullscreen ? 'auto' : 'isolate'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -161,6 +166,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             height: '100%',
             transform: `translateX(${offset}%)`,
             transition: transition ? 'transform 0.3s' : 'none',
+            position: 'relative',
+            willChange: 'transform'
           }}
         >
           {imagesToShow.map((img, idx) => (
@@ -180,6 +187,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 maxHeight: fullscreen ? '85vh' : '100%',
                 maxWidth: fullscreen ? '85vw' : '100%',
               }}
+              draggable={false}
             />
           ))}
         </div>
