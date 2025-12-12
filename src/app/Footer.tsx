@@ -1,7 +1,7 @@
 'use client';
 
 import ThemeSwitcher from '@/app/ThemeSwitcher';
-import { ContactContent } from '../../app/contact/page';
+import ContactContent from '@/components/ContactContent';
 
 export default function Footer() {
   return (
