@@ -350,12 +350,12 @@ const MediaItem = ({
       }}
     >
       <div className={clsx(
-        'w-full h-full',
+        'w-full',
         isExpanded && 'transition-all duration-300',
         isExpanded
           ? hasLargeContent
             ? 'flex flex-col h-auto min-h-[420px] sm:min-h-[460px]'
-            : 'flex flex-col h-auto min-h-[260px] sm:min-h-[340px]'
+            : 'flex flex-col h-auto min-h-[calc(100vh-120px)] sm:min-h-[340px]'
           : 'min-h-[200px]'
       )}>
         {!isExpanded && (
@@ -491,7 +491,12 @@ const MediaItem = ({
         )}
         {isExpanded && (
           <div
-            className="flex flex-col h-full max-h-[80vh] sm:max-h-[85vh] overflow-hidden w-full"
+            className={clsx(
+              "flex flex-col w-full",
+              hasLargeContent 
+                ? "h-full max-h-[80vh] sm:max-h-[85vh] overflow-hidden"
+                : "h-auto sm:h-auto min-h-[calc(100vh-120px)] sm:max-h-[85vh] overflow-visible sm:overflow-hidden"
+            )}
             ref={contentRef}
           >
             <div className="flex items-center px-3 sm:px-6 py-2 sm:py-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
@@ -530,10 +535,15 @@ const MediaItem = ({
               </button>
             </div>
             <div 
-              className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-auto sm:overscroll-contain px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black flex flex-col items-start w-full"
+              className={clsx(
+                "flex flex-col items-start w-full px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black",
+                hasLargeContent 
+                  ? "flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-auto sm:overscroll-contain"
+                  : "flex-1 overflow-visible sm:overflow-y-auto overflow-x-hidden sm:custom-scrollbar sm:overscroll-contain"
+              )}
               style={{
-                WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-y',
+                WebkitOverflowScrolling: hasLargeContent ? 'touch' : 'auto',
+                touchAction: hasLargeContent ? 'pan-y' : 'auto',
                 position: 'relative',
                 transform: 'translateZ(0)'
               }}
@@ -659,7 +669,7 @@ export default function PhotoGridContainer({
           'lg:grid-cols-4 xl:grid-cols-4',
           'grid-flow-dense',
           'mt-8 sm:mt-0',
-          'auto-rows-fr'
+          expandedPermlinks.length > 0 ? 'auto-rows-auto' : 'auto-rows-fr'
         )}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
@@ -677,7 +687,7 @@ export default function PhotoGridContainer({
                     ? (
                       hasLargeContentMap[permlink]
                         ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3'
-                        : 'col-span-1 row-span-2'
+                        : 'col-span-1 sm:col-span-1 row-auto sm:row-span-2'
                     )
                     : 'w-full',
                 )}

@@ -169,24 +169,44 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           }}
         >
           {imagesToShow.map((img, idx) => (
-            <img
+            <div
               key={idx}
-              src={img.src}
-              alt={img.alt || ''}
-              className={fullscreen ? "shadow-2xl" : "rounded-lg shadow-lg"}
               style={{
-                objectFit: 'contain',
-                display: 'block',
-                margin: '0 auto',
-                background: 'transparent',
-                minWidth: '100%',
                 width: '100%',
-                height: '100%',
-                maxHeight: fullscreen ? '85vh' : '100%',
-                maxWidth: fullscreen ? '85vw' : '100%',
+                minWidth: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexShrink: 0,
+                position: 'relative',
+                padding: fullscreen ? '0' : '20px'
               }}
-              draggable={false}
-            />
+            >
+              <img
+                src={img.src}
+                alt={img.alt || ''}
+                className={fullscreen ? "shadow-2xl" : "rounded-lg shadow-lg"}
+                style={{
+                  objectFit: 'contain',
+                  display: 'block',
+                  background: 'transparent',
+                  margin: '0 auto',
+                  ...(fullscreen ? {
+                    width: '100%',
+                    height: '100%',
+                    maxHeight: '85vh',
+                    maxWidth: '85vw',
+                  } : {
+                    width: 'auto',
+                    height: 'auto',
+                    maxWidth: '100%',
+                    maxHeight: '70vh',
+                    flexShrink: 0,
+                  }),
+                }}
+                draggable={false}
+              />
+            </div>
           ))}
         </div>
       </div>

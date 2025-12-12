@@ -106,7 +106,7 @@ export default function Markdown({ children, className = '', removeMedia = false
         // Renderiza a imagem única normalmente
         return (
           <img
-            className="rounded-lg max-w-full h-auto my-4"
+            className="rounded-lg max-w-full h-auto my-6"
             style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
             alt={props.alt || ''}
             src={images[0].src}
@@ -117,7 +117,7 @@ export default function Markdown({ children, className = '', removeMedia = false
         // Comportamento padrão
         return (
           <img
-            className="rounded-lg max-w-full h-auto my-4"
+            className="rounded-lg max-w-full h-auto my-6"
             style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
             alt={props.alt || ''}
             {...props}
@@ -131,7 +131,7 @@ export default function Markdown({ children, className = '', removeMedia = false
         <video
           controls
           poster={videoPoster || props.poster}
-          className="w-full my-4 rounded-lg bg-black"
+          className="w-full my-6 rounded-lg bg-black"
           {...props}
         />
       );
@@ -171,18 +171,23 @@ export default function Markdown({ children, className = '', removeMedia = false
     >
       {blocks.map((block, idx) => {
         if (block.type === 'carousel' && block.images && block.images.length > 0) {
-          return <ImageCarousel key={idx} images={block.images} inExpandedCard={inExpandedCard} hasLittleContent={hasLittleContent} />;
+          return (
+            <div key={idx} className="my-6 first:mt-0 last:mb-0">
+              <ImageCarousel images={block.images} inExpandedCard={inExpandedCard} hasLittleContent={hasLittleContent} />
+            </div>
+          );
         }
         // Renderiza bloco markdown normalmente
         return (
-          <ReactMarkdown
-            key={idx}
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-            components={components}
-          >
-            {block.content.join('\n')}
-          </ReactMarkdown>
+          <div key={idx} className="my-4 first:mt-0 last:mb-0">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={components}
+            >
+              {block.content.join('\n')}
+            </ReactMarkdown>
+          </div>
         );
       })}
     </div>
