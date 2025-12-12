@@ -638,24 +638,22 @@ export default function PhotoGridContainer({
     }));
   const handleTagClick = useCallback((tag: string) => {
     // Se clicar na mesma tag, desmarca. Caso contrário, seleciona a nova tag
-    setSelectedTag(prevTag => {
-      const newSelectedTag = prevTag === tag ? null : tag;
-      
-      // Atualiza a URL
-      const url = new URL(window.location.href);
-      if (newSelectedTag) {
-        url.searchParams.set('tag', newSelectedTag);
-      } else {
-        url.searchParams.delete('tag');
-      }
-      window.history.pushState({}, '', url);
-      
-      return newSelectedTag;
-    });
+    const newSelectedTag = selectedTag === tag ? null : tag;
+    
+    // Atualiza a URL
+    const url = new URL(window.location.href);
+    if (newSelectedTag) {
+      url.searchParams.set('tag', newSelectedTag);
+    } else {
+      url.searchParams.delete('tag');
+    }
+    window.history.pushState({}, '', url);
+    
+    setSelectedTag(newSelectedTag);
     
     // Fecha todos os cards expandidos
     setExpandedPermlinks([]);
-  }, [setSelectedTag]);
+  }, [selectedTag, setSelectedTag]);
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
