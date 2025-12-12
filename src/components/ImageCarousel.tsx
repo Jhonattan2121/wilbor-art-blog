@@ -144,13 +144,11 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
             : inExpandedCard
-              ? hasLittleContent
-                ? "w-full flex justify-center items-center max-w-5xl h-[80vh] sm:h-[650px] md:h-[700px] mx-auto overflow-hidden"
-                : "w-full flex justify-center items-center max-w-5xl h-[500px] sm:h-[420px] md:h-[520px] mx-auto overflow-hidden"
-              : "w-full flex justify-center items-center max-w-5xl h-[260px] sm:h-[420px] md:h-[520px] mx-auto overflow-hidden"
+              ? "w-full flex justify-center items-center max-w-5xl mx-auto overflow-hidden"
+              : "w-full flex justify-center items-center max-w-5xl mx-auto overflow-hidden"
         }
         style={{
-          background: fullscreen ? 'transparent' : 'rgba(0,0,0,0.02)',
+          background: 'transparent',
           position: fullscreen ? 'relative' : 'relative',
           isolation: fullscreen ? 'auto' : 'isolate'
         }}
