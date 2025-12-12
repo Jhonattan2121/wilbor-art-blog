@@ -228,10 +228,10 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 minWidth: fullscreen ? 16 : 13,
                 minHeight: fullscreen ? 16 : 13,
                 padding: 0,
-                borderWidth: fullscreen ? 2 : 0,
+                borderWidth: 0,
                 background: current === idx ? activeDotBg : (fullscreen ? 'rgba(255,255,255,0.3)' : inactiveDotBg),
-                borderColor: current === idx ? activeDotBorder : (fullscreen ? 'rgba(255,255,255,0.5)' : inactiveDotBorder),
-                borderStyle: 'solid',
+                borderColor: 'transparent',
+                borderStyle: 'none',
                 borderRadius: '50%',
               }}
             />
