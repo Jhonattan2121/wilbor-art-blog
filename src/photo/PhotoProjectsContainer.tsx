@@ -675,10 +675,12 @@ export default function PhotoGridContainer({
     }
   }, [expandedPermlinks]);
   return (
-    <div className="w-full">
+    <div className="w-full bg-white dark:bg-neutral-950">
       <div className={clsx(
         'max-w-[2000px] mx-auto px-3.5 sm:px-6 md:px-8',
-        header ? 'mb-5 sm:mb-5' : 'mb-2'
+        header ? 'mb-5 sm:mb-5' : 'mb-2',
+        'bg-white dark:bg-neutral-950',
+        'pt-0 mt-0'
       )}>
         {header}
 
@@ -688,8 +690,9 @@ export default function PhotoGridContainer({
           'grid-cols-2 sm:grid-cols-2 md:grid-cols-3',
           'lg:grid-cols-4 xl:grid-cols-4',
           'grid-flow-dense',
-          'mt-8 sm:mt-0',
-          expandedPermlinks.length > 0 ? 'auto-rows-auto' : 'auto-rows-fr'
+          'pt-0 mt-0',
+          expandedPermlinks.length > 0 ? 'auto-rows-auto' : 'auto-rows-fr',
+          'bg-white dark:bg-neutral-950'
         )}>
           {mediaGroups.map(({ permlink, group }, idx) => {
             const isExpanded = expandedPermlinks.includes(permlink);
@@ -702,6 +705,7 @@ export default function PhotoGridContainer({
                   'relative overflow-hidden w-full shadow-sm',
                   'transition-all duration-300',
                   'rounded-none sm:rounded-lg',
+                  'bg-transparent',
 
                   isExpanded
                     ? (

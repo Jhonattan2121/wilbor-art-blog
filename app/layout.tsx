@@ -88,8 +88,6 @@ export default function RootLayout({
       </head>
       <body className="bg-main">
           <ThemeProvider attribute="class" defaultTheme={DEFAULT_THEME}>
-              <div className="w-full px-4 sm:px-8 pt-4">
-              </div>
               <main >
                 <div className="flex flex-col items-center">
                 </div>
