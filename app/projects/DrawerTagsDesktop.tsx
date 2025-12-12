@@ -21,11 +21,16 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
   useEffect(() => {
     const tagFromUrl = searchParams.get('tag');
     if (tagFromUrl && tags.includes(tagFromUrl)) {
-      if (typeof setSelectedTag === 'function') {
+      if (typeof setSelectedTag === 'function' && tagFromUrl !== selectedTag) {
         setSelectedTag(tagFromUrl);
       }
+    } else if (!tagFromUrl && selectedTag) {
+      // Se não há tag na URL, limpa o estado
+      if (typeof setSelectedTag === 'function') {
+        setSelectedTag(null);
+      }
     }
-  }, [searchParams, tags, setSelectedTag]);
+  }, [searchParams, tags, setSelectedTag, selectedTag]);
 
   useEffect(() => {
     if (showDrawer) {
@@ -58,15 +63,23 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
   }, [showDrawer, drawerVisible]);
 
   const handleTagSelection = (tag: string | null) => {
+    // Previne qualquer comportamento padrão
+    if (isAnimating) return;
+    
     if (typeof setSelectedTag === 'function') {
-      setSelectedTag(tag);
+      // Atualiza a URL primeiro
       if (tag) {
         const url = new URL(window.location.href);
         url.searchParams.set('tag', tag);
         window.history.pushState({}, '', url.toString());
       } else {
-        window.location.href = window.location.pathname;
+        const url = new URL(window.location.href);
+        url.searchParams.delete('tag');
+        window.history.pushState({}, '', url.toString());
       }
+      
+      // Depois atualiza o estado
+      setSelectedTag(tag);
     } else {
       // Se não houver setSelectedTag (usando ViewSwitcher em outras rotas),
       // navegamos para a página de projetos com o query param 'tag'
@@ -76,7 +89,11 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
         window.location.href = '/projects';
       }
     }
-    setShowDrawer(false);
+    
+    // Fecha o drawer após um pequeno delay para garantir que o clique foi processado
+    setTimeout(() => {
+      setShowDrawer(false);
+    }, 100);
   };
 
 

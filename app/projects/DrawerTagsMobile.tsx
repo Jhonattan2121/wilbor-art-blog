@@ -20,12 +20,17 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
 
     useEffect(() => {
         const tagFromUrl = searchParams.get('tag');
-        if (tagFromUrl && tags.includes(tagFromUrl) && tagFromUrl !== selectedTag) {
-            if (typeof setSelectedTag === 'function') {
+        if (tagFromUrl && tags.includes(tagFromUrl)) {
+            if (typeof setSelectedTag === 'function' && tagFromUrl !== selectedTag) {
                 setSelectedTag(tagFromUrl);
             }
+        } else if (!tagFromUrl && selectedTag) {
+            // Se não há tag na URL, limpa o estado
+            if (typeof setSelectedTag === 'function') {
+                setSelectedTag(null);
+            }
         }
-    }, [searchParams, tags, selectedTag, setSelectedTag]);
+    }, [searchParams, tags, setSelectedTag, selectedTag]);
 
     useEffect(() => {
         if (showMobileTags) {
@@ -58,15 +63,23 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
     }, [showMobileTags, drawerVisible]);
 
     const handleTagSelection = (tag: string | null) => {
+        // Previne qualquer comportamento padrão
+        if (isAnimating) return;
+        
         if (typeof setSelectedTag === 'function') {
-            setSelectedTag(tag);
+            // Atualiza a URL primeiro
             if (tag) {
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('tag', tag);
                 window.history.pushState({}, '', currentUrl.toString());
             } else {
-                window.location.href = window.location.pathname;
+                const url = new URL(window.location.href);
+                url.searchParams.delete('tag');
+                window.history.pushState({}, '', url.toString());
             }
+            
+            // Depois atualiza o estado
+            setSelectedTag(tag);
         } else {
             if (tag) {
                 window.location.href = `/projects?tag=${encodeURIComponent(tag)}`;
@@ -74,7 +87,11 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                 window.location.href = '/projects';
             }
         }
-        setShowMobileTags(false);
+        
+        // Fecha o drawer após um pequeno delay para garantir que o clique foi processado
+        setTimeout(() => {
+            setShowMobileTags(false);
+        }, 100);
     };
 
 

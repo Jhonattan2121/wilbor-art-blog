@@ -7,7 +7,7 @@ import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import '@/styles/slider-custom.css';
 import { clsx } from 'clsx/lite';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -324,7 +324,11 @@ const MediaItem = ({
                 {media.tags.map(tag => (
                   <span
                     key={tag}
-                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTagClick(tag);
+                    }}
+                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline"
                   >
                     {tag}
                   </span>
@@ -391,7 +395,11 @@ const MediaItem = ({
                         {mainItem.tags.map(tag => (
                           <span
                             key={tag}
-                            className="text-[10px] px-1 py-0.5 rounded transition-colors duration-100"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onTagClick(tag);
+                            }}
+                            className="text-[10px] px-1 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline"
                           >
                             {tag}
                           </span>
@@ -441,7 +449,11 @@ const MediaItem = ({
                                 {(showAllTags ? mainItem.tags : mainItem.tags.slice(0, 3)).map(tag => (
                                   <span
                                     key={tag}
-                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTagClick(tag);
+                                    }}
+                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline"
                                   >
                                     {tag}
                                   </span>
@@ -624,18 +636,26 @@ export default function PhotoGridContainer({
       group,
       mainItem: group[0]
     }));
-  const handleTagClick = (tag: string) => {
-    setSelectedTag(selectedTag === tag ? null : tag);
+  const handleTagClick = useCallback((tag: string) => {
+    // Se clicar na mesma tag, desmarca. Caso contrário, seleciona a nova tag
+    setSelectedTag(prevTag => {
+      const newSelectedTag = prevTag === tag ? null : tag;
+      
+      // Atualiza a URL
+      const url = new URL(window.location.href);
+      if (newSelectedTag) {
+        url.searchParams.set('tag', newSelectedTag);
+      } else {
+        url.searchParams.delete('tag');
+      }
+      window.history.pushState({}, '', url);
+      
+      return newSelectedTag;
+    });
+    
+    // Fecha todos os cards expandidos
     setExpandedPermlinks([]);
-
-    const url = new URL(window.location.href);
-    if (selectedTag !== tag) {
-      url.searchParams.set('tag', tag);
-    } else {
-      url.searchParams.delete('tag');
-    }
-    window.history.pushState({}, '', url);
-  };
+  }, [setSelectedTag]);
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
