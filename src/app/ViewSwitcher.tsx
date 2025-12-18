@@ -51,16 +51,16 @@ export default function ViewSwitcher({
 
   const menuItems = [
     {
-      text: "SOBRE WILBOR",
-      mobileText: "SOBRE WILBOR",
-      href: `${PATH_GRID}#about`,
-      active: currentSelection === 'about',
-    },
-    {
       text: "PROJETOS",
       mobileText: "PROJETOS",
       href: PATH_GRID,
       active: currentSelection === 'projects',
+    },
+    {
+      text: "SOBRE WILBOR",
+      mobileText: "SOBRE WILBOR",
+      href: `${PATH_GRID}#about`,
+      active: currentSelection === 'about',
     },
     {
       text: "EXPOSIÇÕES / EXIBIÇÕES",
