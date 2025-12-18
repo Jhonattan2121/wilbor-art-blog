@@ -59,16 +59,27 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
     if (typeof window === 'undefined') return;
     
     const url = new URL(href, window.location.origin);
+    let targetId: string | null = null;
+    
     if (url.hash) {
-      const targetId = url.hash.substring(1); // Remove o #
+      targetId = url.hash.substring(1); // Remove o #
+    } else if (url.pathname === PATH_GRID) {
+      // Se for apenas /projects sem hash, vai para a seção projects
+      targetId = 'projects';
+    }
+    
+    if (targetId) {
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         const headerHeight = 90; // Altura do header
         const yOffset = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
         window.scrollTo({ top: yOffset, behavior: 'smooth' });
-        window.history.pushState(null, '', href);
+        // Atualiza a URL sem recarregar a página
+        const newHref = targetId === 'projects' ? PATH_GRID : `${PATH_GRID}#${targetId}`;
+        window.history.pushState(null, '', newHref);
       }
     } else {
+      // Fallback: se não encontrar a seção, recarrega a página
       window.location.href = href;
     }
   }, []);
