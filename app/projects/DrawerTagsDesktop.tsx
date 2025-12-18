@@ -4,6 +4,8 @@ import { IconX } from '@/components/IconX';
 import { clsx } from 'clsx/lite';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
+import { BiDesktop, BiMoon, BiSun } from 'react-icons/bi';
 
 export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, menuItems, onMenuItemClick }: {
   tags: string[];
@@ -17,6 +19,12 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
   const [drawerActive, setDrawerActive] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const searchParams = useSearchParams();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const tagFromUrl = searchParams.get('tag');
@@ -217,17 +225,58 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
                 )}
               </div>
             </div>
-            <div className="w-full px-4 pb-4 pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
-              <button
-                onClick={() => handleTagSelection(null)}
-                className="w-full px-4 py-3 text-center font-semibold bg-red-50 dark:bg-neutral-800 text-red-700 dark:text-red-300 rounded-lg transition border-none shadow focus:outline-none hover:bg-red-100 dark:hover:bg-neutral-700"
-                style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
-                aria-label="Limpar filtro de tags"
-                title="Limpar filtro de tags"
-              >
-                Limpar filtro
-              </button>
-            </div>
+            {/* Seletor de tema */}
+            {mounted && (
+              <div className="w-full px-4 pb-3 pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setTheme('system')}
+                    className={clsx(
+                      'flex-1 px-2 py-2 text-center font-medium rounded-lg transition border-none shadow focus:outline-none flex items-center justify-center gap-1.5',
+                      theme === 'system'
+                        ? 'bg-gray-100 dark:bg-neutral-800 text-red-600 dark:text-red-400'
+                        : 'bg-gray-50 dark:bg-neutral-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                    )}
+                    style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                    aria-label="Tema do sistema"
+                    title="Tema do sistema"
+                  >
+                    <BiDesktop size={14} />
+                    <span className="text-xs font-mono">Sistema</span>
+                  </button>
+                  <button
+                    onClick={() => setTheme('light')}
+                    className={clsx(
+                      'flex-1 px-2 py-2 text-center font-medium rounded-lg transition border-none shadow focus:outline-none flex items-center justify-center gap-1.5',
+                      theme === 'light'
+                        ? 'bg-gray-100 dark:bg-neutral-800 text-red-600 dark:text-red-400'
+                        : 'bg-gray-50 dark:bg-neutral-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                    )}
+                    style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                    aria-label="Tema claro"
+                    title="Tema claro"
+                  >
+                    <BiSun size={14} />
+                    <span className="text-xs font-mono">Claro</span>
+                  </button>
+                  <button
+                    onClick={() => setTheme('dark')}
+                    className={clsx(
+                      'flex-1 px-2 py-2 text-center font-medium rounded-lg transition border-none shadow focus:outline-none flex items-center justify-center gap-1.5',
+                      theme === 'dark'
+                        ? 'bg-gray-100 dark:bg-neutral-800 text-red-600 dark:text-red-400'
+                        : 'bg-gray-50 dark:bg-neutral-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
+                    )}
+                    style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+                    aria-label="Tema escuro"
+                    title="Tema escuro"
+                  >
+                    <BiMoon size={14} />
+                    <span className="text-xs font-mono">Escuro</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </aside>
         </>
       )}

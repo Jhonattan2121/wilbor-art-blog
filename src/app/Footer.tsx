@@ -1,6 +1,5 @@
 'use client';
 
-import ThemeSwitcher from '@/app/ThemeSwitcher';
 import ContactContent from '@/components/ContactContent';
 
 export default function Footer() {
@@ -12,7 +11,6 @@ export default function Footer() {
           <section id="contact">
             <ContactContent/> 
           </section>
-            <ThemeSwitcher />
             <p className="text-sm mt-2">
             Wilbor Studio @ 2025
             </p>
