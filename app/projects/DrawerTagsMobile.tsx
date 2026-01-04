@@ -245,21 +245,7 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                         {mounted && (
                             <div className="w-full px-4 pb-3 pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
                                 <div className="flex gap-1.5">
-                                    <button
-                                        onClick={() => setTheme('system')}
-                                        className={clsx(
-                                            'flex-1 px-2 py-2 text-center font-medium rounded-lg transition border-none shadow focus:outline-none flex items-center justify-center gap-1.5',
-                                            theme === 'system'
-                                                ? 'bg-gray-100 dark:bg-neutral-800 text-red-600 dark:text-red-400'
-                                                : 'bg-gray-50 dark:bg-neutral-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700'
-                                        )}
-                                        style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
-                                        aria-label="Tema do sistema"
-                                        title="Tema do sistema"
-                                    >
-                                        <BiDesktop size={14} />
-                                        <span className="text-xs font-mono">Sistema</span>
-                                    </button>
+                                
                                     <button
                                         onClick={() => setTheme('light')}
                                         className={clsx(

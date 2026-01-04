@@ -57,12 +57,6 @@ export default function ThemeSwitcher () {
   return (
     <Switcher>
       <SwitcherItem
-        title="System"
-        icon={<BiDesktop size={16} />}
-        onClick={() => setTheme('system')}
-        active={theme === 'system'}
-      />
-      <SwitcherItem
         title="Light"
         icon={<BiSun size={18} />}
         onClick={() => setTheme('light')}
