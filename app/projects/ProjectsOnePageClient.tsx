@@ -175,15 +175,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
 
         {/* ABOUT COMO SEÇÃO DA LANDING */}
         <section id="about" className="w-full bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200/40 dark:border-neutral-800/70">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-12 sm:py-16">
-            <div className="mb-8">
-              <p className="uppercase tracking-[0.25em] text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400">
-                SOBRE
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
-                Sobre Wilbor
-              </h2>
-            </div>
+          <div className="max-w-6xl mx-auto">
             <ScrollReveal forceMount>
               <MemoizedAbout />
             </ScrollReveal>
@@ -192,15 +184,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
 
         {/* EXHIBITIONS COMO SEÇÃO DA LANDING */}
         <section id="exhibitions" className="w-full bg-gray-100 dark:bg-neutral-800 border-t border-neutral-200/40 dark:border-neutral-800/70">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-12 sm:py-16">
-            <div className="mb-8">
-              <p className="uppercase tracking-[0.25em] text-[11px] sm:text-xs text-neutral-700 dark:text-neutral-300">
-                EXPOSIÇÕES · EXIBIÇÕES
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
-                Mostras e exposições selecionadas
-              </h2>
-            </div>
+          <div className="max-w-6xl mx-auto">
             <ScrollReveal forceMount>
               <MemoizedExhibitionsContent />
             </ScrollReveal>
@@ -209,15 +193,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
 
         {/* PARTNERS COMO SEÇÃO DA LANDING */}
         <section id="partners" className="w-full bg-slate-100 dark:bg-neutral-700 border-t border-neutral-200/40 dark:border-neutral-800/70">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-12 sm:py-16">
-            <div className="mb-8">
-              <p className="uppercase tracking-[0.25em] text-[11px] sm:text-xs text-neutral-700 dark:text-neutral-300">
-                PARCEIROS
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
-                Colaborações e parcerias
-              </h2>
-            </div>
+          <div className="max-w-6xl mx-auto">
             <ScrollReveal forceMount>
               <MemoizedPartnersContent />
             </ScrollReveal>
