@@ -548,7 +548,7 @@ const MediaItem = ({
             </div>
             <div 
               className={clsx(
-                "flex flex-col items-start w-full px-3 sm:px-6 py-3 sm:py-6 bg-white dark:bg-black",
+                "flex flex-col items-start w-full bg-white dark:bg-black",
                 hasLargeContent 
                   ? "flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-auto sm:overscroll-contain"
                   : "flex-1 overflow-visible sm:overflow-y-auto overflow-x-hidden sm:custom-scrollbar sm:overscroll-contain"

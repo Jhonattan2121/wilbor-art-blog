@@ -172,14 +172,14 @@ export default function Markdown({ children, className = '', removeMedia = false
       {blocks.map((block, idx) => {
         if (block.type === 'carousel' && block.images && block.images.length > 0) {
           return (
-            <div key={idx} className="my-6 first:mt-0 last:mb-0">
+            <div key={idx} className={inExpandedCard ? "my-0" : "my-6 first:mt-0 last:mb-0"}>
               <ImageCarousel images={block.images} inExpandedCard={inExpandedCard} hasLittleContent={hasLittleContent} />
             </div>
           );
         }
         // Renderiza bloco markdown normalmente
         return (
-          <div key={idx} className="my-4 first:mt-0 last:mb-0">
+          <div key={idx} className={inExpandedCard ? "my-3 px-3 sm:px-6 first:mt-0 last:mb-0" : "my-4 first:mt-0 last:mb-0"}>
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}

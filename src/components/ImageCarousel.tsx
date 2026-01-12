@@ -144,8 +144,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-5xl mx-auto overflow-hidden"
-              : "w-full flex justify-center items-center max-w-5xl mx-auto overflow-hidden"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden"
         }
         style={{
           background: 'transparent',
@@ -179,7 +179,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 alignItems: 'center',
                 flexShrink: 0,
                 position: 'relative',
-                padding: fullscreen ? '0' : '20px'
+                padding: '0'
               }}
             >
               <img
@@ -194,10 +194,10 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                   ...(fullscreen ? {
                     width: '100%',
                     height: '100%',
-                    maxHeight: '85vh',
-                    maxWidth: '85vw',
+                    maxHeight: '90vh',
+                    maxWidth: '100%',
                   } : {
-                    width: 'auto',
+                    width: '100%',
                     height: 'auto',
                     maxWidth: '100%',
                     maxHeight: '70vh',
