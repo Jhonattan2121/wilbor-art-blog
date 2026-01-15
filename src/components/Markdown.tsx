@@ -70,32 +70,32 @@ export default function Markdown({ children, className = '', removeMedia = false
   // Mover components para cima!
   const components: Components = {
     h1: (props) => (
-      <h1 className="text-3xl font-bold mt-8 mb-4 dark:text-[#666666]" {...props} />
+      <h1 className="text-3xl font-bold mt-8 mb-4 !text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     h2: (props) => (
-      <h2 className="text-2xl font-semibold mt-6 mb-3 dark:text-[#666666]" {...props} />
+      <h2 className="text-2xl font-semibold mt-6 mb-3 !text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     h3: (props) => (
-      <h3 className="text-xl font-semibold mt-4 mb-2 dark:text-[#666666]" {...props} />
+      <h3 className="text-xl font-semibold mt-4 mb-2 !text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     h4: (props) => (
-      <h4 className="text-lg font-semibold mt-3 mb-2 dark:text-[#666666]" {...props} />
+      <h4 className="text-lg font-semibold mt-3 mb-2 !text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     h5: (props) => (
-      <h5 className="text-base font-semibold mt-2 mb-1 dark:text-[#666666]" {...props} />
+      <h5 className="text-base font-semibold mt-2 mb-1 !text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     h6: (props) => (
-      <h6 className="text-sm font-semibold mt-2 mb-1 dark:text-[#666666]" {...props} />
+      <h6 className="text-sm font-semibold mt-2 mb-1 !text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     p: (props) => (
-      <p className="dark:text-[#666666]" {...props} />
+      <p className="!text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     li: (props) => (
-      <li className="dark:text-[#666666]" {...props} />
+      <li className="!text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     a: (props) => (
       <a
-        className="text-red-600 hover:text-red-800 dark:text-[#666666] dark:hover:text-[#999999] transition-colors"
+        className="text-red-600 hover:text-red-800 dark:!text-[#666666] dark:hover:!text-[#999999] transition-colors"
         target="_blank"
         rel="noopener noreferrer"
         {...props}
@@ -104,13 +104,13 @@ export default function Markdown({ children, className = '', removeMedia = false
     ul: (props) => <ul className="list-disc pl-6 my-2" {...props} />,
     ol: (props) => <ol className="list-decimal pl-6 my-2" {...props} />,
     strong: (props) => (
-      <strong className="dark:text-[#666666]" {...props} />
+      <strong className="!text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     em: (props) => (
-      <em className="dark:text-[#666666]" {...props} />
+      <em className="!text-gray-500 dark:!text-[#666666]" {...props} />
     ),
     blockquote: (props) => (
-      <blockquote className="border-l-4 border-gray-400 pl-4 italic text-gray-500 dark:text-[#666666] my-4" {...props} />
+      <blockquote className="border-l-4 border-gray-400 pl-4 italic !text-gray-500 dark:!text-[#666666] my-4" {...props} />
     ),
     code(props: any) {
       const { inline, children, ...rest } = props;
