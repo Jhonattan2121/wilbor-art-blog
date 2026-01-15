@@ -22,7 +22,7 @@ export default function PhotoGridPage({
       media={photos.map(photo => ({
         ...photo,
         type: photo.type === 'video' ? 'video' : 'photo',
-        thumbnailSrc: photo.type === 'video' ? photo.thumbnailSrc : undefined,
+        thumbnailSrc: photo.thumbnailSrc, // Preservar thumbnailSrc para todos os tipos, não apenas vídeos
         videoUrl: photo.type === 'video' ? photo.src : undefined
       }))}
       sidebar={undefined}

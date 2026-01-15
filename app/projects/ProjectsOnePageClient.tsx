@@ -21,15 +21,22 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
 
   const searchParams = useSearchParams();
 
-  // Always reset scroll and URL to /projects (sem hash) ao recarregar
+  // Always reset scroll and URL to /projects (preservando query params como project e tag)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
     if (window.location.pathname === PATH_GRID) {
-      window.history.replaceState(null, '', PATH_GRID);
-      window.scrollTo(0, 0);
+      // Preservar os parâmetros de query string (project, tag, etc)
+      const url = new URL(window.location.href);
+      const queryString = url.search;
+      const newUrl = PATH_GRID + queryString;
+      window.history.replaceState(null, '', newUrl);
+      // Só fazer scroll para o topo se não houver parâmetro project na URL
+      if (!url.searchParams.has('project')) {
+        window.scrollTo(0, 0);
+      }
     }
   }, []);
 
@@ -50,6 +57,8 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
     } else {
       url.searchParams.delete('tag');
     }
+    // Preservar o parâmetro project se existir
+    // (não remover, apenas atualizar a tag)
     window.history.pushState({}, '', url.toString());
     setSelectedTag(tag);
   }, []);
@@ -74,8 +83,12 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
         const headerHeight = 90; // Altura do header
         const yOffset = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
         window.scrollTo({ top: yOffset, behavior: 'smooth' });
-        // Atualiza a URL sem recarregar a página
-        const newHref = targetId === 'projects' ? PATH_GRID : `${PATH_GRID}#${targetId}`;
+        // Atualiza a URL sem recarregar a página, preservando query params
+        const url = new URL(window.location.href);
+        const queryString = url.search;
+        const newHref = targetId === 'projects' 
+          ? PATH_GRID + queryString 
+          : `${PATH_GRID}${queryString}#${targetId}`;
         window.history.pushState(null, '', newHref);
       }
     } else {
@@ -124,9 +137,14 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
 
       setActiveSection(closestId);
 
+      // Preservar query params ao atualizar a URL
+      const url = new URL(window.location.href);
+      const queryString = url.search;
       const targetUrl =
-        closestId === 'projects' ? PATH_GRID : `${PATH_GRID}#${closestId}`;
-      const currentUrl = window.location.pathname + window.location.hash;
+        closestId === 'projects' 
+          ? PATH_GRID + queryString 
+          : `${PATH_GRID}${queryString}#${closestId}`;
+      const currentUrl = window.location.pathname + window.location.search + window.location.hash;
 
       if (currentUrl !== targetUrl) {
         window.history.replaceState(null, '', targetUrl);

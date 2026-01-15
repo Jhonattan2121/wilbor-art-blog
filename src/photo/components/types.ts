@@ -59,6 +59,7 @@ export interface Media {
     author: string;
     permlink: string;
     body: string;
+    json_metadata?: string;
   };
 }
 

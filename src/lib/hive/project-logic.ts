@@ -69,15 +69,23 @@ export async function getHivePosts(username: string) {
 
       return mediaItems.map((media) => {
         let postTags: string[] = [];
+        let thumbnailSrc: string | undefined = undefined;
         try {
           const metadata = JSON.parse(post.json_metadata || '{}');
           postTags = metadata.tags || [];
           if (post.category && !postTags.includes(post.category)) {
             postTags.unshift(post.category);
           }
+          // Extrair thumbnailSrc do metadata (pode estar em thumbnail, thumbnailSrc, ou thumbnail_url)
+          thumbnailSrc = metadata.thumbnail || metadata.thumbnailSrc || metadata.thumbnail_url || undefined;
         } catch (e) {
           console.warn('Error parsing post tags:', e);
           postTags = post.category ? [post.category] : [];
+        }
+
+        // Se o media já tem thumbnailSrc, usar ele (prioridade)
+        if (media.thumbnailSrc) {
+          thumbnailSrc = media.thumbnailSrc;
         }
 
         const extractIpfsHash = (url: string): string => {
@@ -96,6 +104,7 @@ export async function getHivePosts(username: string) {
             ? 'iframe'
             : getMediaType(media.url),
           src: media.url,
+          thumbnailSrc: thumbnailSrc,
           iframeHtml: media.url.includes('ipfs.skatehive.app/ipfs/')
             ? `<iframe 
                 src="${media.url}?autoplay=1&controls=0&muted=1&loop=1"
@@ -126,7 +135,8 @@ export async function getHivePosts(username: string) {
           hiveMetadata: {
             author: post.author,
             permlink: post.permlink,
-            body: post.body
+            body: post.body,
+            json_metadata: post.json_metadata
           },
           author: post.author,
           permlink: post.permlink,
@@ -196,6 +206,7 @@ export function extractAndCountTags(
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count);
 }
+
 
 
 

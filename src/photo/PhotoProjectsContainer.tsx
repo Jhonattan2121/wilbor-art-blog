@@ -29,16 +29,22 @@ function enhanceMediaWithMetadata(media: Media[]): Media[] {
   return media.map(item => {
     if (!item.hiveMetadata) return item;
     const enhancedItem = { ...item };
-    if (item.thumbnailSrc && item.thumbnailSrc.startsWith('http')) {
+    // Priorizar thumbnailSrc se já existir (de qualquer formato válido)
+    if (item.thumbnailSrc && (item.thumbnailSrc.startsWith('http') || item.thumbnailSrc.startsWith('/') || item.thumbnailSrc.startsWith('data:'))) {
       enhancedItem.thumbnailSrc = formatPinataUrl(item.thumbnailSrc);
       return enhancedItem;
     }
+    // Tentar extrair thumbnail do json_metadata do hiveMetadata
     try {
-      const metadata = item.hiveMetadata as any;
-      if (metadata.json_metadata) {
-        const metadataStr = metadata.json_metadata;
+      if (item.hiveMetadata?.json_metadata) {
+        const metadataStr = item.hiveMetadata.json_metadata;
         const parsedMetadata = typeof metadataStr === 'string' ? JSON.parse(metadataStr) : metadataStr;
-        if (parsedMetadata?.image && Array.isArray(parsedMetadata.image) && parsedMetadata.image.length > 0) {
+        // Verificar campos comuns de thumbnail no metadata
+        const thumbnailFromMetadata = parsedMetadata?.thumbnail || parsedMetadata?.thumbnailSrc || parsedMetadata?.thumbnail_url;
+        if (thumbnailFromMetadata) {
+          enhancedItem.thumbnailSrc = formatPinataUrl(thumbnailFromMetadata);
+        } else if (parsedMetadata?.image && Array.isArray(parsedMetadata.image) && parsedMetadata.image.length > 0) {
+          // Fallback para o primeiro item do array image
           enhancedItem.thumbnailSrc = formatPinataUrl(parsedMetadata.image[0]);
         }
       }
@@ -120,7 +126,8 @@ const MediaItem = ({
   onContentSizeChange,
   onTagClick,
   hasLargeContent = false,
-  isReversedLayout = false
+  isReversedLayout = false,
+  shareUrl
 }: {
   items: Media[];
   isExpanded: boolean;
@@ -129,6 +136,7 @@ const MediaItem = ({
   onTagClick: (tag: string) => void;
   hasLargeContent?: boolean;
   isReversedLayout?: boolean;
+  shareUrl?: string;
 }) => {
   const mainItem = items[0];
   const [isHovered, setIsHovered] = useState(false);
@@ -137,7 +145,21 @@ const MediaItem = ({
   const [showAllTags, setShowAllTags] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
+
+  const handleCopyLink = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (shareUrl) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setLinkCopied(true);
+        setTimeout(() => setLinkCopied(false), 2000);
+      } catch (err) {
+        console.error('Erro ao copiar link:', err);
+      }
+    }
+  }, [shareUrl]);
 
   useEffect(() => {
     setMounted(true);
@@ -518,33 +540,61 @@ const MediaItem = ({
               >
                 {mainItem.title}
               </h2>
-              {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
-              {images.length > 0 && (
+              <div className="flex items-center gap-2">
+                {/* Botão de compartilhar/copiar link */}
+                {shareUrl && (
+                  <button
+                    onClick={handleCopyLink}
+                    className="p-1.5 sm:p-2 rounded-full transition-colors flex items-center justify-center focus:outline-none hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    aria-label={linkCopied ? "Link copiado!" : "Copiar link do projeto"}
+                    title={linkCopied ? "Link copiado!" : "Copiar link do projeto"}
+                  >
+                    {linkCopied ? (
+                      <span className="text-xs sm:text-sm text-green-600 dark:text-green-400">✓ Copiado</span>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5 sm:w-6 sm:h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                )}
+                {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
+                {images.length > 0 && (
+                  <button
+                    onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
+                    className="p-1.5 sm:p-2 bg-transparent border-none shadow-none flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+                    aria-label="Abrir em tela cheia"
+                    title="Abrir em tela cheia"
+                  >
+                    <Image
+                      src="/wilborPhotos/Full-Screen-Icon-Wilbor-site.png"
+                      alt="Abrir em tela cheia"
+                      width={28}
+                      height={28}
+                      style={{ display: 'inline-block' }}
+                    />
+                  </button>
+                )}
                 <button
-                  onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
-                  className="mr-2 p-0 bg-transparent border-none shadow-none flex items-center justify-center"
-                  aria-label="Abrir em tela cheia"
-                  title="Abrir em tela cheia"
-                  style={{ background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }}
+                  onClick={e => { e.stopPropagation(); onExpand(); }}
+                  className="p-1.5 sm:p-2 rounded-full transition-colors flex items-center justify-center focus:outline-none hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  aria-label="Fechar"
+                  title="Fechar"
                 >
-                  <Image
-                    src="/wilborPhotos/Full-Screen-Icon-Wilbor-site.png"
-                    alt="Abrir em tela cheia"
-                    width={28}
-                    height={28}
-                    style={{ display: 'inline-block' }}
-                  />
+                  <IconX size={35} />
                 </button>
-              )}
-              <button
-                onClick={e => { e.stopPropagation(); onExpand(); }}
-                className="ml-2 sm:ml-6 rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
-                aria-label="Fechar"
-                title="Fechar"
-                style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
-              >
-                <IconX size={35} />
-              </button>
+              </div>
             </div>
             <div 
               className={clsx(
@@ -636,6 +686,35 @@ export default function PhotoGridContainer({
       group,
       mainItem: group[0]
     }));
+
+  // Detectar projeto na URL ao carregar a página (apenas uma vez)
+  const hasInitializedFromUrl = useRef(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || hasInitializedFromUrl.current) return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectParam = urlParams.get('project');
+    
+    if (projectParam && mediaGroups.length > 0) {
+      // Verificar se o permlink existe nos mediaGroups
+      const permlinks = new Set(mediaGroups.map(({ permlink }) => permlink));
+      if (permlinks.has(projectParam)) {
+        // Marcar como inicializado para evitar loops
+        hasInitializedFromUrl.current = true;
+        // Expandir o card correspondente
+        setExpandedPermlinks([projectParam]);
+        // Scroll para o card após um pequeno delay para garantir que o DOM foi atualizado
+        setTimeout(() => {
+          const ref = cardRefs.current[projectParam];
+          if (ref) {
+            const yOffset = -80;
+            const y = ref.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }, 300);
+      }
+    }
+  }, [mediaGroups.length]); // Executa apenas quando os mediaGroups forem carregados
   const handleTagClick = useCallback((tag: string) => {
     // Se clicar na mesma tag, desmarca. Caso contrário, seleciona a nova tag
     const newSelectedTag = selectedTag === tag ? null : tag;
@@ -647,6 +726,8 @@ export default function PhotoGridContainer({
     } else {
       url.searchParams.delete('tag');
     }
+    // Remove o parâmetro project quando filtrar por tag
+    url.searchParams.delete('project');
     window.history.pushState({}, '', url);
     
     setSelectedTag(newSelectedTag);
@@ -654,6 +735,30 @@ export default function PhotoGridContainer({
     // Fecha todos os cards expandidos
     setExpandedPermlinks([]);
   }, [selectedTag, setSelectedTag]);
+
+  // Função para atualizar URL quando expandir/colapsar card
+  const updateUrlForProject = useCallback((permlink: string | null) => {
+    if (typeof window === 'undefined') return;
+    
+    const url = new URL(window.location.href);
+    if (permlink) {
+      url.searchParams.set('project', permlink);
+    } else {
+      url.searchParams.delete('project');
+    }
+    window.history.pushState({}, '', url.toString());
+  }, []);
+
+  // Função para gerar URL compartilhável do projeto
+  const getProjectShareUrl = useCallback((permlink: string) => {
+    if (typeof window === 'undefined') return '';
+    const url = new URL(window.location.origin + window.location.pathname);
+    if (selectedTag) {
+      url.searchParams.set('tag', selectedTag);
+    }
+    url.searchParams.set('project', permlink);
+    return url.toString();
+  }, [selectedTag]);
   const handleContentSizeChange = (permlink: string, isLarge: boolean) => {
     setHasLargeContentMap(prev => ({ ...prev, [permlink]: isLarge }));
   };
@@ -668,7 +773,7 @@ export default function PhotoGridContainer({
           const yOffset = -80; // Offset para aparecer mais acima
           const y = ref.getBoundingClientRect().top + window.pageYOffset + yOffset;
           window.scrollTo({ top: y, behavior: 'smooth' });
-        }, 100);
+        }, 150);
       }
     }
   }, [expandedPermlinks]);
@@ -721,11 +826,10 @@ export default function PhotoGridContainer({
                   items={group}
                   isExpanded={isExpanded}
                   onExpand={() => {
-                    setExpandedPermlinks(prev =>
-                      prev.includes(permlink)
-                        ? []
-                        : [permlink],
-                    );
+                    const newExpanded = expandedPermlinks.includes(permlink) ? [] : [permlink];
+                    setExpandedPermlinks(newExpanded);
+                    // Atualizar URL
+                    updateUrlForProject(newExpanded.length > 0 ? permlink : null);
                   }}
                   onContentSizeChange={function onSizeChange(isLarge) {
                     handleContentSizeChange(permlink, isLarge);
@@ -733,6 +837,7 @@ export default function PhotoGridContainer({
                   onTagClick={handleTagClick}
                   hasLargeContent={!!hasLargeContentMap[permlink]}
                   isReversedLayout={isOdd}
+                  shareUrl={isExpanded ? getProjectShareUrl(permlink) : undefined}
                 />
               </div>
             );
