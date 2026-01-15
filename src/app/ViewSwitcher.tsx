@@ -93,8 +93,8 @@ export default function ViewSwitcher({
 
   return (
     <>
-      {/* Mobile: logo à esquerda e Drawer à direita, fixos no topo */}
-      <div className="md:hidden fixed top-0 left-0 w-full z-50 flex items-center justify-between pr-4" style={{ height: '64px', backgroundColor: headerBgColor }}>
+      {/* Mobile: logo à esquerda e Drawer à direita */}
+      <div className="md:hidden w-full flex items-center justify-between pr-4" style={{ height: '64px', backgroundColor: headerBgColor }}>
         {/* Logo/thumbnail centralizado e contido no topo */}
         <div className="h-full overflow-hidden flex-1 flex items-center">
           <BannerWilborSwitcher forceWhiteLogo />
@@ -109,11 +109,8 @@ export default function ViewSwitcher({
           />
         </div>
       </div>
-      {/* Espaço para não sobrepor conteúdo no mobile */}
-      <div className="md:hidden" style={{ height: '64px' }} />
-
       {/* Desktop: Header com faixa preta e menu separado */}
-      <div className="hidden md:flex fixed top-0 left-0 w-full z-50 items-center justify-between" style={{ height: '90px' }}>
+      <div className="hidden md:flex w-full items-center justify-between relative" style={{ height: '90px' }}>
         {/* Faixa preta que ocupa 100% mas fica por trás do menu */}
         <div className="absolute inset-0 z-10" style={{ backgroundColor: headerBgColor, right: '90px' }}>
           <div className="h-full w-full flex items-center relative">
@@ -125,7 +122,7 @@ export default function ViewSwitcher({
         <div className="flex-grow" />
 
         {/* Menu quadrado na extrema direita, sobrepondo ou ao lado da faixa */}
-        <div className="flex items-center justify-center flex-shrink-0 z-20 bg-white dark:bg-[#222222]" style={{ width: '90px', height: '90px' }}>
+        <div className="flex items-center justify-center flex-shrink-0 z-20 bg-white dark:bg-[#222222] relative" style={{ width: '90px', height: '90px' }}>
           <DrawerTagsDesktop
             tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}
@@ -135,8 +132,6 @@ export default function ViewSwitcher({
           />
         </div>
       </div>
-      {/* Espaço para não sobrepor conteúdo no desktop */}
-      <div className="hidden md:block" style={{ height: '90px' }} />
     </>
   );
 }
