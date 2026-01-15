@@ -182,7 +182,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
 
       <div className="flex flex-col w-full">
         {/* PROJETOS (mantido como estava, só grid + filtros) */}
-        <section id="projects" className="min-h-screen w-full bg-white dark:bg-neutral-950 pt-0">
+        <section id="projects" className="min-h-screen w-full bg-white dark:bg-neutral-950 pt-6 md:pt-8">
           <MemoizedProjectsClient
             {...projectsProps}
             hideSwitcher={true}

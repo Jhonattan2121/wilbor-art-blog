@@ -804,8 +804,7 @@ export default function PhotoGridContainer({
       <div className={clsx(
         'max-w-[2000px] mx-auto px-3.5 sm:px-6 md:px-8',
         header ? 'mb-5 sm:mb-5' : 'mb-2',
-        'bg-white dark:bg-neutral-950',
-        'pt-0 mt-0'
+        'bg-white dark:bg-neutral-950'
       )}>
         {header}
 
