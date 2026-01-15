@@ -80,7 +80,8 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
     if (targetId) {
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        const headerHeight = 90; // Altura do header
+        // Altura do header: 90px desktop, 64px mobile
+        const headerHeight = window.innerWidth >= 768 ? 90 : 64;
         const yOffset = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
         window.scrollTo({ top: yOffset, behavior: 'smooth' });
         // Atualiza a URL sem recarregar a página, preservando query params

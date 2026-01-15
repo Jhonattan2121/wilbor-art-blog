@@ -729,7 +729,9 @@ export default function PhotoGridContainer({
         setTimeout(() => {
           const ref = cardRefs.current[projectParam];
           if (ref) {
-            const yOffset = -80;
+            // Offset considerando altura do header (90px desktop, 64px mobile) + espaço extra
+            const headerHeight = window.innerWidth >= 768 ? 90 : 64;
+            const yOffset = -(headerHeight + 20); // Header + 20px de espaço extra
             const y = ref.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
           }
@@ -792,7 +794,9 @@ export default function PhotoGridContainer({
       const ref = cardRefs.current[permlink];
       if (ref) {
         setTimeout(() => {
-          const yOffset = -80; // Offset para aparecer mais acima
+          // Offset considerando altura do header (90px desktop, 64px mobile) + espaço extra
+          const headerHeight = window.innerWidth >= 768 ? 90 : 64;
+          const yOffset = -(headerHeight + 20); // Header + 20px de espaço extra
           const y = ref.getBoundingClientRect().top + window.pageYOffset + yOffset;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }, 150);
