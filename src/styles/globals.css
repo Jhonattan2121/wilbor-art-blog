@@ -30,6 +30,41 @@ body {
   @apply text-blue-400 hover:text-blue-300 no-underline hover:underline;
 }
 
+/* Sobrescrever para o markdown customizado - FORÇAR COR #888888 EM TUDO */
+.markdown-content-custom,
+.markdown-content-custom *,
+.markdown-content-custom p,
+.markdown-content-custom span,
+.markdown-content-custom div,
+.markdown-content-custom a,
+.markdown-content-custom a:visited,
+.markdown-content-custom a:link,
+.markdown-content-custom a:active,
+.markdown-content-custom strong,
+.markdown-content-custom em,
+.markdown-content-custom b,
+.markdown-content-custom i,
+.markdown-content-custom li,
+.markdown-content-custom ul,
+.markdown-content-custom ol,
+.markdown-content-custom h1,
+.markdown-content-custom h2,
+.markdown-content-custom h3,
+.markdown-content-custom h4,
+.markdown-content-custom h5,
+.markdown-content-custom h6 {
+  color: #888888 !important;
+}
+
+.markdown-content-custom a {
+  text-decoration: none !important;
+}
+
+.markdown-content-custom a:hover {
+  text-decoration: underline !important;
+  color: inherit !important;
+}
+
 .markdown-content hr {
   @apply border-gray-700 my-6;
 }

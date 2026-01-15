@@ -342,4 +342,63 @@
     @apply
       bg-content rounded-lg
   }
+  
+  /* Sobrescrever estilos padrão do prose para links */
+  .prose a,
+  .prose a:visited,
+  .prose a:link,
+  .prose a:active {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  
+  .prose a:hover {
+    text-decoration: underline !important;
+    color: inherit !important;
+  }
+  
+  /* Forçar cor em todos os elementos dentro do prose */
+  .prose * {
+    color: inherit !important;
+  }
+  
+  .prose p,
+  .prose li,
+  .prose strong,
+  .prose em,
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    color: inherit !important;
+  }
+  
+  /* Forçar cor correta em todos os elementos do markdown customizado */
+  .markdown-content-custom,
+  .markdown-content-custom *,
+  .markdown-content-custom p,
+  .markdown-content-custom span,
+  .markdown-content-custom div,
+  .markdown-content-custom a,
+  .markdown-content-custom a:visited,
+  .markdown-content-custom a:link,
+  .markdown-content-custom a:active,
+  .markdown-content-custom strong,
+  .markdown-content-custom em,
+  .markdown-content-custom li,
+  .markdown-content-custom h1,
+  .markdown-content-custom h2,
+  .markdown-content-custom h3,
+  .markdown-content-custom h4,
+  .markdown-content-custom h5,
+  .markdown-content-custom h6 {
+    color: #888888 !important;
+  }
+  
+  .markdown-content-custom a:hover {
+    text-decoration: underline !important;
+    color: #888888 !important;
+  }
 }

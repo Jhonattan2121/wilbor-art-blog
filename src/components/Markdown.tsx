@@ -70,8 +70,8 @@ export default function Markdown({ children, className = '', removeMedia = false
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   
-  // Cores baseadas no tema
-  const textColor = isDark ? '#888888' : '#1f2937';
+  // Cores baseadas no tema - mesma cor em ambos os modos
+  const textColor = '#888888';
 
   // Mover components para cima!
   const components: Components = {
@@ -101,7 +101,8 @@ export default function Markdown({ children, className = '', removeMedia = false
     ),
     a: (props) => (
       <a
-        className="text-red-600 hover:text-red-800 dark:!text-[#666666] dark:hover:!text-[#999999] transition-colors"
+        style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor, textDecoration: 'none' }}
+        className="hover:underline transition-colors"
         target="_blank"
         rel="noopener noreferrer"
         {...props}
@@ -173,7 +174,7 @@ export default function Markdown({ children, className = '', removeMedia = false
         <div className={`w-full flex flex-col sm:flex-row sm:items-start gap-8 sm:gap-12 ${className}`}>
           {columnBlocks.map((block, idx) => (
             <div key={idx} className="flex-1 min-w-[220px] max-w-xs sm:max-w-sm md:max-w-md">
-              <div className="prose prose-lg dark:prose-invert max-w-none text-left leading-relaxed text-base sm:text-lg">
+              <div className="max-w-none text-left leading-relaxed text-base sm:text-lg" style={{ color: textColor, fontFamily: 'Helvetica, Arial, sans-serif' }}>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
@@ -194,7 +195,8 @@ export default function Markdown({ children, className = '', removeMedia = false
 
   return (
     <div
-      className={`prose prose-lg dark:prose-invert max-w-none text-left leading-relaxed text-base sm:text-lg ${className}`}
+      className={`max-w-none text-left leading-relaxed text-base sm:text-lg markdown-content-custom ${className}`}
+      style={{ color: textColor, fontFamily: 'Helvetica, Arial, sans-serif' }}
     >
       {blocks.map((block, idx) => {
         if (block.type === 'carousel' && block.images && block.images.length > 0) {
