@@ -338,7 +338,7 @@ const MediaItem = ({
             )}
 
           >
-            <div className="text-sm font-normal line-clamp-2 text-center text-gray-700 dark:text-gray-300 mt-0 mb-1 transition-colors duration-100">
+            <div className="text-sm font-normal line-clamp-2 text-center text-gray-700 dark:text-[#CCCCCC] mt-0 mb-1 transition-colors duration-100">
               {media.title}
             </div>
             {media.tags && media.tags.length > 0 && (
@@ -409,7 +409,7 @@ const MediaItem = ({
                       )
                     }
                   >
-                    <div className="text-xs font-medium line-clamp-2 text-left text-gray-700 dark:text-gray-300 mt-0 mb-0.5 transition-colors duration-100">
+                    <div className="text-xs font-medium line-clamp-2 text-left text-gray-700 dark:text-[#888888] mt-0 mb-0.5 transition-colors duration-100">
                       {mainItem.title}
                     </div>
                     {mainItem.tags && mainItem.tags.length > 0 && (
@@ -421,7 +421,7 @@ const MediaItem = ({
                               e.stopPropagation();
                               onTagClick(tag);
                             }}
-                            className="text-[10px] px-1 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline"
+                            className="text-[10px] px-1 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline dark:text-[#777777]"
                           >
                             {tag}
                           </span>
@@ -460,7 +460,7 @@ const MediaItem = ({
                               'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
                             )
                           }>
-                            <div className="text-xs sm:text-sm md:text-base font-medium line-clamp-1 transition-colors duration-100">
+                            <div className="text-xs sm:text-sm md:text-base font-medium line-clamp-1 transition-colors duration-100 text-gray-700 dark:text-[#888888]">
                               {mainItem.title}
                             </div>
                             {mainItem.tags && mainItem.tags.length > 0 && (
@@ -475,7 +475,7 @@ const MediaItem = ({
                                       e.stopPropagation();
                                       onTagClick(tag);
                                     }}
-                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline"
+                                    className="text-xs px-1.5 py-0.5 rounded transition-colors duration-100 cursor-pointer hover:underline dark:text-[#777777]"
                                   >
                                     {tag}
                                   </span>
@@ -535,7 +535,7 @@ const MediaItem = ({
           >
             <div className="flex items-center px-3 sm:px-6 py-2 sm:py-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
               <h2
-                className="flex-1 text-base sm:text-xl md:text-2xl font-bold tracking-wide leading-tight"
+                className="flex-1 text-base sm:text-xl md:text-2xl font-bold tracking-wide leading-tight text-gray-900 dark:text-[#CCCCCC]"
                 style={{ fontFamily: 'IBMPlexMono, monospace' }}
               >
                 {mainItem.title}
