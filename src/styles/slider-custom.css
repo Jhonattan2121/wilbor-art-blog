@@ -61,6 +61,25 @@ div.slick-dots,
   max-width: 100%;
   margin: 1rem auto;
   border-radius: 0.5rem;
+  scroll-margin-top: 0;
+  scroll-margin-bottom: 0;
+  scroll-behavior: auto;
+  pointer-events: auto;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Bloqueia scroll-into-view automático */
+.markdown-content video:focus {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+/* Wrapper do vídeo mantém aspect ratio */
+.markdown-content > div > video {
+  aspect-ratio: 16 / 9;
 }
 
 .video-container {
