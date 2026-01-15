@@ -146,6 +146,7 @@ const MediaItem = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
 
   const handleCopyLink = useCallback(async (e: React.MouseEvent) => {
@@ -165,23 +166,38 @@ const MediaItem = ({
     setMounted(true);
   }, []);
 
-  // Fecha fullscreen com ESC e bloqueia scroll do body enquanto aberto
+  // Fecha fullscreen com ESC, navega com setas esquerda/direita e bloqueia scroll do body enquanto aberto
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsFullscreen(false);
+      if (e.key === 'Escape') {
+        setIsFullscreen(false);
+      } else if (isFullscreen && images.length > 1) {
+        // Navegação por teclado apenas em desktop (largura >= 640px) e quando há mais de uma imagem
+        if (window.innerWidth >= 640) {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1);
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1);
+          }
+        }
+      }
     };
     if (isFullscreen) {
       document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', onKey);
     } else {
       document.body.style.overflow = '';
+      // Reset do índice quando sair do fullscreen
+      setCurrentImageIndex(0);
     }
     return () => {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
     };
-  }, [isFullscreen]);
+  }, [isFullscreen, images.length]);
   function getThumbnailUrl(item: Media): string | null {
     try {
       if (item.hiveMetadata) {
@@ -572,7 +588,11 @@ const MediaItem = ({
                 {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
                 {images.length > 0 && (
                   <button
-                    onClick={e => { e.stopPropagation(); setIsFullscreen(true); }}
+                    onClick={e => { 
+                      e.stopPropagation(); 
+                      setCurrentImageIndex(0); // Reset do índice ao abrir fullscreen
+                      setIsFullscreen(true); 
+                    }}
                     className="p-1.5 sm:p-2 bg-transparent border-none shadow-none flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
                     aria-label="Abrir em tela cheia"
                     title="Abrir em tela cheia"
@@ -651,6 +671,8 @@ const MediaItem = ({
             <ImageCarousel
               images={images.map(src => ({ src, alt: mainItem.title || '' }))}
               fullscreen={true}
+              currentIndex={currentImageIndex}
+              onIndexChange={setCurrentImageIndex}
             />
           </div>
         </div>,

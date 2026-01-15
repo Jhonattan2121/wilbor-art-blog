@@ -1,15 +1,33 @@
 import { useTheme } from 'next-themes';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ImageCarouselProps {
   images: { src: string; alt?: string }[];
   fullscreen?: boolean;
   inExpandedCard?: boolean;
   hasLittleContent?: boolean;
+  currentIndex?: number;
+  onIndexChange?: (index: number) => void;
 }
 
-export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, hasLittleContent = false }: ImageCarouselProps) {
-  const [current, setCurrent] = useState(0);
+export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, hasLittleContent = false, currentIndex, onIndexChange }: ImageCarouselProps) {
+  const [internalCurrent, setInternalCurrent] = useState(0);
+  const current = currentIndex !== undefined ? currentIndex : internalCurrent;
+  const setCurrent = (index: number) => {
+    if (onIndexChange) {
+      onIndexChange(index);
+    } else {
+      setInternalCurrent(index);
+    }
+  };
+  
+  // Sincroniza o estado interno quando currentIndex externo mudar
+  useEffect(() => {
+    if (currentIndex !== undefined) {
+      setInternalCurrent(currentIndex);
+    }
+  }, [currentIndex]);
+  
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
