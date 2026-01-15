@@ -1,3 +1,4 @@
+import { useTheme } from 'next-themes';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -66,32 +67,37 @@ function splitMarkdownWithImageBlocks(markdown: string) {
 export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster, columns = false, inExpandedCard = false, hasLittleContent = false }: MarkdownProps) {
   const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
   const hasSingleImage = images && images.length === 1;
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
+  // Cores baseadas no tema
+  const textColor = isDark ? '#888888' : '#1f2937';
 
   // Mover components para cima!
   const components: Components = {
     h1: (props) => (
-      <h1 className="text-3xl font-bold mt-8 mb-4 !text-gray-500 dark:!text-[#666666]" {...props} />
+      <h1 className="text-3xl font-bold mt-8 mb-4" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     h2: (props) => (
-      <h2 className="text-2xl font-semibold mt-6 mb-3 !text-gray-500 dark:!text-[#666666]" {...props} />
+      <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     h3: (props) => (
-      <h3 className="text-xl font-semibold mt-4 mb-2 !text-gray-500 dark:!text-[#666666]" {...props} />
+      <h3 className="text-xl font-semibold mt-4 mb-2" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     h4: (props) => (
-      <h4 className="text-lg font-semibold mt-3 mb-2 !text-gray-500 dark:!text-[#666666]" {...props} />
+      <h4 className="text-lg font-semibold mt-3 mb-2" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     h5: (props) => (
-      <h5 className="text-base font-semibold mt-2 mb-1 !text-gray-500 dark:!text-[#666666]" {...props} />
+      <h5 className="text-base font-semibold mt-2 mb-1" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     h6: (props) => (
-      <h6 className="text-sm font-semibold mt-2 mb-1 !text-gray-500 dark:!text-[#666666]" {...props} />
+      <h6 className="text-sm font-semibold mt-2 mb-1" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     p: (props) => (
-      <p className="!text-gray-500 dark:!text-[#666666]" {...props} />
+      <p style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     li: (props) => (
-      <li className="!text-gray-500 dark:!text-[#666666]" {...props} />
+      <li style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     a: (props) => (
       <a
@@ -104,13 +110,13 @@ export default function Markdown({ children, className = '', removeMedia = false
     ul: (props) => <ul className="list-disc pl-6 my-2" {...props} />,
     ol: (props) => <ol className="list-decimal pl-6 my-2" {...props} />,
     strong: (props) => (
-      <strong className="!text-gray-500 dark:!text-[#666666]" {...props} />
+      <strong style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     em: (props) => (
-      <em className="!text-gray-500 dark:!text-[#666666]" {...props} />
+      <em style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     blockquote: (props) => (
-      <blockquote className="border-l-4 border-gray-400 pl-4 italic !text-gray-500 dark:!text-[#666666] my-4" {...props} />
+      <blockquote className="border-l-4 border-gray-400 pl-4 italic my-4" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
     ),
     code(props: any) {
       const { inline, children, ...rest } = props;

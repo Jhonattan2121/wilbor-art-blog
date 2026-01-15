@@ -9,6 +9,7 @@
 
 @theme {
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-sans: "Helvetica", "Arial", sans-serif;
 
   --breakpoint-xs: 390px;
   --breakpoint-3xl: 1640px;
