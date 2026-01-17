@@ -76,32 +76,32 @@ export default function Markdown({ children, className = '', removeMedia = false
     // Mover components para cima!
     const components: Components = {
         h1: (props) => (
-            <h1 className="text-3xl font-bold mt-8 mb-4" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <h1 className="text-3xl font-bold mt-8 mb-4" style={{  color: textColor }} {...props} />
         ),
         h2: (props) => (
-            <h2 className="text-2xl font-semibold mt-6 mb-3" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <h2 className="text-2xl font-semibold mt-6 mb-3" style={{  color: textColor }} {...props} />
         ),
         h3: (props) => (
-            <h3 className="text-xl font-semibold mt-4 mb-2" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <h3 className="text-xl font-semibold mt-4 mb-2" style={{  color: textColor }} {...props} />
         ),
         h4: (props) => (
-            <h4 className="text-lg font-semibold mt-3 mb-2" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <h4 className="text-lg font-semibold mt-3 mb-2" style={{  color: textColor }} {...props} />
         ),
         h5: (props) => (
-            <h5 className="text-base font-semibold mt-2 mb-1" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <h5 className="text-base font-semibold mt-2 mb-1" style={{  color: textColor }} {...props} />
         ),
         h6: (props) => (
-            <h6 className="text-sm font-semibold mt-2 mb-1" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <h6 className="text-sm font-semibold mt-2 mb-1" style={{  color: textColor }} {...props} />
         ),
         p: (props) => (
-            <p style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <p style={{  color: textColor }} {...props} />
         ),
         li: (props) => (
-            <li style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <li style={{  color: textColor }} {...props} />
         ),
         a: (props) => (
             <a
-                style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor, textDecoration: 'none' }}
+                style={{  color: textColor, textDecoration: 'none' }}
                 className="hover:underline transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -111,13 +111,13 @@ export default function Markdown({ children, className = '', removeMedia = false
         ul: (props) => <ul className="list-disc pl-6 my-2" {...props} />,
         ol: (props) => <ol className="list-decimal pl-6 my-2" {...props} />,
         strong: (props) => (
-            <strong style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <strong style={{  color: textColor }} {...props} />
         ),
         em: (props) => (
-            <em style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <em style={{  color: textColor }} {...props} />
         ),
         blockquote: (props) => (
-            <blockquote className="border-l-4 border-gray-400 pl-4 italic my-4" style={{ fontFamily: 'Helvetica, Arial, sans-serif', color: textColor }} {...props} />
+            <blockquote className="border-l-4 border-gray-400 pl-4 italic my-4" style={{  color: textColor }} {...props} />
         ),
         code(props: any) {
             const { inline, children, ...rest } = props;
@@ -198,7 +198,7 @@ export default function Markdown({ children, className = '', removeMedia = false
                 <div className={`w-full flex flex-col sm:flex-row sm:items-start gap-8 sm:gap-12 ${className}`}>
                     {columnBlocks.map((block, idx) => (
                         <div key={idx} className="flex-1 min-w-[220px] max-w-xs sm:max-w-sm md:max-w-md">
-                            <div className="max-w-none text-left leading-relaxed text-base sm:text-lg" style={{ color: textColor, fontFamily: 'Helvetica, Arial, sans-serif' }}>
+                            <div className="max-w-none text-left leading-relaxed text-base sm:text-lg" style={{ color: textColor,  }}>
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     rehypePlugins={[rehypeRaw]}
@@ -220,7 +220,7 @@ export default function Markdown({ children, className = '', removeMedia = false
     return (
         <div
             className={`max-w-none text-left leading-relaxed text-base sm:text-lg markdown-content-custom ${className}`}
-            style={{ color: textColor, fontFamily: 'Helvetica, Arial, sans-serif' }}
+            style={{ color: textColor,  }}
         >
             {blocks.map((block, idx) => {
                 if (block.type === 'carousel' && block.images && block.images.length > 0) {

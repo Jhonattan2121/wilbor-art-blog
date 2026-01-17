@@ -598,7 +598,7 @@ const MediaItem = ({
                         <div className="flex items-center px-3 sm:px-6 py-2 sm:py-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
                             <h2
                                 className="flex-1 text-base sm:text-xl md:text-2xl font-bold tracking-wide leading-tight !text-gray-500 dark:!text-[#888888]"
-                                style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}
+                                style={{ fontFamily: 'IBMPlexMono, monospace' }}
                             >
                                 {mainItem.title}
                             </h2>
