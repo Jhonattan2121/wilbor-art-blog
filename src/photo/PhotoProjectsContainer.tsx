@@ -856,7 +856,7 @@ export default function PhotoGridContainer({
                     'grid',
                     'gap-y-8 sm:gap-y-6 gap-x-2 sm:gap-x-4 md:gap-5',
                     'grid-cols-2 sm:grid-cols-2 md:grid-cols-3',
-                    'lg:grid-cols-5 xl:grid-cols-5',
+                    'lg:grid-cols-4 xl:grid-cols-4',
                     'grid-flow-dense',
                     'pt-0 mt-0',
                     expandedPermlinks.length > 0 ? 'auto-rows-auto' : 'auto-rows-fr',
