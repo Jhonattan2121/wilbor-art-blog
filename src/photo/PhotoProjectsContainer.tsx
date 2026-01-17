@@ -441,9 +441,7 @@ const MediaItem = ({
                 'w-full',
                 isExpanded && 'transition-all duration-300',
                 isExpanded
-                    ? hasLargeContent
-                        ? 'flex flex-col h-auto min-h-[420px] sm:min-h-[460px]'
-                        : 'flex flex-col h-auto min-h-[calc(100vh-120px)] sm:min-h-[340px]'
+                    ? 'flex flex-col h-auto'
                     : 'min-h-[200px]'
             )}>
                 {!isExpanded && (
@@ -590,8 +588,8 @@ const MediaItem = ({
                         className={clsx(
                             "flex flex-col w-full",
                             hasLargeContent
-                                ? "h-full max-h-[80vh] sm:max-h-[85vh] overflow-hidden"
-                                : "h-auto sm:h-auto min-h-[calc(100vh-120px)] sm:max-h-[85vh] overflow-visible sm:overflow-hidden"
+                                ? "h-auto overflow-visible"
+                                : "h-auto overflow-visible"
                         )}
                         ref={contentRef}
                     >
@@ -665,13 +663,9 @@ const MediaItem = ({
                         <div
                             className={clsx(
                                 "flex flex-col items-start w-full bg-white dark:bg-black",
-                                hasLargeContent
-                                    ? "flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-y-auto sm:overscroll-contain"
-                                    : "flex-1 overflow-visible sm:overflow-y-auto overflow-x-hidden sm:custom-scrollbar sm:overscroll-contain"
+                                "flex-1 overflow-visible"
                             )}
                             style={{
-                                WebkitOverflowScrolling: hasLargeContent ? 'touch' : 'auto',
-                                touchAction: hasLargeContent ? 'pan-y' : 'auto',
                                 position: 'relative',
                                 transform: 'translateZ(0)'
                             }}
@@ -884,8 +878,8 @@ export default function PhotoGridContainer({
                                     isExpanded
                                         ? (
                                             hasLargeContentMap[permlink]
-                                                ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-3'
-                                                : 'col-span-1 sm:col-span-1 row-auto sm:row-span-2'
+                                                ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-6 sm:row-span-7 md:row-span-8'
+                                                : 'col-span-1 sm:col-span-1 md:col-span-3 lg:col-span-3 row-span-4 sm:row-span-5 md:row-span-6'
                                         )
                                         : 'w-full',
                                 )}
