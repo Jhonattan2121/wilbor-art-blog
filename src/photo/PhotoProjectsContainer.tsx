@@ -891,8 +891,8 @@ export default function PhotoGridContainer({
                                     isExpanded
                                         ? (
                                             hasLargeContentMap[permlink]
-                                                ? 'col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-3 row-span-6 sm:row-span-7 md:row-span-8'
-                                                : 'col-span-1 sm:col-span-1 md:col-span-3 lg:col-span-3 row-span-4 sm:row-span-5 md:row-span-6'
+                                                ? 'col-span-2 sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-6 sm:row-span-7 md:row-span-8'
+                                                : 'col-span-1 sm:col-span-1 md:col-span-2 lg:col-span-2 row-span-4 sm:row-span-5 md:row-span-6'
                                         )
                                         : 'w-full',
 	                                )}
