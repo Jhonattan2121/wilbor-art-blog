@@ -800,6 +800,21 @@ export default function PhotoGridContainer({
         setExpandedPermlinks([]);
     }, [selectedTag, setSelectedTag]);
 
+    // Permite que o header (logo) feche o card expandido
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const handler = () => {
+            setExpandedPermlinks([]);
+            const url = new URL(window.location.href);
+            url.searchParams.delete('project');
+            window.history.pushState({}, '', url.toString());
+        };
+
+        window.addEventListener('wilbor:close-expanded-project', handler as EventListener);
+        return () => window.removeEventListener('wilbor:close-expanded-project', handler as EventListener);
+    }, []);
+
     // Função para atualizar URL quando expandir/colapsar card
     const updateUrlForProject = useCallback((permlink: string | null) => {
         if (typeof window === 'undefined') return;

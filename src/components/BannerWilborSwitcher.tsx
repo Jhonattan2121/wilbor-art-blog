@@ -14,6 +14,23 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
+  const handleGoProjects = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('wilbor:close-expanded-project'));
+    }
+
+    if (typeof window === 'undefined') {
+      router.push('/projects');
+      router.refresh();
+      return;
+    }
+
+    const currentUrl = new URL(window.location.href);
+    const tag = currentUrl.searchParams.get('tag');
+    const destination = tag ? `/projects?tag=${encodeURIComponent(tag)}` : '/projects';
+    router.push(destination);
+    router.refresh();
+  };
 
   // Define se o header deve seguir o modo escuro
   let isDarkHeader = false;
@@ -27,7 +44,7 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
 
   return (
     <div
-      onClick={() => router.push('/projects')}
+      onClick={handleGoProjects}
       className={`relative ${forceWhiteLogo ? 'h-full w-full' : 'h-20 sm:h-32 w-full max-w-[460px]'} cursor-pointer hover:opacity-90 transition-opacity`}
       style={{
         cursor: 'pointer',
@@ -56,4 +73,3 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
     </div>
   );
 }
-
