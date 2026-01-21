@@ -879,10 +879,10 @@ export default function PhotoGridContainer({
                         const isExpanded = expandedPermlinks.includes(permlink);
                         const isOdd = idx % 2 === 1;
                         return (
-                            <div
-                                key={permlink}
-                                ref={el => { cardRefs.current[permlink] = el; }}
-                                className={clsx(
+	                            <div
+	                                key={permlink}
+	                                ref={el => { cardRefs.current[permlink] = el; }}
+	                                className={clsx(
                                     'relative overflow-hidden w-full shadow-sm',
                                     'transition-all duration-300',
                                     'rounded-none sm:rounded-lg',
@@ -895,11 +895,11 @@ export default function PhotoGridContainer({
                                                 : 'col-span-1 sm:col-span-1 md:col-span-3 lg:col-span-3 row-span-4 sm:row-span-5 md:row-span-6'
                                         )
                                         : 'w-full',
-                                )}
-                                tabIndex={0}
-                                aria-label={`Projeto ${group[0]?.title || ''}`}
-                                title={group[0]?.title || ''}
-                            >
+	                                )}
+	                                tabIndex={0}
+	                                aria-label={`Projeto ${group[0]?.title || ''}`}
+	                                title={isExpanded ? undefined : (group[0]?.title || '')}
+	                            >
                                 <MediaItem
                                     items={group}
                                     isExpanded={isExpanded}
