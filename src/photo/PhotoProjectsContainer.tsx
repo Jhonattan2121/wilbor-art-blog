@@ -593,7 +593,7 @@ const MediaItem = ({
                         )}
                         ref={contentRef}
                     >
-                        <div className="flex items-center px-3 sm:px-6 py-2 sm:py-3 border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black">
+                        <div className="flex items-center px-3 sm:px-6 py-2 sm:py-3">
                             <h2
                                 className="flex-1 text-base sm:text-xl md:text-2xl font-bold tracking-wide leading-tight !text-gray-500 dark:!text-[#888888]"
                                 style={{ fontFamily: 'IBMPlexMono, monospace' }}
@@ -602,7 +602,7 @@ const MediaItem = ({
                             </h2>
                             <div className="flex items-center gap-2">
                                 {/* Botão de compartilhar/copiar link */}
-                                {shareUrl && (
+                                {/* {shareUrl && (
                                     <button
                                         onClick={handleCopyLink}
                                         className="p-1.5 sm:p-2 rounded-full transition-colors flex items-center justify-center focus:outline-none hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -628,7 +628,7 @@ const MediaItem = ({
                                             </svg>
                                         )}
                                     </button>
-                                )}
+                                )} */}
                                 {/* Botão de zoom para abrir fullscreen reutilizando ImageCarousel */}
                                 {images.length > 0 && (
                                     <button

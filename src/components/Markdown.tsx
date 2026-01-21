@@ -217,22 +217,32 @@ export default function Markdown({ children, className = '', removeMedia = false
     // Divide o markdown em blocos de markdown e blocos de imagens consecutivas
     const blocks = splitMarkdownWithImageBlocks(content);
 
+    const containerClassName = [
+        'w-full max-w-none text-left leading-relaxed text-base sm:text-lg markdown-content-custom',
+        className,
+    ].filter(Boolean).join(' ');
+
     return (
         <div
-            className={`max-w-none text-left leading-relaxed text-base sm:text-lg markdown-content-custom ${className}`}
+            className={containerClassName}
             style={{ color: textColor,  }}
         >
             {blocks.map((block, idx) => {
                 if (block.type === 'carousel' && block.images && block.images.length > 0) {
                     return (
-                        <div key={idx} className={inExpandedCard ? "my-0" : "my-6 first:mt-0 last:mb-0"}>
+                        <div key={idx} className={inExpandedCard ? "my-0 w-full px-2 sm:px-4" : "my-6 first:mt-0 last:mb-0"}>
                             <ImageCarousel images={block.images} inExpandedCard={inExpandedCard} hasLittleContent={hasLittleContent} />
                         </div>
                     );
                 }
                 // Renderiza bloco markdown normalmente
                 return (
-                    <div key={idx} className={inExpandedCard ? "my-3 px-3 sm:px-6 first:mt-0 last:mb-0" : "my-4 first:mt-0 last:mb-0"}>
+                    <div
+                        key={idx}
+                        className={inExpandedCard
+                            ? "my-3 px-2 sm:px-4 first:mt-0 last:mb-0"
+                            : "my-4 first:mt-0 last:mb-0"}
+                    >
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw]}

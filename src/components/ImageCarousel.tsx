@@ -218,7 +218,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                     width: '100%',
                     height: 'auto',
                     maxWidth: '100%',
-                    maxHeight: '70vh',
+                    maxHeight: inExpandedCard ? 'none' : '70vh',
                     flexShrink: 0,
                   }),
                 }}
@@ -259,5 +259,4 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     </div>
   );
 }
-
 
