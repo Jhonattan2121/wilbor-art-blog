@@ -898,7 +898,6 @@ export default function PhotoGridContainer({
 	                                )}
 	                                tabIndex={0}
 	                                aria-label={`Projeto ${group[0]?.title || ''}`}
-	                                title={isExpanded ? undefined : (group[0]?.title || '')}
 	                            >
                                 <MediaItem
                                     items={group}
