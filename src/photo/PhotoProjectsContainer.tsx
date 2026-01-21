@@ -637,7 +637,7 @@ const MediaItem = ({
                                             setCurrentImageIndex(0); // Reset do índice ao abrir fullscreen
                                             setIsFullscreen(true);
                                         }}
-                                        className="p-1.5 sm:p-2 bg-transparent border-none shadow-none flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+                                        className="p-1.5 sm:p-2 bg-transparent border-none shadow-none flex items-center justify-center hover:bg-transparent rounded-full transition-colors"
                                         aria-label="Abrir em tela cheia"
                                         title="Abrir em tela cheia"
                                     >
@@ -652,9 +652,8 @@ const MediaItem = ({
                                 )}
                                 <button
                                     onClick={e => { e.stopPropagation(); onExpand(); }}
-                                    className="p-1.5 sm:p-2 rounded-full transition-colors flex items-center justify-center focus:outline-none hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                    className="p-1.5 sm:p-2 bg-transparent border-none shadow-none rounded-full transition-colors flex items-center justify-center focus:outline-none hover:bg-transparent"
                                     aria-label="Fechar"
-                                    title="Fechar"
                                 >
                                     <IconX size={35} />
                                 </button>
@@ -695,9 +694,8 @@ const MediaItem = ({
                             e.stopPropagation();
                             setIsFullscreen(false);
                         }}
-                        className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[10000] rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
+                        className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[10000] bg-transparent border-none shadow-none rounded-full transition-colors p-1 sm:p-2 flex items-center justify-center focus:outline-none"
                         aria-label="Fechar fullscreen"
-                        title="Fechar (ESC)"
                         style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}
                     >
                         <IconX size={35} />
