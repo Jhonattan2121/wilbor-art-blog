@@ -230,7 +230,13 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
       </div>
       {/* Navegação por bolinhas abaixo da imagem */}
       {images.length > 1 && (
-        <div className={fullscreen ? "absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2 sm:gap-3" : "mt-2 flex items-center justify-center gap-2"}>
+        <div
+          className={
+            fullscreen
+              ? "absolute bottom-6 left-0 right-0 px-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:bottom-8 sm:left-1/2 sm:right-auto sm:px-0 sm:-translate-x-1/2 sm:flex-nowrap sm:gap-3"
+              : "mt-2 flex items-center justify-center gap-2"
+          }
+        >
           {images.map((_, idx) => (
             <button
               key={idx}
@@ -259,4 +265,3 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     </div>
   );
 }
-
