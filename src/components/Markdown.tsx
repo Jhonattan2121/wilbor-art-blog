@@ -157,7 +157,7 @@ export default function Markdown({ children, className = '', removeMedia = false
             // Usa a prop videoPoster do componente para o poster
             return (
                 <div
-                    className={inExpandedCard ? 'w-full' : undefined}
+                    className={inExpandedCard ? 'w-full rounded-lg overflow-hidden bg-black' : 'w-full rounded-lg overflow-hidden bg-black'}
                     style={{
                         scrollMarginTop: '0',
                         scrollMarginBottom: '0',
@@ -175,7 +175,7 @@ export default function Markdown({ children, className = '', removeMedia = false
                     <video
                         controls
                         poster={videoPoster || props.poster}
-                        className="w-full h-full my-0 rounded-lg bg-black"
+                        className="w-full h-full my-0 bg-black"
                         style={{
                             scrollMarginTop: '0',
                             scrollMarginBottom: '0',
@@ -186,6 +186,70 @@ export default function Markdown({ children, className = '', removeMedia = false
                             ...props.style
                         }}
                         {...props}
+                    />
+                </div>
+            );
+        },
+        iframe: (props: any) => {
+            const styleProp = props.style as unknown;
+            const styleStr = typeof styleProp === 'string' ? styleProp.replace(/\s+/g, '').toLowerCase() : '';
+            const isAbsolute =
+                (typeof styleProp === 'object' && styleProp !== null && (styleProp as any).position === 'absolute') ||
+                styleStr.includes('position:absolute');
+
+            // Vimeo geralmente vem dentro de um wrapper com padding-top e iframe absoluto.
+            // Aqui a gente envolve com um container ABSOLUTO (não cria altura extra) só pra clipar o raio.
+            if (isAbsolute) {
+                const { style, ...rest } = props;
+                return (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            borderRadius: '0.5rem',
+                            overflow: 'hidden',
+                            background: 'black',
+                        }}
+                    >
+                        <iframe
+                            {...rest}
+                            style={{
+                                position: 'absolute',
+                                inset: 0,
+                                width: '100%',
+                                height: '100%',
+                                border: 0,
+                            }}
+                            allowFullScreen
+                        />
+                    </div>
+                );
+            }
+
+            // Fallback para iframes "soltos" (sem wrapper do provider)
+            return (
+                <div
+                    className="w-full rounded-lg overflow-hidden bg-black"
+                    style={{
+                        width: '100%',
+                        aspectRatio: '16 / 9',
+                        position: 'relative',
+                        marginTop: '1rem',
+                        marginBottom: '1rem',
+                    }}
+                >
+                    <iframe
+                        {...props}
+                        className="w-full h-full"
+                        style={{
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%',
+                            border: 0,
+                            ...(typeof props.style === 'object' && props.style ? props.style : null),
+                        }}
+                        allowFullScreen
                     />
                 </div>
             );
