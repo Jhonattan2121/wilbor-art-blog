@@ -162,8 +162,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden"
-              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg"
         }
         style={{
           background: 'transparent',

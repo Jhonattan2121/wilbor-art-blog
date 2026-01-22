@@ -134,13 +134,8 @@ export default function Markdown({ children, className = '', removeMedia = false
                 // Renderiza a imagem única normalmente
                 return (
                     <img
-                        className={[
-                            'rounded-lg h-auto my-6 block',
-                            inExpandedCard
-                                ? 'w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] max-w-none -mx-2 sm:-mx-4'
-                                : 'max-w-full'
-                        ].join(' ')}
-                        style={inExpandedCard ? undefined : { marginLeft: 'auto', marginRight: 'auto' }}
+                        className={inExpandedCard ? "rounded-lg w-full max-w-full h-auto my-6 block" : "rounded-lg max-w-full h-auto my-6 block"}
+                        style={inExpandedCard ? { marginLeft: 0, marginRight: 0 } : { marginLeft: 'auto', marginRight: 'auto' }}
                         alt={props.alt || ''}
                         src={images[0].src}
                         {...props}
@@ -150,13 +145,8 @@ export default function Markdown({ children, className = '', removeMedia = false
                 // Comportamento padrão
                 return (
                     <img
-                        className={[
-                            'rounded-lg h-auto my-6 block',
-                            inExpandedCard
-                                ? 'w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] max-w-none -mx-2 sm:-mx-4'
-                                : 'max-w-full'
-                        ].join(' ')}
-                        style={inExpandedCard ? undefined : { marginLeft: 'auto', marginRight: 'auto' }}
+                        className={inExpandedCard ? "rounded-lg w-full max-w-full h-auto my-6 block" : "rounded-lg max-w-full h-auto my-6 block"}
+                        style={inExpandedCard ? { marginLeft: 0, marginRight: 0 } : { marginLeft: 'auto', marginRight: 'auto' }}
                         alt={props.alt || ''}
                         {...props}
                     />
@@ -167,11 +157,7 @@ export default function Markdown({ children, className = '', removeMedia = false
             // Usa a prop videoPoster do componente para o poster
             return (
                 <div
-                    className={
-                        inExpandedCard
-                            ? 'w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] -mx-2 sm:-mx-4'
-                            : undefined
-                    }
+                    className={inExpandedCard ? 'w-full' : undefined}
                     style={{
                         scrollMarginTop: '0',
                         scrollMarginBottom: '0',
@@ -250,7 +236,7 @@ export default function Markdown({ children, className = '', removeMedia = false
                             key={idx}
                             className={
                                 inExpandedCard
-                                    ? "my-0 w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] -mx-2 sm:-mx-4"
+                                    ? "my-0 w-full px-0"
                                     : "my-6 first:mt-0 last:mb-0"
                             }
                         >
@@ -263,7 +249,7 @@ export default function Markdown({ children, className = '', removeMedia = false
                     <div
                         key={idx}
                         className={inExpandedCard
-                            ? "my-3 px-2 sm:px-4 first:mt-0 last:mb-0"
+                            ? "my-3 px-3 sm:px-6 first:mt-0 last:mb-0"
                             : "my-4 first:mt-0 last:mb-0"}
                     >
                         <ReactMarkdown
