@@ -431,7 +431,7 @@ const MediaItem = ({
                 'rounded-lg overflow-hidden h-full group transition-colors duration-100',
                 'bg-white text-black dark:bg-black dark:text-white',
                 !isExpanded && 'md:border-t-8 md:border-l-8 md:border-r-8 md:border-b-0 md:border-white md:dark:border-black md:hover:bg-black md:hover:text-white md:hover:border-t-black md:hover:border-l-black md:hover:border-r-black md:dark:hover:bg-white md:dark:hover:text-black md:dark:hover:border-t-white md:dark:hover:border-l-white md:dark:hover:border-r-white',
-                isExpanded && 'p-2'
+                isExpanded && 'p-0 sm:p-2'
             )}
             onClick={e => {
                 if (!isExpanded) onExpand();

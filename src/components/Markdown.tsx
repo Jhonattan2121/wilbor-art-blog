@@ -134,8 +134,13 @@ export default function Markdown({ children, className = '', removeMedia = false
                 // Renderiza a imagem única normalmente
                 return (
                     <img
-                        className="rounded-lg max-w-full h-auto my-6"
-                        style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+                        className={[
+                            'rounded-lg h-auto my-6 block',
+                            inExpandedCard
+                                ? 'w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] max-w-none -mx-2 sm:-mx-4'
+                                : 'max-w-full'
+                        ].join(' ')}
+                        style={inExpandedCard ? undefined : { marginLeft: 'auto', marginRight: 'auto' }}
                         alt={props.alt || ''}
                         src={images[0].src}
                         {...props}
@@ -145,8 +150,13 @@ export default function Markdown({ children, className = '', removeMedia = false
                 // Comportamento padrão
                 return (
                     <img
-                        className="rounded-lg max-w-full h-auto my-6"
-                        style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+                        className={[
+                            'rounded-lg h-auto my-6 block',
+                            inExpandedCard
+                                ? 'w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] max-w-none -mx-2 sm:-mx-4'
+                                : 'max-w-full'
+                        ].join(' ')}
+                        style={inExpandedCard ? undefined : { marginLeft: 'auto', marginRight: 'auto' }}
                         alt={props.alt || ''}
                         {...props}
                     />
@@ -157,13 +167,19 @@ export default function Markdown({ children, className = '', removeMedia = false
             // Usa a prop videoPoster do componente para o poster
             return (
                 <div
+                    className={
+                        inExpandedCard
+                            ? 'w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] -mx-2 sm:-mx-4'
+                            : undefined
+                    }
                     style={{
                         scrollMarginTop: '0',
                         scrollMarginBottom: '0',
                         width: '100%',
                         aspectRatio: '16 / 9',
                         position: 'relative',
-                        margin: '1rem auto',
+                        marginTop: '1rem',
+                        marginBottom: '1rem',
                     }}
                     onMouseDown={(e) => {
                         // Previne qualquer comportamento padrão de scroll
@@ -230,7 +246,14 @@ export default function Markdown({ children, className = '', removeMedia = false
             {blocks.map((block, idx) => {
                 if (block.type === 'carousel' && block.images && block.images.length > 0) {
                     return (
-                        <div key={idx} className={inExpandedCard ? "my-0 w-full px-2 sm:px-4" : "my-6 first:mt-0 last:mb-0"}>
+                        <div
+                            key={idx}
+                            className={
+                                inExpandedCard
+                                    ? "my-0 w-[calc(100%+1rem)] sm:w-[calc(100%+2rem)] -mx-2 sm:-mx-4"
+                                    : "my-6 first:mt-0 last:mb-0"
+                            }
+                        >
                             <ImageCarousel images={block.images} inExpandedCard={inExpandedCard} hasLittleContent={hasLittleContent} />
                         </div>
                     );
