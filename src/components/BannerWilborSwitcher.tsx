@@ -15,20 +15,12 @@ export default function BannerWilborSwitcher({ forceWhiteLogo = false }: { force
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const handleGoProjects = () => {
+    // Sempre volta para a listagem geral de projetos, removendo qualquer filtro/tag
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('wilbor:close-expanded-project'));
     }
 
-    if (typeof window === 'undefined') {
-      router.push('/projects');
-      router.refresh();
-      return;
-    }
-
-    const currentUrl = new URL(window.location.href);
-    const tag = currentUrl.searchParams.get('tag');
-    const destination = tag ? `/projects?tag=${encodeURIComponent(tag)}` : '/projects';
-    router.push(destination);
+    router.push('/projects');
     router.refresh();
   };
 

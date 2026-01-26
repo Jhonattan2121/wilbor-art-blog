@@ -152,6 +152,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     offset = translateX < 0 ? -2 * slideWidth : 0;
   }
 
+  const borderRadius = fullscreen ? undefined : 12;
+  const aspectRatio = fullscreen ? undefined : '16 / 9';
+
   return (
     <div 
       className={fullscreen ? "relative w-full h-full flex flex-col items-center justify-center" : inExpandedCard ? "relative w-full flex flex-col items-center" : "relative w-full flex flex-col items-center my-6"}
@@ -162,13 +165,21 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg"
-              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-black"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-black"
         }
         style={{
-          background: 'transparent',
+          background: fullscreen ? 'transparent' : 'black',
           position: fullscreen ? 'relative' : 'relative',
-          isolation: fullscreen ? 'auto' : 'isolate'
+          isolation: fullscreen ? 'auto' : 'isolate',
+          borderRadius,
+          overflow: fullscreen ? undefined : 'hidden',
+          transform: fullscreen ? undefined : 'translateZ(0)',
+          backfaceVisibility: fullscreen ? undefined : 'hidden',
+          WebkitBackfaceVisibility: fullscreen ? undefined : 'hidden',
+          WebkitMaskImage: fullscreen ? undefined : 'linear-gradient(#fff 0 0)',
+          WebkitMaskRepeat: fullscreen ? undefined : 'no-repeat',
+          WebkitMaskSize: fullscreen ? undefined : '100% 100%',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -187,46 +198,56 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           }}
         >
           {imagesToShow.map((img, idx) => (
+          <div
+            key={idx}
+            style={{
+              width: '100%',
+              minWidth: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexShrink: 0,
+              position: 'relative',
+              padding: '0',
+              overflow: fullscreen ? 'visible' : 'hidden',
+              borderRadius,
+              background: fullscreen ? 'transparent' : 'black',
+            }}
+          >
             <div
-              key={idx}
               style={{
                 width: '100%',
-                minWidth: '100%',
+                maxWidth: 'min(900px, 100%)',
+                aspectRatio,
+                height: aspectRatio ? undefined : '100%',
+                borderRadius,
+                overflow: 'hidden',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                flexShrink: 0,
-                position: 'relative',
-                padding: '0'
               }}
             >
               <img
                 src={img.src}
                 alt={img.alt || ''}
-                className={fullscreen ? "shadow-2xl" : "rounded-lg shadow-lg"}
+                className={fullscreen ? "shadow-2xl" : "shadow-lg"}
                 style={{
-                  objectFit: 'contain',
+                  objectFit: fullscreen ? 'contain' : 'cover',
                   display: 'block',
+                  width: '100%',
+                  height: '100%',
+                  maxWidth: '100%',
+                  maxHeight: fullscreen ? '90vh' : (inExpandedCard ? 'none' : '70vh'),
                   background: 'transparent',
                   margin: '0 auto',
-                  ...(fullscreen ? {
-                    width: '100%',
-                    height: '100%',
-                    maxHeight: '90vh',
-                    maxWidth: '100%',
-                  } : {
-                    width: '100%',
-                    height: 'auto',
-                    maxWidth: '100%',
-                    maxHeight: inExpandedCard ? 'none' : '70vh',
-                    flexShrink: 0,
-                  }),
+                  borderRadius,
                 }}
                 draggable={false}
               />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
       </div>
       {/* Navegação por bolinhas abaixo da imagem */}
       {images.length > 1 && (

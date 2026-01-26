@@ -129,31 +129,49 @@ export default function Markdown({ children, className = '', removeMedia = false
                 </pre>
             );
         },
-        img: (props) => {
+        img: (props: any) => {
+            const { className: imgClassName, style: imgStyle, ...rest } = props ?? {};
+            const baseClassName = inExpandedCard
+                ? " !rounded-lg w-full max-w-full h-auto my-6 block"
+                : " !rounded-lg max-w-full h-auto my-6 block";
+            const mergedClassName = `${imgClassName ? String(imgClassName) : ""}${baseClassName}`;
+
+            const mergedStyle =
+                imgStyle && typeof imgStyle === 'object'
+                    ? { ...imgStyle, borderRadius: '0.5rem' }
+                    : { borderRadius: '0.5rem' };
+
             if (hasSingleImage && images) {
                 // Renderiza a imagem única normalmente
                 return (
                     <img
-                        className={inExpandedCard ? "rounded-lg w-full max-w-full h-auto my-6 block" : "rounded-lg max-w-full h-auto my-6 block"}
-                        style={inExpandedCard ? { marginLeft: 0, marginRight: 0 } : { marginLeft: 'auto', marginRight: 'auto' }}
+                        {...rest}
+                        className={mergedClassName}
+                        style={{
+                            ...mergedStyle,
+                            ...(inExpandedCard ? { marginLeft: 0, marginRight: 0 } : { marginLeft: 'auto', marginRight: 'auto' }),
+                        }}
                         alt={props.alt || ''}
                         src={images[0].src}
-                        {...props}
                     />
                 );
             } else {
                 // Comportamento padrão
                 return (
                     <img
-                        className={inExpandedCard ? "rounded-lg w-full max-w-full h-auto my-6 block" : "rounded-lg max-w-full h-auto my-6 block"}
-                        style={inExpandedCard ? { marginLeft: 0, marginRight: 0 } : { marginLeft: 'auto', marginRight: 'auto' }}
+                        {...rest}
+                        className={mergedClassName}
+                        style={{
+                            ...mergedStyle,
+                            ...(inExpandedCard ? { marginLeft: 0, marginRight: 0 } : { marginLeft: 'auto', marginRight: 'auto' }),
+                        }}
                         alt={props.alt || ''}
-                        {...props}
                     />
                 );
             }
         },
         video: (props: any) => {
+            const { className: videoClassName, style: videoStyle, ...rest } = props ?? {};
             // Usa a prop videoPoster do componente para o poster
             return (
                 <div
@@ -173,9 +191,10 @@ export default function Markdown({ children, className = '', removeMedia = false
                     }}
                 >
                     <video
+                        {...rest}
                         controls
                         poster={videoPoster || props.poster}
-                        className="w-full h-full my-0 bg-black"
+                        className={`${videoClassName ? String(videoClassName) : ''} w-full h-full my-0 bg-black`}
                         style={{
                             scrollMarginTop: '0',
                             scrollMarginBottom: '0',
@@ -183,9 +202,8 @@ export default function Markdown({ children, className = '', removeMedia = false
                             width: '100%',
                             height: '100%',
                             margin: 0,
-                            ...props.style
+                            ...(videoStyle && typeof videoStyle === 'object' ? videoStyle : null),
                         }}
-                        {...props}
                     />
                 </div>
             );

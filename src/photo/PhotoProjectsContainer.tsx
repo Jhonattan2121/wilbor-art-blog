@@ -883,10 +883,10 @@ export default function PhotoGridContainer({
 	                                key={permlink}
 	                                ref={el => { cardRefs.current[permlink] = el; }}
 	                                className={clsx(
-                                    'relative overflow-hidden w-full shadow-sm',
-                                    'transition-all duration-300',
-                                    'rounded-none sm:rounded-lg',
-                                    'bg-transparent',
+                            'relative overflow-hidden w-full shadow-sm',
+                            'transition-all duration-300',
+                            'rounded-lg',
+                            'bg-transparent',
 
                                     isExpanded
                                         ? (
