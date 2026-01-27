@@ -157,23 +157,23 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
 
   return (
     <div 
-      className={fullscreen ? "relative w-full h-full flex flex-col items-center justify-center" : inExpandedCard ? "relative w-full flex flex-col items-center" : "relative w-full flex flex-col items-center my-6"}
-      style={inExpandedCard && !fullscreen ? { marginTop: '0', marginBottom: '0' } : undefined}
+      className={fullscreen ? "fixed inset-0 z-50" : inExpandedCard ? "relative w-full flex flex-col items-center" : "relative w-full flex flex-col items-center my-6"}
+      style={fullscreen ? { margin: 0, padding: 0 } : (inExpandedCard && !fullscreen ? { marginTop: '0', marginBottom: '0' } : undefined)}
     >
       <div
         className={
           fullscreen 
-            ? "w-full h-full flex justify-center items-center mx-auto overflow-hidden"
+            ? "w-full h-full flex justify-center items-center overflow-hidden bg-black"
             : inExpandedCard
               ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-black"
               : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-black"
         }
         style={{
-          background: fullscreen ? 'transparent' : 'black',
-          position: fullscreen ? 'relative' : 'relative',
+          background: fullscreen ? 'black' : 'black',
+          position: 'relative',
           isolation: fullscreen ? 'auto' : 'isolate',
           borderRadius,
-          overflow: fullscreen ? undefined : 'hidden',
+          overflow: 'hidden',
           transform: fullscreen ? undefined : 'translateZ(0)',
           backfaceVisibility: fullscreen ? undefined : 'hidden',
           WebkitBackfaceVisibility: fullscreen ? undefined : 'hidden',
@@ -217,14 +217,15 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             <div
               style={{
                 width: '100%',
-                maxWidth: 'min(900px, 100%)',
-                aspectRatio,
-                height: aspectRatio ? undefined : '100%',
+                height: '100%',
+                maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
+                aspectRatio: fullscreen ? undefined : aspectRatio,
                 borderRadius,
                 overflow: 'hidden',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                flex: fullscreen ? 1 : undefined,
               }}
             >
               <img
@@ -232,14 +233,15 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 alt={img.alt || ''}
                 className={fullscreen ? "shadow-2xl" : "shadow-lg"}
                 style={{
-                  objectFit: fullscreen ? 'contain' : 'cover',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
                   display: 'block',
                   width: '100%',
                   height: '100%',
                   maxWidth: '100%',
-                  maxHeight: fullscreen ? '90vh' : (inExpandedCard ? 'none' : '70vh'),
+                  maxHeight: '100%',
                   background: 'transparent',
-                  margin: '0 auto',
+                  margin: '0',
                   borderRadius,
                 }}
                 draggable={false}
