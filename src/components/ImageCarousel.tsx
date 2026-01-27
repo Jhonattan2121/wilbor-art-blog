@@ -13,6 +13,19 @@ interface ImageCarouselProps {
 export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, hasLittleContent = false, currentIndex, onIndexChange }: ImageCarouselProps) {
   const [internalCurrent, setInternalCurrent] = useState(0);
   const current = currentIndex !== undefined ? currentIndex : internalCurrent;
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 640;
+  });
+
+  // Detecta tamanho de tela para ajustar o fit apenas no fullscreen mobile
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const setCurrent = (index: number) => {
     if (onIndexChange) {
       onIndexChange(index);
@@ -233,7 +246,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 alt={img.alt || ''}
                 className={fullscreen ? "shadow-2xl" : "shadow-lg"}
                 style={{
-                  objectFit: 'cover',
+                  // Em fullscreen no mobile usamos contain para não cortar a imagem;
+                  // no desktop mantemos cover (comportamento atual).
+                  objectFit: fullscreen && isMobile ? 'contain' : 'cover',
                   objectPosition: 'center',
                   display: 'block',
                   width: '100%',
@@ -256,9 +271,10 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
         <div
           className={
             fullscreen
-              ? "absolute bottom-6 left-0 right-0 px-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:bottom-8 sm:left-1/2 sm:right-auto sm:px-0 sm:-translate-x-1/2 sm:flex-nowrap sm:gap-3"
-              : "mt-2 flex items-center justify-center gap-2"
+              ? "absolute inset-x-0 bottom-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:bottom-3 sm:flex-nowrap sm:gap-3"
+              : "mt-1 flex items-center justify-center gap-2"
           }
+          style={fullscreen ? { pointerEvents: 'none', zIndex: 5 } : undefined}
         >
           {images.map((_, idx) => (
             <button
@@ -280,6 +296,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 borderColor: 'transparent',
                 borderStyle: 'none',
                 borderRadius: '50%',
+                pointerEvents: 'auto',
               }}
             />
           ))}
