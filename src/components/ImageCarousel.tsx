@@ -166,7 +166,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }
 
   const borderRadius = fullscreen ? undefined : 12;
-  const aspectRatio = fullscreen ? undefined : '16 / 9';
+  const useAspectRatio = fullscreen ? undefined : (inExpandedCard ? undefined : '16 / 9');
+  const containerHeight = fullscreen ? '100%' : 'auto';
 
   return (
     <div 
@@ -203,7 +204,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           style={{
             display: 'flex',
             width: '300%',
-            height: '100%',
+            height: fullscreen ? '100%' : 'auto',
             transform: `translateX(${offset}%)`,
             transition: transition ? 'transform 0.3s' : 'none',
             position: 'relative',
@@ -230,9 +231,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             <div
               style={{
                 width: '100%',
-                height: '100%',
+                height: containerHeight,
                 maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
-                aspectRatio: fullscreen ? undefined : aspectRatio,
+                aspectRatio: useAspectRatio,
                 borderRadius,
                 overflow: 'hidden',
                 display: 'flex',
@@ -246,15 +247,13 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 alt={img.alt || ''}
                 className={fullscreen ? "shadow-2xl" : "shadow-lg"}
                 style={{
-                  // Em fullscreen no mobile usamos contain para não cortar a imagem;
-                  // no desktop mantemos cover (comportamento atual).
                   objectFit: fullscreen && isMobile ? 'contain' : 'cover',
                   objectPosition: 'center',
                   display: 'block',
                   width: '100%',
-                  height: '100%',
+                  height: fullscreen ? '100%' : 'auto',
                   maxWidth: '100%',
-                  maxHeight: '100%',
+                  maxHeight: fullscreen ? '100%' : 'none',
                   background: 'transparent',
                   margin: '0',
                   borderRadius,
