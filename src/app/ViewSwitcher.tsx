@@ -99,15 +99,7 @@ export default function ViewSwitcher({
         <div className="h-full overflow-hidden flex-1 flex items-center">
           <BannerWilborSwitcher forceWhiteLogo />
         </div>
-        <div className="flex items-center flex-shrink-0 mr-0">
-          <DrawerTagsMobile
-            tags={tagsToUse}
-            selectedTag={drawerTagsProps?.selectedTag ?? null}
-            setSelectedTag={drawerTagsProps?.setSelectedTag}
-            menuItems={menuItems}
-            onMenuItemClick={onMenuItemClick}
-          />
-        </div>
+        <div className="flex items-center flex-shrink-0 mr-0 w-[64px] h-[44px]" aria-hidden="true" />
       </div>
       {/* Desktop: Header com faixa preta e menu separado */}
       <div className="hidden md:flex w-full items-center justify-between relative" style={{ height: '90px' }}>
@@ -123,7 +115,36 @@ export default function ViewSwitcher({
 
         {/* Menu quadrado na extrema direita, sobrepondo ou ao lado da faixa */}
         <div className="flex items-center justify-center flex-shrink-0 z-20 bg-white dark:bg-[#222222] relative" style={{ width: '90px', height: '90px' }}>
+          <span className="sr-only">Espaço reservado para o botão do drawer</span>
+        </div>
+      </div>
+      <div
+        className="fixed top-0 right-0 z-50 hidden md:flex pointer-events-none"
+        style={{ width: '90px', height: '90px' }}
+        aria-label="Atalho para o menu de tags"
+      >
+        <div
+          className="pointer-events-auto flex items-center justify-center w-full h-full bg-white dark:bg-[#222222] border border-gray-200 dark:border-neutral-800 rounded-l-xl"
+        >
           <DrawerTagsDesktop
+            tags={tagsToUse}
+            selectedTag={drawerTagsProps?.selectedTag ?? null}
+            setSelectedTag={drawerTagsProps?.setSelectedTag}
+            menuItems={menuItems}
+            onMenuItemClick={onMenuItemClick}
+          />
+        </div>
+      </div>
+      <div
+        className="fixed top-0 right-0 z-50 md:hidden pointer-events-none"
+        style={{ width: '64px', height: '64px' }}
+        aria-label="Atalho móvel para o menu de tags"
+      >
+        <div
+          className="pointer-events-auto flex items-center justify-center w-full h-full"
+          style={{ background: 'transparent' }}
+        >
+          <DrawerTagsMobile
             tags={tagsToUse}
             selectedTag={drawerTagsProps?.selectedTag ?? null}
             setSelectedTag={drawerTagsProps?.setSelectedTag}
