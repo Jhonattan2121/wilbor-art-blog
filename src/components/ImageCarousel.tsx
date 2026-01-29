@@ -166,7 +166,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }
 
   const borderRadius = fullscreen ? undefined : 12;
-  const useAspectRatio = fullscreen ? undefined : (inExpandedCard ? undefined : '16 / 9');
+  const clipPath = fullscreen ? undefined : `inset(0 round ${borderRadius}px)`;
+  const useAspectRatio = fullscreen ? undefined : '16 / 9';
   const containerHeight = fullscreen ? '100%' : 'auto';
 
   return (
@@ -236,6 +237,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 aspectRatio: useAspectRatio,
                 borderRadius,
                 overflow: 'hidden',
+                clipPath,
+                background: fullscreen ? 'transparent' : 'black',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -247,13 +250,13 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                  alt={img.alt || ''}
                  className={fullscreen ? "shadow-2xl" : "shadow-lg"}
                  style={{
-                   objectFit: (fullscreen && isMobile) || inExpandedCard ? 'contain' : 'cover',
+                   objectFit: (fullscreen && isMobile) ? 'contain' : 'cover',
                    objectPosition: 'center',
                    display: 'block',
                    width: '100%',
-                   height: fullscreen ? '100%' : 'auto',
+                   height: fullscreen ? '100%' : '100%',
                    maxWidth: '100%',
-                   maxHeight: fullscreen ? '100%' : 'none',
+                   maxHeight: fullscreen ? '100%' : '100%',
                    background: 'transparent',
                    margin: '0',
                    borderRadius,
