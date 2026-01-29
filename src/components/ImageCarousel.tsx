@@ -166,8 +166,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }
 
   const borderRadius = fullscreen ? undefined : 12;
-  const useAspectRatio = fullscreen ? undefined : (inExpandedCard ? '16 / 9' : '16 / 9');
-  const containerHeight = fullscreen ? '100%' : (inExpandedCard ? '400px' : 'auto');
+  const useAspectRatio = fullscreen ? undefined : (inExpandedCard ? undefined : '16 / 9');
+  const containerHeight = fullscreen ? '100%' : 'auto';
 
   return (
     <div 
@@ -243,23 +243,23 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
               }}
             >
               <img
-                src={img.src}
-                alt={img.alt || ''}
-                className={fullscreen ? "shadow-2xl" : "shadow-lg"}
-                style={{
-                  objectFit: fullscreen && isMobile ? 'contain' : 'cover',
-                  objectPosition: 'center',
-                  display: 'block',
-                  width: '100%',
-                  height: fullscreen ? '100%' : 'auto',
-                  maxWidth: '100%',
-                  maxHeight: fullscreen ? '100%' : 'none',
-                  background: 'transparent',
-                  margin: '0',
-                  borderRadius,
-                }}
-                draggable={false}
-              />
+                 src={img.src}
+                 alt={img.alt || ''}
+                 className={fullscreen ? "shadow-2xl" : "shadow-lg"}
+                 style={{
+                   objectFit: (fullscreen && isMobile) || inExpandedCard ? 'contain' : 'cover',
+                   objectPosition: 'center',
+                   display: 'block',
+                   width: '100%',
+                   height: fullscreen ? '100%' : 'auto',
+                   maxWidth: '100%',
+                   maxHeight: fullscreen ? '100%' : 'none',
+                   background: 'transparent',
+                   margin: '0',
+                   borderRadius,
+                 }}
+                 draggable={false}
+               />
             </div>
           </div>
         ))}
