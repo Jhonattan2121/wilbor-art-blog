@@ -166,8 +166,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }
 
   const borderRadius = fullscreen ? undefined : 12;
-  const useAspectRatio = fullscreen ? undefined : (inExpandedCard ? undefined : '16 / 9');
-  const containerHeight = fullscreen ? '100%' : 'auto';
+  const useAspectRatio = fullscreen ? undefined : (inExpandedCard ? '16 / 9' : '16 / 9');
+  const containerHeight = fullscreen ? '100%' : (inExpandedCard ? '400px' : 'auto');
 
   return (
     <div 
