@@ -49,6 +49,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
   const touchStartY = useRef<number | null>(null);
   const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
+  const [imgHasBars, setImgHasBars] = useState<Record<string, boolean>>({});
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
   const { theme, systemTheme } = useTheme();
@@ -169,6 +170,33 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const borderRadius = fullscreen ? undefined : 12;
   const containerHeight = fullscreen ? '100%' : 'auto';
   const baseAspectRatio = '16 / 9';
+  const detectBlackBars = (imgEl: HTMLImageElement) => {
+    try {
+      const { naturalWidth, naturalHeight } = imgEl;
+      if (!naturalWidth || !naturalHeight) return false;
+      const canvas = document.createElement('canvas');
+      const sampleHeight = Math.max(4, Math.round(naturalHeight * 0.06));
+      canvas.width = Math.min(naturalWidth, 320);
+      canvas.height = sampleHeight * 2;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return false;
+      const scaleX = canvas.width / naturalWidth;
+      ctx.drawImage(imgEl, 0, 0, naturalWidth, sampleHeight, 0, 0, canvas.width, sampleHeight);
+      ctx.drawImage(imgEl, 0, naturalHeight - sampleHeight, naturalWidth, sampleHeight, 0, sampleHeight, canvas.width, sampleHeight);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let sum = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        sum += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+      const avg = sum / (data.length / 4);
+      return avg < 18;
+    } catch {
+      return false;
+    }
+  };
 
   return (
     <div 
@@ -215,10 +243,14 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           {imagesToShow.map((img, idx) => {
             const ratio = imgRatios[img.src];
             const isPortrait = ratio ? ratio < 1 : false;
-            const innerAspectRatio = fullscreen ? undefined : (inExpandedCard || isPortrait ? undefined : baseAspectRatio);
-            const objectFit = (fullscreen && isMobile) || inExpandedCard || isPortrait ? 'contain' : 'cover';
-            const imgHeight = fullscreen ? '100%' : (inExpandedCard || isPortrait ? 'auto' : '100%');
-            const imgMaxHeight = fullscreen ? '100%' : (inExpandedCard || isPortrait ? 'none' : '100%');
+            const isLandscape = ratio ? ratio > 1.05 : false;
+            const hasBars = !!imgHasBars[img.src];
+            const forceCrop = inExpandedCard && isLandscape && hasBars;
+            const innerAspectRatio = fullscreen ? undefined : ((inExpandedCard && !forceCrop) || isPortrait ? undefined : baseAspectRatio);
+            const objectFit = (fullscreen && isMobile) || (inExpandedCard && !forceCrop) || isPortrait ? 'contain' : 'cover';
+            const imgHeight = fullscreen ? '100%' : ((inExpandedCard && !forceCrop) || isPortrait ? 'auto' : '100%');
+            const imgMaxHeight = fullscreen ? '100%' : ((inExpandedCard && !forceCrop) || isPortrait ? 'none' : '100%');
+            const imgScale = forceCrop ? 'scale(1.08)' : 'none';
             return (
           <div
             key={idx}
@@ -262,15 +294,21 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    height: imgHeight,
                    maxWidth: '100%',
                    maxHeight: imgMaxHeight,
+                   transform: imgScale,
                    background: 'transparent',
                    margin: '0',
                    borderRadius,
                  }}
+                 crossOrigin="anonymous"
                  onLoad={(e) => {
                    const { naturalWidth, naturalHeight } = e.currentTarget;
                    if (!naturalWidth || !naturalHeight) return;
                    const nextRatio = naturalWidth / naturalHeight;
                    setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: nextRatio }));
+                   if (imgHasBars[img.src] === undefined) {
+                     const has = detectBlackBars(e.currentTarget);
+                     setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: has }));
+                   }
                  }}
                  draggable={false}
                />
