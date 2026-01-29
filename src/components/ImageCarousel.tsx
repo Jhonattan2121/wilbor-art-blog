@@ -48,6 +48,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const [translateX, setTranslateX] = useState(0);
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
   const touchStartY = useRef<number | null>(null);
+  const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
   const { theme, systemTheme } = useTheme();
@@ -166,9 +167,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }
 
   const borderRadius = fullscreen ? undefined : 12;
-  const clipPath = fullscreen ? undefined : `inset(0 round ${borderRadius}px)`;
-  const useAspectRatio = fullscreen ? undefined : '16 / 9';
   const containerHeight = fullscreen ? '100%' : 'auto';
+  const baseAspectRatio = '16 / 9';
 
   return (
     <div 
@@ -212,7 +212,14 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             willChange: 'transform'
           }}
         >
-          {imagesToShow.map((img, idx) => (
+          {imagesToShow.map((img, idx) => {
+            const ratio = imgRatios[img.src];
+            const isPortrait = ratio ? ratio < 1 : false;
+            const innerAspectRatio = fullscreen ? undefined : (inExpandedCard || isPortrait ? undefined : baseAspectRatio);
+            const objectFit = (fullscreen && isMobile) || inExpandedCard || isPortrait ? 'contain' : 'cover';
+            const imgHeight = fullscreen ? '100%' : (inExpandedCard || isPortrait ? 'auto' : '100%');
+            const imgMaxHeight = fullscreen ? '100%' : (inExpandedCard || isPortrait ? 'none' : '100%');
+            return (
           <div
             key={idx}
             style={{
@@ -234,11 +241,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 width: '100%',
                 height: containerHeight,
                 maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
-                aspectRatio: useAspectRatio,
+                aspectRatio: innerAspectRatio,
                 borderRadius,
                 overflow: 'hidden',
-                clipPath,
-                background: fullscreen ? 'transparent' : 'black',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -250,22 +255,29 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                  alt={img.alt || ''}
                  className={fullscreen ? "shadow-2xl" : "shadow-lg"}
                  style={{
-                   objectFit: (fullscreen && isMobile) ? 'contain' : 'cover',
+                   objectFit,
                    objectPosition: 'center',
                    display: 'block',
                    width: '100%',
-                   height: fullscreen ? '100%' : '100%',
+                   height: imgHeight,
                    maxWidth: '100%',
-                   maxHeight: fullscreen ? '100%' : '100%',
+                   maxHeight: imgMaxHeight,
                    background: 'transparent',
                    margin: '0',
                    borderRadius,
+                 }}
+                 onLoad={(e) => {
+                   const { naturalWidth, naturalHeight } = e.currentTarget;
+                   if (!naturalWidth || !naturalHeight) return;
+                   const nextRatio = naturalWidth / naturalHeight;
+                   setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: nextRatio }));
                  }}
                  draggable={false}
                />
             </div>
           </div>
-        ))}
+        );
+        })}
       </div>
       </div>
       {/* Navegação por bolinhas abaixo da imagem */}
