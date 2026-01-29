@@ -50,6 +50,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const touchStartY = useRef<number | null>(null);
   const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
   const [imgHasBars, setImgHasBars] = useState<Record<string, boolean>>({});
+  const preloadedRef = useRef<Record<string, boolean>>({});
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
   const { theme, systemTheme } = useTheme();
@@ -198,6 +199,33 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     }
   };
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    images.forEach((img) => {
+      if (preloadedRef.current[img.src]) return;
+      preloadedRef.current[img.src] = true;
+      const probe = new Image();
+      probe.crossOrigin = 'anonymous';
+      probe.onload = () => {
+        const { naturalWidth, naturalHeight } = probe;
+        if (naturalWidth && naturalHeight) {
+          const ratio = naturalWidth / naturalHeight;
+          setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: ratio }));
+          if (ratio > 1.05 && inExpandedCard) {
+            const has = detectBlackBars(probe);
+            setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: has }));
+          } else {
+            setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: false }));
+          }
+        }
+      };
+      probe.onerror = () => {
+        setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: false }));
+      };
+      probe.src = img.src;
+    });
+  }, [images, inExpandedCard]);
+
   return (
     <div 
       className={fullscreen ? "fixed inset-0 z-50" : inExpandedCard ? "relative w-full flex flex-col items-center" : "relative w-full flex flex-col items-center my-6"}
@@ -244,6 +272,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             const ratio = imgRatios[img.src];
             const isPortrait = ratio ? ratio < 1 : false;
             const isLandscape = ratio ? ratio > 1.05 : false;
+            const barsKnown = imgHasBars[img.src] !== undefined;
             const hasBars = !!imgHasBars[img.src];
             const forceCrop = inExpandedCard && isLandscape && hasBars;
             const innerAspectRatio = fullscreen ? undefined : ((inExpandedCard && !forceCrop) || isPortrait ? undefined : baseAspectRatio);
@@ -251,6 +280,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             const imgHeight = fullscreen ? '100%' : ((inExpandedCard && !forceCrop) || isPortrait ? 'auto' : '100%');
             const imgMaxHeight = fullscreen ? '100%' : ((inExpandedCard && !forceCrop) || isPortrait ? 'none' : '100%');
             const imgScale = forceCrop ? 'scale(1.08)' : 'none';
+            const ready = isLandscape && inExpandedCard ? barsKnown : true;
             return (
           <div
             key={idx}
@@ -295,20 +325,17 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    maxWidth: '100%',
                    maxHeight: imgMaxHeight,
                    transform: imgScale,
+                   opacity: ready ? 1 : 0,
+                   transition: 'opacity 140ms ease-out',
                    background: 'transparent',
                    margin: '0',
                    borderRadius,
                  }}
-                 crossOrigin="anonymous"
                  onLoad={(e) => {
                    const { naturalWidth, naturalHeight } = e.currentTarget;
                    if (!naturalWidth || !naturalHeight) return;
                    const nextRatio = naturalWidth / naturalHeight;
                    setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: nextRatio }));
-                   if (imgHasBars[img.src] === undefined) {
-                     const has = detectBlackBars(e.currentTarget);
-                     setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: has }));
-                   }
                  }}
                  draggable={false}
                />
