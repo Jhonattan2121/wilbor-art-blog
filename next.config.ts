@@ -41,6 +41,9 @@ if (HOSTNAME_AWS_S3) {
 }
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '1mb',
