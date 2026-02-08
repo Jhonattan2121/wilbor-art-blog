@@ -704,7 +704,7 @@ const MediaItem = ({
                     </button>
 
                     <div
-                        className="w-full h-full max-w-7xl px-4 sm:px-8 py-16 sm:py-20 flex items-center justify-center"
+                        className="w-full h-[100dvh] max-w-none px-0 py-0 flex items-center justify-center lg:max-w-7xl lg:px-8 lg:py-20"
                         onClick={e => e.stopPropagation()}
                         style={{ position: 'relative', zIndex: 1 }}
                     >
