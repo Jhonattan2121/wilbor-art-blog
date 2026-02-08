@@ -1,4 +1,3 @@
-import { useTheme } from 'next-themes';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -24,13 +23,25 @@ function removeImagesAndVideosFromMarkdown(markdown: string): string {
 
 
 function splitMarkdownWithImageBlocks(markdown: string) {
-    // Divide o markdown em linhas para facilitar
-    const lines = markdown.split(/\n+/);
+    // Preserva quebras de linha para manter parsing completo de markdown.
+    const lines = markdown.split('\n');
     const blocks: Array<{ type: 'carousel' | 'markdown'; content: string[]; images?: { src: string; alt?: string }[] }> = [];
     let currentBlock: string[] = [];
     let currentImages: { src: string; alt?: string }[] = [];
-    const imgMdRegex = /^!\[([^\]]*)\]\(([^\)]+)\)$/;
-    const imgHtmlRegex = /^<img [^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/>$/;
+    const imgHtmlRegex = /^<img\b[^>]*src=["']([^"']+)["'][^>]*>/i;
+
+    function parseMarkdownImageLine(line: string): { src: string; alt?: string } | null {
+        const trimmed = line.trim();
+        const match = trimmed.match(
+            /^!\[([^\]]*)\]\(\s*(<[^>]+>|[^)\s]+)(?:\s+["'][^"']*["'])?\s*\)$/
+        );
+        if (!match) return null;
+        let src = match[2].trim();
+        if (src.startsWith('<') && src.endsWith('>')) {
+            src = src.slice(1, -1);
+        }
+        return { src, alt: match[1] };
+    }
 
     function pushMarkdownBlock() {
         if (currentBlock.length > 0) {
@@ -46,14 +57,22 @@ function splitMarkdownWithImageBlocks(markdown: string) {
     }
 
     for (const line of lines) {
-        const mdMatch = imgMdRegex.exec(line.trim());
-        const htmlMatch = imgHtmlRegex.exec(line.trim());
-        if (mdMatch) {
+        const trimmed = line.trim();
+        const mdImage = parseMarkdownImageLine(trimmed);
+        const htmlMatch = imgHtmlRegex.exec(trimmed);
+
+        // Mantem linhas em branco entre imagens no mesmo bloco de carousel.
+        if (!trimmed && currentImages.length > 0) {
+            continue;
+        }
+
+        if (mdImage) {
             pushMarkdownBlock();
-            currentImages.push({ src: mdMatch[2], alt: mdMatch[1] });
+            currentImages.push(mdImage);
         } else if (htmlMatch) {
             pushMarkdownBlock();
-            currentImages.push({ src: htmlMatch[1], alt: htmlMatch[2] });
+            const altMatch = trimmed.match(/\balt=["']([^"']*)["']/i);
+            currentImages.push({ src: htmlMatch[1], alt: altMatch?.[1] || '' });
         } else {
             pushCarouselBlock();
             currentBlock.push(line);
@@ -67,8 +86,6 @@ function splitMarkdownWithImageBlocks(markdown: string) {
 export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster, columns = false, inExpandedCard = false, hasLittleContent = false }: MarkdownProps) {
     const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
     const hasSingleImage = images && images.length === 1;
-    const { theme } = useTheme();
-    const isDark = theme === 'dark';
 
     // Cores baseadas no tema - mesma cor em ambos os modos
     const textColor = '#888888';
@@ -111,13 +128,28 @@ export default function Markdown({ children, className = '', removeMedia = false
         ul: (props) => <ul className="list-disc pl-6 my-2" {...props} />,
         ol: (props) => <ol className="list-decimal pl-6 my-2" {...props} />,
         strong: (props) => (
-            <strong style={{  color: textColor }} {...props} />
+            <strong style={{ color: textColor, fontWeight: 700 }} {...props} />
+        ),
+        b: (props) => (
+            <b style={{ color: textColor, fontWeight: 700 }} {...props} />
         ),
         em: (props) => (
-            <em style={{  color: textColor }} {...props} />
+            <em style={{ color: textColor, fontStyle: 'italic' }} {...props} />
+        ),
+        i: (props) => (
+            <i style={{ color: textColor, fontStyle: 'italic' }} {...props} />
+        ),
+        del: (props) => (
+            <del style={{ color: textColor, textDecoration: 'line-through' }} {...props} />
+        ),
+        s: (props) => (
+            <s style={{ color: textColor, textDecoration: 'line-through' }} {...props} />
         ),
         blockquote: (props) => (
             <blockquote className="border-l-4 border-gray-400 pl-4 italic my-4" style={{  color: textColor }} {...props} />
+        ),
+        hr: () => (
+            <hr className="my-6 border-t border-gray-500/50" />
         ),
         code(props: any) {
             const { inline, children, ...rest } = props;
@@ -129,12 +161,27 @@ export default function Markdown({ children, className = '', removeMedia = false
                 </pre>
             );
         },
+        table: (props: any) => (
+            <div className="my-4 w-full overflow-x-auto">
+                <table className="w-full border-collapse text-left text-sm" {...props} />
+            </div>
+        ),
+        thead: (props) => <thead className="border-b border-gray-500/40" {...props} />,
+        tbody: (props) => <tbody className="divide-y divide-gray-500/30" {...props} />,
+        th: (props) => <th className="px-3 py-2 font-semibold" style={{ color: textColor }} {...props} />,
+        td: (props) => <td className="px-3 py-2" style={{ color: textColor }} {...props} />,
+        input: (props: any) => {
+            if (props?.type === 'checkbox') {
+                return <input {...props} readOnly className="mr-2 align-middle accent-gray-500" />;
+            }
+            return <input {...props} />;
+        },
         img: (props: any) => {
             const { className: imgClassName, style: imgStyle, ...rest } = props ?? {};
             const baseClassName = inExpandedCard
                 ? " !rounded-2xl w-full max-w-full h-auto my-6 block"
                 : " !rounded-2xl max-w-full h-auto my-6 block";
-            const mergedClassName = `${imgClassName ? String(imgClassName) : ""}${baseClassName}`;
+            const mergedClassName = `${imgClassName ? String(imgClassName) : ""} ${baseClassName}`.trim();
 
             const mergedStyle =
                 imgStyle && typeof imgStyle === 'object'
