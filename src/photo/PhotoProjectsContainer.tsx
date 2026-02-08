@@ -341,7 +341,9 @@ const MediaItem = ({
                             poster={updatedThumbnail || thumbnailUrl || undefined} // thumbnail como poster
                             className={clsx(
                                 "transition-all duration-300 filter grayscale hover:grayscale-0",
-                                isMainVideo ? "absolute top-0 left-0 w-full h-full object-contain" : "absolute inset-0 w-full h-full object-cover"
+                                isMainVideo
+                                    ? "absolute top-0 left-0 w-full h-full object-contain"
+                                    : "absolute inset-0 w-full h-full object-cover rounded-lg"
                             )}
                             autoPlay={isHovered || (!isMainVideo && isExpanded)}
                             loop={!isMainVideo}
@@ -380,7 +382,7 @@ const MediaItem = ({
                         src={updatedThumbnail || thumbnailUrl || media.src || 'https://placehold.co/600x400?text=No+Image'}
                         alt={media.title || ''}
                         fill
-                        className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0"
+                        className="object-cover transition-all duration-300 filter grayscale group-hover:grayscale-0 rounded-lg"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                         quality={85}
                         unoptimized={true}
@@ -446,7 +448,7 @@ const MediaItem = ({
             )}>
                 {!isExpanded && (
                     <>
-                        <div className="sm:hidden w-full">
+                        <div className="sm:hidden w-full rounded-lg overflow-hidden">
                             {mainItem.hiveMetadata?.body && updatedThumbnail ? (
                                 <div className="flex flex-col h-full w-full">
                                     <div className="relative w-full aspect-square">
@@ -454,7 +456,7 @@ const MediaItem = ({
                                             src={updatedThumbnail}
                                             alt={mainItem.title || ''}
                                             fill
-                                            className="object-cover filter grayscale group-hover:grayscale-0 rounded-t-lg"
+                                            className="object-cover filter grayscale group-hover:grayscale-0 rounded-lg"
                                             sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, 33vw"
                                             style={{ objectFit: 'cover', objectPosition: 'center' }}
                                         />
@@ -496,7 +498,7 @@ const MediaItem = ({
                                 </div>
                             )}
                         </div>
-                        <div className="hidden sm:flex flex-row h-full w-full">
+                        <div className="hidden sm:flex flex-row h-full w-full rounded-lg overflow-hidden">
                             {mainItem.hiveMetadata?.body && (
                                 <>
                                     {updatedThumbnail ? (
@@ -508,7 +510,7 @@ const MediaItem = ({
                                                             src={updatedThumbnail}
                                                             alt={mainItem.title || ''}
                                                             fill
-                                                            className="object-cover filter grayscale group-hover:grayscale-0"
+                                            className="object-cover filter grayscale group-hover:grayscale-0 rounded-lg"
                                                             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                                                             quality={85}
                                                             unoptimized={true}
@@ -516,7 +518,7 @@ const MediaItem = ({
                                                     </div>
                                                     <div className={
                                                         clsx(
-                                                            'bg-white dark:bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 transition-colors duration-100',
+                                                            'bg-white dark:bg-black flex flex-col justify-center px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-3 transition-colors duration-100 rounded-b-lg',
                                                             'group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black'
                                                         )
                                                     }>
