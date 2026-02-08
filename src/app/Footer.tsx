@@ -12,7 +12,7 @@ export default function Footer() {
             <ContactContent/> 
           </section>
             <p className="text-lg mt-8">
-            Wilbor Studio @ 2025
+            Wilbor Studio @{new Date().getFullYear()}
             </p>
           </div>
         </div>
