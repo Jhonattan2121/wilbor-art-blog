@@ -6,7 +6,7 @@ import { PATH_GRID } from '@/app/paths';
 import ExhibitionsContent from '@/components/ExhibitionsContent';
 import PartnersContent from '@/components/PartnersContent';
 import ScrollReveal from '@/components/ScrollReveal';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { memo, useCallback, useEffect, useState } from 'react';
 import ProjectsClient from './ProjectsClient';
 
@@ -20,6 +20,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Always reset scroll and URL to /projects (preservando query params como project e tag)
   useEffect(() => {
@@ -78,6 +79,21 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
     }
     
     if (targetId) {
+      if (targetId === 'projects') {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('tag');
+        cleanUrl.searchParams.delete('project');
+        cleanUrl.hash = '';
+        window.history.replaceState(null, '', PATH_GRID + cleanUrl.search);
+
+        setSelectedTag(null);
+        setActiveSection('projects');
+        window.dispatchEvent(new CustomEvent('wilbor:close-expanded-project'));
+        router.replace(PATH_GRID + cleanUrl.search);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
         // Altura do header: 90px desktop, 64px mobile
@@ -96,7 +112,7 @@ export default function ProjectsOnePageClient({ projectsProps }: { projectsProps
       // Fallback: se não encontrar a seção, recarrega a página
       window.location.href = href;
     }
-  }, []);
+  }, [router, setSelectedTag]);
 
   // Atualiza rota /projects#secao conforme o usuário rola (scroll spy baseado na seção mais próxima do centro)
   useEffect(() => {

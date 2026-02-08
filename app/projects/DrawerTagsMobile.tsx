@@ -27,7 +27,8 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
     }, []);
 
     useEffect(() => {
-        const tagFromUrl = searchParams.get('tag');
+        if (typeof window === 'undefined') return;
+        const tagFromUrl = new URL(window.location.href).searchParams.get('tag');
         if (tagFromUrl && tags.includes(tagFromUrl)) {
             if (typeof setSelectedTag === 'function' && tagFromUrl !== selectedTag) {
                 setSelectedTag(tagFromUrl);
