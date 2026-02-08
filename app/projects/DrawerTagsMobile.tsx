@@ -95,6 +95,10 @@ export default function DrawerTagsMobile({ tags, selectedTag, setSelectedTag, me
                 window.location.href = '/projects';
             }
         }
+
+        if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         
         // Fecha o drawer após um pequeno delay para garantir que o clique foi processado
         setTimeout(() => {
