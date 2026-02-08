@@ -180,7 +180,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     offset = translateX < 0 ? -2 * slideWidth : 0;
   }
 
-  const borderRadius = fullscreen ? undefined : 12;
+  const borderRadius = fullscreen ? undefined : 16;
   const containerHeight = fullscreen ? '100%' : 'auto';
   const baseAspectRatio = '16 / 9';
   const detectBlackBars = (imgEl: HTMLImageElement): boolean | null => {
@@ -260,6 +260,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   };
 
   if (images.length === 0) return null;
+  const useBlackBg = fullscreen;
+  const currentRatio = images[current]?.src ? imgRatios[images[current].src] : undefined;
+  const lockViewportToCurrent = Boolean(inExpandedCard && !fullscreen && currentRatio);
 
   return (
     <div 
@@ -271,17 +274,18 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center overflow-hidden bg-black"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-black"
-              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-black"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-transparent"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-transparent"
         }
         style={{
-          background: fullscreen ? 'black' : 'black',
+          background: useBlackBg ? 'black' : 'transparent',
           position: 'relative',
           isolation: fullscreen ? 'auto' : 'isolate',
           borderRadius,
           overflow: 'hidden',
           width: fullscreen ? '100%' : undefined,
           height: fullscreen ? '100%' : undefined,
+          aspectRatio: lockViewportToCurrent ? currentRatio : undefined,
           transform: fullscreen ? undefined : 'translateZ(0)',
           backfaceVisibility: fullscreen ? undefined : 'hidden',
           WebkitBackfaceVisibility: fullscreen ? undefined : 'hidden',
@@ -298,7 +302,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           style={{
             display: 'flex',
             width: '300%',
-            height: fullscreen ? '100%' : 'auto',
+            height: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : 'auto'),
             transform: `translateX(${offset}%)`,
             transition: transition ? 'transform 0.3s' : 'none',
             position: 'relative',
@@ -339,16 +343,16 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 padding: '0',
                 overflow: fullscreen ? 'visible' : 'hidden',
                 borderRadius,
-                background: fullscreen ? 'transparent' : 'black',
-                height: fullscreen ? '100%' : undefined,
+                background: fullscreen ? 'transparent' : 'transparent',
+                height: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : undefined),
               }}
             >
             <div
               style={{
                 width: '100%',
-                height: containerHeight,
+                height: lockViewportToCurrent ? '100%' : containerHeight,
                 maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
-                maxHeight: fullscreen ? '100%' : undefined,
+                maxHeight: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : undefined),
                 aspectRatio: innerAspectRatio,
                 borderRadius,
                 overflow: 'hidden',
@@ -367,9 +371,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    objectPosition: 'center',
                    display: 'block',
                    width: '100%',
-                   height: imgHeight,
+                   height: lockViewportToCurrent ? '100%' : imgHeight,
                    maxWidth: '100%',
-                   maxHeight: fullscreen ? '100%' : imgMaxHeight,
+                   maxHeight: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : imgMaxHeight),
                    transform: imgScale,
                    opacity: ready ? 1 : 0,
                    transition: 'opacity 140ms ease-out',

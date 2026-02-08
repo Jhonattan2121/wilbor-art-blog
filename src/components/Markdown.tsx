@@ -132,14 +132,14 @@ export default function Markdown({ children, className = '', removeMedia = false
         img: (props: any) => {
             const { className: imgClassName, style: imgStyle, ...rest } = props ?? {};
             const baseClassName = inExpandedCard
-                ? " !rounded-lg w-full max-w-full h-auto my-6 block"
-                : " !rounded-lg max-w-full h-auto my-6 block";
+                ? " !rounded-2xl w-full max-w-full h-auto my-6 block"
+                : " !rounded-2xl max-w-full h-auto my-6 block";
             const mergedClassName = `${imgClassName ? String(imgClassName) : ""}${baseClassName}`;
 
             const mergedStyle =
                 imgStyle && typeof imgStyle === 'object'
-                    ? { ...imgStyle, borderRadius: '0.5rem' }
-                    : { borderRadius: '0.5rem' };
+                    ? { ...imgStyle, borderRadius: '1rem' }
+                    : { borderRadius: '1rem' };
 
             if (hasSingleImage && images) {
                 // Renderiza a imagem única normalmente
