@@ -5,7 +5,6 @@ import { Discussion } from '@hiveio/dhive';
 
 export const getMediaType = (url: string, mediaType?: string) => {
   if (url.includes('ipfs.skatehive.app/ipfs/')) {
-    console.log('Encontrado URL do IPFS skatehive:', url);
     return 'iframe';
   }
 
@@ -50,8 +49,6 @@ export async function getHivePosts(username: string) {
       return await getPostsByAuthor(username);
     });
     
-    console.log('Posts found:', posts.length);
-
     const formattedPosts = posts.flatMap(post => {
       // Check if the post has the "hidden" tag
       try {
@@ -65,7 +62,6 @@ export async function getHivePosts(username: string) {
       }
 
       const mediaItems = MarkdownRenderer.extractMediaFromHive(post);
-      console.log('Media items found:', mediaItems.length);
 
       return mediaItems.map((media) => {
         let postTags: string[] = [];
@@ -206,7 +202,6 @@ export function extractAndCountTags(
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count);
 }
-
 
 
 
