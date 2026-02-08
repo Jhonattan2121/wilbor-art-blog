@@ -11,7 +11,7 @@ export default function Footer() {
           <section id="contact">
             <ContactContent/> 
           </section>
-            <p className="text-lg mt-8">
+            <p className="text-lg mt-8 text-neutral-500 dark:text-neutral-400">
             Wilbor Studio @{new Date().getFullYear()}
             </p>
           </div>
