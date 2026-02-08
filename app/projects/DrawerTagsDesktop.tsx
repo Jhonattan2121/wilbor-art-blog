@@ -147,7 +147,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
           ></div>
           <aside
             id="desktop-tags-drawer"
-            className="fixed top-0 right-0 h-full w-80 max-w-[90vw] shadow-2xl z-50 flex flex-col bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-l-xl"
+            className="fixed top-0 right-0 h-[100dvh] w-80 max-w-[90vw] shadow-2xl z-50 flex flex-col bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-l-xl"
             style={{
               transform: drawerActive ? 'translateX(0)' : 'translateX(100%)',
               transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -232,7 +232,7 @@ export default function DrawerTagsDesktop({ tags, selectedTag, setSelectedTag, m
             </div>
             {/* Seletor de tema */}
             {mounted && (
-              <div className="w-full px-4 pb-3 pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
+              <div className="w-full px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 bg-white dark:bg-neutral-900 border-t border-gray-100 dark:border-neutral-800 sticky bottom-0 z-10">
                 <div className="flex gap-1.5">
                 
                   <button
