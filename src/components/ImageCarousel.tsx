@@ -10,31 +10,51 @@ interface ImageCarouselProps {
   onIndexChange?: (index: number) => void;
 }
 
+interface ViewportMetrics {
+  isMobileViewport: boolean;
+  isLandscape: boolean;
+  ratio: number;
+  isTabletViewport: boolean;
+}
+
+const getViewportMetrics = (): ViewportMetrics => {
+  if (typeof window === 'undefined') {
+    return {
+      isMobileViewport: false,
+      isLandscape: false,
+      ratio: 1,
+      isTabletViewport: false,
+    };
+  }
+  const coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const shortestSide = Math.min(width, height);
+  return {
+    isMobileViewport: coarse || width < 640 || height < 520,
+    isLandscape: width > height,
+    ratio: width / height,
+    isTabletViewport: coarse && shortestSide >= 700,
+  };
+};
+
 export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, hasLittleContent = false, currentIndex, onIndexChange }: ImageCarouselProps) {
   const [internalCurrent, setInternalCurrent] = useState(0);
   const current = currentIndex !== undefined ? currentIndex : internalCurrent;
-  const [isMobile, setIsMobile] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
-    return coarse || window.innerWidth < 640 || window.innerHeight < 520;
-  });
-  const [isLandscapeViewport, setIsLandscapeViewport] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.innerWidth > window.innerHeight;
-  });
-  const [viewportRatio, setViewportRatio] = useState<number>(() => {
-    if (typeof window === 'undefined') return 1;
-    return window.innerWidth / window.innerHeight;
-  });
+  const [isMobile, setIsMobile] = useState<boolean>(() => getViewportMetrics().isMobileViewport);
+  const [isLandscapeViewport, setIsLandscapeViewport] = useState<boolean>(() => getViewportMetrics().isLandscape);
+  const [viewportRatio, setViewportRatio] = useState<number>(() => getViewportMetrics().ratio);
+  const [isTabletViewport, setIsTabletViewport] = useState<boolean>(() => getViewportMetrics().isTabletViewport);
 
   // Detecta tamanho de tela para ajustar o fit apenas no fullscreen mobile
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handleResize = () => {
-      const coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
-      setIsMobile(coarse || window.innerWidth < 640 || window.innerHeight < 520);
-      setIsLandscapeViewport(window.innerWidth > window.innerHeight);
-      setViewportRatio(window.innerWidth / window.innerHeight);
+      const viewport = getViewportMetrics();
+      setIsMobile(viewport.isMobileViewport);
+      setIsLandscapeViewport(viewport.isLandscape);
+      setViewportRatio(viewport.ratio);
+      setIsTabletViewport(viewport.isTabletViewport);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -220,8 +240,18 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const shouldDetectBars = inExpandedCard || fullscreen;
-    images.forEach((img) => {
+    if (!images.length) return;
+    const shouldDetectBars = inExpandedCard && !fullscreen;
+    const prevIndex = current === 0 ? images.length - 1 : current - 1;
+    const nextIndex = current === images.length - 1 ? 0 : current + 1;
+    const probeTargets = fullscreen
+      ? [images[prevIndex], images[current], images[nextIndex]]
+      : images;
+    const uniqueTargets = probeTargets.filter((img, index, arr) => {
+      if (!img?.src) return false;
+      return arr.findIndex((item) => item?.src === img.src) === index;
+    });
+    uniqueTargets.forEach((img) => {
       if (preloadedRef.current[img.src]) return;
       preloadedRef.current[img.src] = true;
       const probe = new Image();
@@ -244,9 +274,9 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
       };
       probe.src = img.src;
     });
-  }, [images, inExpandedCard, fullscreen]);
+  }, [images, inExpandedCard, fullscreen, current]);
 
-  const shouldZoomFullscreen = fullscreen && isMobile && isLandscapeViewport;
+  const shouldZoomFullscreen = fullscreen && isMobile && isLandscapeViewport && !isTabletViewport;
   const getFullscreenZoom = (ratio?: number, hasBars?: boolean | null) => {
     if (!shouldZoomFullscreen) return 1;
     if (hasBars === true) return 1.12;
@@ -313,6 +343,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             const ratio = imgRatios[img.src];
             const isPortrait = ratio ? ratio < 1 : false;
             const isLandscape = ratio ? ratio > 1.05 : false;
+            const isActiveSlide = idx === 1;
             const barsKnown = imgHasBars[img.src] !== undefined;
             const hasBars = imgHasBars[img.src] === true;
             const forceCrop = inExpandedCard && isLandscape && hasBars;
@@ -329,6 +360,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             const finalScale = Math.max(baseScale, zoomScale);
             const imgScale = finalScale > 1 ? `scale(${finalScale})` : 'none';
             const ready = isLandscape && inExpandedCard ? barsKnown : true;
+            const fullscreenInset = fullscreen && isTabletViewport ? 32 : 0;
             return (
             <div
               key={idx}
@@ -349,10 +381,14 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             >
             <div
               style={{
-                width: '100%',
-                height: lockViewportToCurrent ? '100%' : containerHeight,
+                width: fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%',
+                height: fullscreen
+                  ? (fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%')
+                  : (lockViewportToCurrent ? '100%' : containerHeight),
                 maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
-                maxHeight: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : undefined),
+                maxHeight: fullscreen
+                  ? (fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%')
+                  : (lockViewportToCurrent ? '100%' : undefined),
                 aspectRatio: innerAspectRatio,
                 borderRadius,
                 overflow: 'hidden',
@@ -365,7 +401,10 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
               <img
                  src={img.src}
                  alt={img.alt || ''}
-                 className={fullscreen ? "shadow-2xl" : "shadow-lg"}
+                 className={fullscreen ? '' : 'shadow-lg'}
+                 loading={fullscreen && !isActiveSlide ? 'lazy' : 'eager'}
+                 decoding="async"
+                 fetchPriority={fullscreen ? (isActiveSlide ? 'high' : 'low') : 'auto'}
                  style={{
                    objectFit,
                    objectPosition: 'center',
@@ -380,6 +419,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    background: 'transparent',
                    margin: '0',
                    borderRadius,
+                   willChange: fullscreen ? 'transform' : undefined,
                  }}
                  onLoad={(e) => {
                    const { naturalWidth, naturalHeight } = e.currentTarget;

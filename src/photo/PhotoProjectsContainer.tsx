@@ -725,7 +725,7 @@ const MediaItem = ({
             {/* Modal fullscreen renderizado via Portal fora do card */}
             {mounted && isFullscreen && typeof window !== 'undefined' && createPortal(
                 <div
-                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
                     onClick={() => setIsFullscreen(false)}
                     style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
                 >
