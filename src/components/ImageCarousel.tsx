@@ -76,7 +76,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   }, [currentIndex]);
   
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchMoveX, setTouchMoveX] = useState<number | null>(null);
+  const touchMoveXRef = useRef<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [transition, setTransition] = useState(true);
   const [translateX, setTranslateX] = useState(0);
@@ -105,7 +105,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);
     touchStartY.current = e.touches[0].clientY;
-    setTouchMoveX(null);
+    touchMoveXRef.current = null;
     setIsDragging(true);
     setTransition(false);
     if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
@@ -119,7 +119,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     
     // Só ativa o drag se o movimento horizontal for maior que o vertical (swipe horizontal)
     if (deltaX > deltaY && deltaX > 10) {
-      setTouchMoveX(moveX);
+      touchMoveXRef.current = moveX;
       const delta = moveX - touchStartX;
       setTranslateX(delta);
     } else if (deltaY > deltaX && deltaY > 10) {
@@ -135,13 +135,14 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
       transitionTimeout.current = null;
     }
     touchStartY.current = null;
-    if (!isDragging || touchStartX === null || touchMoveX === null) {
+    if (!isDragging || touchStartX === null || touchMoveXRef.current === null) {
       setIsDragging(false);
       setTransition(true);
       setTranslateX(0);
       return;
     }
-    const distance = touchMoveX - touchStartX;
+    const distance = touchMoveXRef.current - touchStartX;
+    touchMoveXRef.current = null;
     setIsDragging(false);
     setTransition(true);
     // Se arrastar o suficiente, troca a imagem
@@ -194,8 +195,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const slideWidth = 100; // porcentagem
   // Offset do slide
   let offset = -slideWidth;
-  if (isDragging && touchStartX !== null && touchMoveX !== null) {
-    offset = -slideWidth + ((touchMoveX - touchStartX) / window.innerWidth) * slideWidth;
+  if (isDragging && touchStartX !== null && touchMoveXRef.current !== null) {
+    offset = -slideWidth + ((touchMoveXRef.current - touchStartX) / window.innerWidth) * slideWidth;
   } else if (transition && translateX !== 0) {
     offset = translateX < 0 ? -2 * slideWidth : 0;
   }
@@ -244,14 +245,12 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     const shouldDetectBars = inExpandedCard && !fullscreen;
     const prevIndex = current === 0 ? images.length - 1 : current - 1;
     const nextIndex = current === images.length - 1 ? 0 : current + 1;
-    const probeTargets = fullscreen
-      ? [images[prevIndex], images[current], images[nextIndex]]
-      : images;
-    const uniqueTargets = probeTargets.filter((img, index, arr) => {
+    const priorityTargets = [images[prevIndex], images[current], images[nextIndex]];
+    const uniqueTargets = priorityTargets.filter((img, index, arr) => {
       if (!img?.src) return false;
       return arr.findIndex((item) => item?.src === img.src) === index;
     });
-    uniqueTargets.forEach((img) => {
+    const probeImage = (img: { src: string; alt?: string }) => {
       if (preloadedRef.current[img.src]) return;
       preloadedRef.current[img.src] = true;
       const probe = new Image();
@@ -273,7 +272,24 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
         setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: null }));
       };
       probe.src = img.src;
-    });
+    };
+
+    uniqueTargets.forEach(probeImage);
+
+    // Em card expandido, processa o restante em lotes leves para evitar travar a UI.
+    const timeoutIds: number[] = [];
+    if (inExpandedCard && !fullscreen) {
+      const remaining = images.filter((img) => !uniqueTargets.some((p) => p.src === img.src));
+      let delay = 120;
+      remaining.forEach((img) => {
+        const timeoutId = window.setTimeout(() => probeImage(img), delay);
+        timeoutIds.push(timeoutId);
+        delay += 120;
+      });
+    }
+    return () => {
+      timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    };
   }, [images, inExpandedCard, fullscreen, current]);
 
   const shouldZoomFullscreen = fullscreen && isMobile && isLandscapeViewport && !isTabletViewport;
