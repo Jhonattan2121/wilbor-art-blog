@@ -212,9 +212,10 @@ const MediaItem = ({
         };
     }, [isExpanded]);
 
-    // Fecha fullscreen com ESC, navega com setas esquerda/direita e bloqueia scroll do body enquanto aberto
+    // Fecha fullscreen com ESC, navega com setas esquerda/direita e bloqueia scroll de fundo enquanto aberto
     useEffect(() => {
         if (typeof window === 'undefined') return;
+
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 setIsFullscreen(false);
@@ -231,18 +232,56 @@ const MediaItem = ({
                 }
             }
         };
-        if (isFullscreen) {
-            document.body.style.overflow = 'hidden';
-            window.addEventListener('keydown', onKey);
-        } else {
-            document.body.style.overflow = '';
+
+        if (!isFullscreen) {
             // Reset do índice quando sair do fullscreen
             setCurrentImageIndex(0);
+            return;
         }
+
+        const { body, documentElement } = document;
+        const scrollY = window.scrollY;
+
+        const prevBodyOverflow = body.style.overflow;
+        const prevBodyPosition = body.style.position;
+        const prevBodyTop = body.style.top;
+        const prevBodyLeft = body.style.left;
+        const prevBodyRight = body.style.right;
+        const prevBodyWidth = body.style.width;
+
+        const prevDocOverflow = documentElement.style.overflow;
+        const prevDocOverscroll = documentElement.style.overscrollBehavior;
+        const prevBodyOverscroll = body.style.overscrollBehavior;
+
+        documentElement.style.overflow = 'hidden';
+        documentElement.style.overscrollBehavior = 'none';
+        body.style.overflow = 'hidden';
+        body.style.overscrollBehavior = 'none';
+
+        // iOS/Android: fixa o body para impedir scroll de fundo durante fullscreen
+        body.style.position = 'fixed';
+        body.style.top = `-${scrollY}px`;
+        body.style.left = '0';
+        body.style.right = '0';
+        body.style.width = '100%';
+
+        window.addEventListener('keydown', onKey);
+
         return () => {
             window.removeEventListener('keydown', onKey);
-            document.body.style.overflow = '';
-        };
+
+            documentElement.style.overflow = prevDocOverflow;
+            documentElement.style.overscrollBehavior = prevDocOverscroll;
+            body.style.overflow = prevBodyOverflow;
+            body.style.overscrollBehavior = prevBodyOverscroll;
+            body.style.position = prevBodyPosition;
+            body.style.top = prevBodyTop;
+            body.style.left = prevBodyLeft;
+            body.style.right = prevBodyRight;
+            body.style.width = prevBodyWidth;
+
+            window.scrollTo(0, scrollY);
+        }
     }, [isFullscreen, images.length]);
     function getThumbnailUrl(item: Media): string | null {
         try {
