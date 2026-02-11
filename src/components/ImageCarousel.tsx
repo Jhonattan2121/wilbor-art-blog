@@ -313,7 +313,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   return (
     <div 
       className={fullscreen ? "fixed inset-0 z-50" : inExpandedCard ? "relative w-full flex flex-col items-center" : "relative w-full flex flex-col items-center my-6"}
-      style={fullscreen ? { margin: 0, padding: 0, width: '100vw', height: '100dvh' } : (inExpandedCard && !fullscreen ? { marginTop: '0', marginBottom: '0' } : undefined)}
+      style={fullscreen ? { margin: 0, padding: 0, width: '100%', height: 'var(--fullscreen-vh, 100svh)' } : (inExpandedCard && !fullscreen ? { marginTop: '0', marginBottom: '0' } : undefined)}
     >
       <div
         className={

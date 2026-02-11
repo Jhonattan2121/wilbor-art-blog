@@ -248,6 +248,9 @@ const MediaItem = ({
         const prevBodyLeft = body.style.left;
         const prevBodyRight = body.style.right;
         const prevBodyWidth = body.style.width;
+        const prevBodyBackground = body.style.backgroundColor;
+        const prevDocBackground = documentElement.style.backgroundColor;
+        const prevFullscreenVh = documentElement.style.getPropertyValue('--fullscreen-vh');
 
         const prevDocOverflow = documentElement.style.overflow;
         const prevDocOverscroll = documentElement.style.overscrollBehavior;
@@ -255,8 +258,16 @@ const MediaItem = ({
 
         documentElement.style.overflow = 'hidden';
         documentElement.style.overscrollBehavior = 'none';
+        documentElement.style.backgroundColor = '#000';
         body.style.overflow = 'hidden';
         body.style.overscrollBehavior = 'none';
+        body.style.backgroundColor = '#000';
+
+        const setViewportHeightVar = () => {
+            const visualHeight = window.visualViewport?.height ?? window.innerHeight;
+            documentElement.style.setProperty('--fullscreen-vh', `${Math.round(visualHeight)}px`);
+        };
+        setViewportHeightVar();
 
         // iOS/Android: fixa o body para impedir scroll de fundo durante fullscreen
         body.style.position = 'fixed';
@@ -266,19 +277,32 @@ const MediaItem = ({
         body.style.width = '100%';
 
         window.addEventListener('keydown', onKey);
+        window.addEventListener('resize', setViewportHeightVar);
+        window.visualViewport?.addEventListener('resize', setViewportHeightVar);
+        window.visualViewport?.addEventListener('scroll', setViewportHeightVar);
 
         return () => {
             window.removeEventListener('keydown', onKey);
+            window.removeEventListener('resize', setViewportHeightVar);
+            window.visualViewport?.removeEventListener('resize', setViewportHeightVar);
+            window.visualViewport?.removeEventListener('scroll', setViewportHeightVar);
 
             documentElement.style.overflow = prevDocOverflow;
             documentElement.style.overscrollBehavior = prevDocOverscroll;
+            documentElement.style.backgroundColor = prevDocBackground;
             body.style.overflow = prevBodyOverflow;
             body.style.overscrollBehavior = prevBodyOverscroll;
+            body.style.backgroundColor = prevBodyBackground;
             body.style.position = prevBodyPosition;
             body.style.top = prevBodyTop;
             body.style.left = prevBodyLeft;
             body.style.right = prevBodyRight;
             body.style.width = prevBodyWidth;
+            if (prevFullscreenVh) {
+                documentElement.style.setProperty('--fullscreen-vh', prevFullscreenVh);
+            } else {
+                documentElement.style.removeProperty('--fullscreen-vh');
+            }
 
             window.scrollTo(0, scrollY);
         }
@@ -727,7 +751,15 @@ const MediaItem = ({
                 <div
                     className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
                     onClick={() => setIsFullscreen(false)}
-                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        height: 'var(--fullscreen-vh, 100svh)',
+                        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+                    }}
                 >
                     {/* Botão de fechar no topo direito */}
                     <button
@@ -745,7 +777,11 @@ const MediaItem = ({
                     <div
                         className="w-full h-[100dvh] max-w-none px-0 py-0 flex items-center justify-center lg:max-w-7xl lg:px-8 lg:py-20"
                         onClick={e => e.stopPropagation()}
-                        style={{ position: 'relative', zIndex: 1 }}
+                        style={{
+                            position: 'relative',
+                            zIndex: 1,
+                            height: 'var(--fullscreen-vh, 100svh)',
+                        }}
                     >
                         <ImageCarousel
                             images={images.map(src => ({ src, alt: mainItem.title || '' }))}
