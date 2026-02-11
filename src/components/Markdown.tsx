@@ -39,8 +39,7 @@ function normalizeMarkdownFormatting(markdown: string): string {
         // Fallback global para inline markdown em conteúdo misto com HTML.
         .replace(/\*\*((?:(?!\*\*)[\s\S])+?)\*\*/g, '<strong>$1</strong>')
         .replace(/__((?:(?!__)[\s\S])+?)__/g, '<strong>$1</strong>')
-        .replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>')
-        .replace(/(^|[^_])_([^_\n]+?)_(?!_)/g, '$1<em>$2</em>')
+        .replace(/(^|[\s(>])\*([^*\n]+?)\*(?=[\s).,!?:;<]|$)/g, '$1<em>$2</em>')
         .replace(/~~((?:(?!~~)[\s\S])+?)~~/g, '<del>$1</del>')
         .replace(/`([^`\n]+?)`/g, '<code>$1</code>');
 }

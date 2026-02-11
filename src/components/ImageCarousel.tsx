@@ -84,6 +84,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const touchStartY = useRef<number | null>(null);
   const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
   const [imgHasBars, setImgHasBars] = useState<Record<string, boolean | null>>({});
+  const [imgSrcOverrides, setImgSrcOverrides] = useState<Record<string, string>>({});
   const preloadedRef = useRef<Record<string, boolean>>({});
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
@@ -356,6 +357,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           }}
         >
           {imagesToShow.map((img, idx) => {
+            const resolvedSrc = imgSrcOverrides[img.src] || img.src;
             const ratio = imgRatios[img.src];
             const isPortrait = ratio ? ratio < 1 : false;
             const isLandscape = ratio ? ratio > 1.05 : false;
@@ -416,7 +418,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
               }}
             >
               <img
-                 src={img.src}
+                 src={resolvedSrc}
                  alt={img.alt || ''}
                  className={fullscreen ? '' : 'shadow-lg'}
                  loading={fullscreen && !isActiveSlide ? 'lazy' : 'eager'}
@@ -443,6 +445,16 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    if (!naturalWidth || !naturalHeight) return;
                    const nextRatio = naturalWidth / naturalHeight;
                    setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: nextRatio }));
+                 }}
+                 onError={() => {
+                   setImgSrcOverrides((prev) => {
+                     if (prev[img.src]) return prev;
+                     // Fallback para proxy Hive quando gateway original falhar (404/timeout).
+                     return {
+                       ...prev,
+                       [img.src]: `https://images.hive.blog/0x0/${img.src}`,
+                     };
+                   });
                  }}
                  draggable={false}
                />

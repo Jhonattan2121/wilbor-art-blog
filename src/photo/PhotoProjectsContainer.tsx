@@ -16,8 +16,9 @@ import { Media, PhotoGridContainerProps } from './components/types';
 
 const formatPinataUrl = (url: string): string => {
     if (!url) return '';
+    // Mantém query params (ex: pinataGatewayToken), pois alguns gateways exigem token.
     if (url.includes('pinataGatewayToken')) {
-        return url.split('?')[0];
+        return url.trim().replace(/['"]+/g, '');
     }
     if (url.includes('images.hive.blog')) {
         return url.trim().replace(/['"]+/g, '');
