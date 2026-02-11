@@ -202,7 +202,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     offset = translateX < 0 ? -2 * slideWidth : 0;
   }
 
-  const borderRadius = fullscreen ? undefined : 16;
+  const borderRadius = fullscreen ? undefined : 20;
   const containerHeight = fullscreen ? '100%' : 'auto';
   const baseAspectRatio = '16 / 9';
   const detectBlackBars = (imgEl: HTMLImageElement): boolean | null => {
@@ -321,8 +321,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center overflow-hidden bg-black"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-transparent"
-              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg bg-transparent"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl bg-black"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl bg-black"
         }
         style={{
           background: useBlackBg ? 'black' : 'transparent',
@@ -364,16 +364,11 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             const isActiveSlide = idx === 1;
             const barsKnown = imgHasBars[img.src] !== undefined;
             const hasBars = imgHasBars[img.src] === true;
-            // No card expandido, sempre prioriza contain para evitar corte.
-            const forceCrop = !inExpandedCard && isLandscape && hasBars;
-            const innerAspectRatio = fullscreen ? undefined : ((inExpandedCard && !forceCrop) || isPortrait ? undefined : baseAspectRatio);
-            const objectFit = fullscreen
-              ? 'contain'
-              : (inExpandedCard && !forceCrop) || isPortrait
-                ? 'contain'
-                : 'cover';
-            const imgHeight = fullscreen ? '100%' : ((inExpandedCard && !forceCrop) || isPortrait ? 'auto' : '100%');
-            const imgMaxHeight = fullscreen ? '100%' : ((inExpandedCard && !forceCrop) || isPortrait ? 'none' : '100%');
+            const forceCrop = false;
+            const innerAspectRatio = undefined;
+            const objectFit = 'contain';
+            const imgHeight = fullscreen ? '100%' : 'auto';
+            const imgMaxHeight = fullscreen ? '100%' : '100%';
             const zoomScale = getFullscreenZoom(ratio, imgHasBars[img.src]);
             const baseScale = forceCrop ? 1.08 : 1;
             const finalScale = Math.max(baseScale, zoomScale);
@@ -411,6 +406,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 aspectRatio: innerAspectRatio,
                 borderRadius,
                 overflow: 'hidden',
+                background: fullscreen ? 'transparent' : '#000',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -438,6 +434,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    background: 'transparent',
                    margin: '0',
                    borderRadius,
+                   clipPath: fullscreen ? undefined : `inset(0 round ${borderRadius}px)`,
                    willChange: fullscreen ? 'transform' : undefined,
                  }}
                  onLoad={(e) => {
