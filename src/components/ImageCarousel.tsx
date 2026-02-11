@@ -362,7 +362,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
             const isActiveSlide = idx === 1;
             const barsKnown = imgHasBars[img.src] !== undefined;
             const hasBars = imgHasBars[img.src] === true;
-            const forceCrop = inExpandedCard && isLandscape && hasBars;
+            // No card expandido, sempre prioriza contain para evitar corte.
+            const forceCrop = !inExpandedCard && isLandscape && hasBars;
             const innerAspectRatio = fullscreen ? undefined : ((inExpandedCard && !forceCrop) || isPortrait ? undefined : baseAspectRatio);
             const objectFit = fullscreen
               ? 'contain'
