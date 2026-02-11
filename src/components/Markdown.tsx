@@ -115,6 +115,28 @@ export default function Markdown({ children, className = '', removeMedia = false
     const textColor = '#888888';
 
     // Mover components para cima!
+    const hasBlockChildren = (node: any): boolean => {
+        if (!node || !Array.isArray(node.children)) return false;
+        return node.children.some((child: any) => {
+            const tag = child?.tagName;
+            return tag === 'div' ||
+                tag === 'video' ||
+                tag === 'iframe' ||
+                tag === 'table' ||
+                tag === 'ul' ||
+                tag === 'ol' ||
+                tag === 'blockquote' ||
+                tag === 'pre' ||
+                tag === 'hr' ||
+                tag === 'h1' ||
+                tag === 'h2' ||
+                tag === 'h3' ||
+                tag === 'h4' ||
+                tag === 'h5' ||
+                tag === 'h6';
+        });
+    };
+
     const components: Components = {
         h1: (props) => (
             <h1 className="text-3xl font-bold mt-8 mb-4" style={{  color: textColor }} {...props} />
@@ -134,9 +156,14 @@ export default function Markdown({ children, className = '', removeMedia = false
         h6: (props) => (
             <h6 className="text-sm font-semibold mt-2 mb-1" style={{  color: textColor }} {...props} />
         ),
-        p: (props) => (
-            <p style={{  color: textColor }} {...props} />
-        ),
+        p: (props: any) => {
+            const { node, ...rest } = props ?? {};
+            // Evita HTML inválido: <div>/<video>/<iframe> dentro de <p> causa hydration mismatch.
+            if (hasBlockChildren(node)) {
+                return <div style={{ color: textColor }} {...rest} />;
+            }
+            return <p style={{ color: textColor }} {...rest} />;
+        },
         li: (props) => (
             <li style={{  color: textColor }} {...props} />
         ),
