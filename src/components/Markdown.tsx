@@ -21,6 +21,30 @@ function removeImagesAndVideosFromMarkdown(markdown: string): string {
     return result;
 }
 
+function normalizeMarkdownFormatting(markdown: string): string {
+    return markdown
+        .replace(/\r\n/g, '\n')
+        .replace(/＊/g, '*')
+        .split('\n')
+        .map((line) =>
+            line
+                .replace(/\\\*\\\*([^*]+?)\\\*\\\*/g, '**$1**')
+                .replace(/\\\*([^*]+?)\\\*/g, '*$1*')
+                .replace(/\\_\\_([^_]+?)\\_\\_/g, '__$1__')
+                .replace(/\\_([^_]+?)\\_/g, '_$1_')
+                .replace(/\\~\\~([^~]+?)\\~\\~/g, '~~$1~~')
+                .replace(/\\`([^`]+?)\\`/g, '`$1`')
+        )
+        .join('\n')
+        // Fallback global para inline markdown em conteúdo misto com HTML.
+        .replace(/\*\*((?:(?!\*\*)[\s\S])+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/__((?:(?!__)[\s\S])+?)__/g, '<strong>$1</strong>')
+        .replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>')
+        .replace(/(^|[^_])_([^_\n]+?)_(?!_)/g, '$1<em>$2</em>')
+        .replace(/~~((?:(?!~~)[\s\S])+?)~~/g, '<del>$1</del>')
+        .replace(/`([^`\n]+?)`/g, '<code>$1</code>');
+}
+
 
 function splitMarkdownWithImageBlocks(markdown: string) {
     // Preserva quebras de linha para manter parsing completo de markdown.
@@ -84,7 +108,8 @@ function splitMarkdownWithImageBlocks(markdown: string) {
 }
 
 export default function Markdown({ children, className = '', removeMedia = false, images, videoPoster, columns = false, inExpandedCard = false, hasLittleContent = false }: MarkdownProps) {
-    const content = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
+    const baseContent = removeMedia ? removeImagesAndVideosFromMarkdown(children) : children;
+    const content = normalizeMarkdownFormatting(baseContent);
     const hasSingleImage = images && images.length === 1;
 
     // Cores baseadas no tema - mesma cor em ambos os modos
