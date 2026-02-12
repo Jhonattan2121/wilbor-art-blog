@@ -67,6 +67,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const [translateX, setTranslateX] = useState(0);
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
   const touchStartY = useRef<number | null>(null);
+  const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
   const [imgSrcOverrides, setImgSrcOverrides] = useState<Record<string, string>>({});
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
@@ -184,6 +185,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
 
   const borderRadius = fullscreen ? undefined : 8;
   const containerHeight = fullscreen ? '100%' : 'auto';
+  const currentRatio = images[current]?.src ? imgRatios[images[current].src] : undefined;
+  const lockViewportToCurrent = Boolean(inExpandedCard && !fullscreen && currentRatio);
 
   if (images.length === 0) return null;
 
@@ -209,6 +212,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           overflow: 'hidden',
           width: fullscreen ? '100%' : undefined,
           height: fullscreen ? '100%' : undefined,
+          aspectRatio: lockViewportToCurrent ? currentRatio : undefined,
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -219,7 +223,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           style={{
             display: 'flex',
             width: '300%',
-            height: fullscreen ? '100%' : 'auto',
+            height: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : 'auto'),
             transform: `translateX(${offset}%)`,
             transition: transition ? 'transform 0.3s' : 'none',
             position: 'relative',
@@ -247,7 +251,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 padding: '0',
                 overflow: fullscreen ? 'visible' : 'hidden',
                 borderRadius,
-                height: fullscreen ? '100%' : undefined,
+                height: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : undefined),
               }}
             >
             <div
@@ -255,11 +259,11 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 width: fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%',
                 height: fullscreen
                   ? (fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%')
-                  : containerHeight,
+                  : (lockViewportToCurrent ? '100%' : containerHeight),
                 maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
                 maxHeight: fullscreen
                   ? (fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%')
-                  : undefined,
+                  : (lockViewportToCurrent ? '100%' : undefined),
                 borderRadius,
                 overflow: 'hidden',
                 display: 'flex',
@@ -280,10 +284,16 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    objectPosition: 'center',
                    display: 'block',
                    width: '100%',
-                   height: imgHeight,
+                   height: lockViewportToCurrent ? '100%' : imgHeight,
                    maxWidth: '100%',
-                   maxHeight: imgMaxHeight,
+                   maxHeight: lockViewportToCurrent ? '100%' : imgMaxHeight,
                    margin: '0',
+                 }}
+                 onLoad={(e) => {
+                   const { naturalWidth, naturalHeight } = e.currentTarget;
+                   if (!naturalWidth || !naturalHeight) return;
+                   const nextRatio = naturalWidth / naturalHeight;
+                   setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: nextRatio }));
                  }}
                  onError={() => {
                    setImgSrcOverrides((prev) => {
