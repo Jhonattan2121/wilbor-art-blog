@@ -182,7 +182,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     offset = translateX < 0 ? -2 * slideWidth : 0;
   }
 
-  const borderRadius = fullscreen ? undefined : 20;
+  const borderRadius = fullscreen ? undefined : 8;
   const containerHeight = fullscreen ? '100%' : 'auto';
 
   if (images.length === 0) return null;
@@ -197,8 +197,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           fullscreen 
             ? "w-full h-full flex justify-center items-center overflow-hidden"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl"
-              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-lg"
         }
         style={{
           position: 'relative',
