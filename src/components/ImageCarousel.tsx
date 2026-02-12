@@ -66,6 +66,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const [transition, setTransition] = useState(true);
   const [translateX, setTranslateX] = useState(0);
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
+  const isAnimatingRef = useRef(false);
   const touchStartY = useRef<number | null>(null);
   const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
   const [imgSrcOverrides, setImgSrcOverrides] = useState<Record<string, string>>({});
@@ -85,6 +86,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
 
   // Eventos de swipe
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (isAnimatingRef.current) return;
     setTouchStartX(e.touches[0].clientX);
     touchStartY.current = e.touches[0].clientY;
     touchMoveXRef.current = null;
@@ -129,26 +131,28 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
     setTransition(true);
     // Se arrastar o suficiente, troca a imagem
     if (distance < -60) {
+      isAnimatingRef.current = true;
       setTranslateX(-window.innerWidth);
       transitionTimeout.current = setTimeout(() => {
         setTransition(false);
         setCurrent(getNextIndex());
-        setTranslateX(window.innerWidth); // começa fora da tela à direita
-        setTimeout(() => {
+        setTranslateX(0);
+        requestAnimationFrame(() => {
           setTransition(true);
-          setTranslateX(0); // anima para o centro
-        }, 20);
+          isAnimatingRef.current = false;
+        });
       }, 300);
     } else if (distance > 60) {
+      isAnimatingRef.current = true;
       setTranslateX(window.innerWidth);
       transitionTimeout.current = setTimeout(() => {
         setTransition(false);
         setCurrent(getPrevIndex());
-        setTranslateX(-window.innerWidth); // começa fora da tela à esquerda
-        setTimeout(() => {
+        setTranslateX(0);
+        requestAnimationFrame(() => {
           setTransition(true);
-          setTranslateX(0); // anima para o centro
-        }, 20);
+          isAnimatingRef.current = false;
+        });
       }, 300);
     } else {
       // Volta para o centro
