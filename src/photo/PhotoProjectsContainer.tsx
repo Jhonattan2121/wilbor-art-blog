@@ -961,23 +961,25 @@ export default function PhotoGridContainer({
 	                            <div
 	                                key={permlink}
 	                                ref={el => { cardRefs.current[permlink] = el; }}
-	                                className={clsx(
-                            'relative overflow-hidden w-full shadow-sm',
-                            'transition-all duration-300',
-                            'rounded-lg',
-                            'bg-transparent',
+		                                className={clsx(
+	                            'relative overflow-hidden w-full',
+	                            'transition-all duration-300',
+	                            'rounded-lg',
+	                            'bg-transparent',
+                                    'focus:outline-none',
+	                                    !isExpanded && 'shadow-sm',
 
-                                    isExpanded
-                                        ? (
+	                                    isExpanded
+	                                        ? (
                                             hasLargeContentMap[permlink]
                                                 ? 'col-span-2 sm:col-span-2 md:col-span-2 lg:col-span-2 row-span-6 sm:row-span-7 md:row-span-8'
                                                 : 'col-span-1 sm:col-span-1 md:col-span-2 lg:col-span-2 row-span-4 sm:row-span-5 md:row-span-6'
                                         )
                                         : 'w-full',
 	                                )}
-	                                tabIndex={0}
-	                                aria-label={`Projeto ${group[0]?.title || ''}`}
-	                            >
+                                        style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
+		                                aria-label={`Projeto ${group[0]?.title || ''}`}
+		                            >
                                 <MediaItem
                                     items={group}
                                     isExpanded={isExpanded}

@@ -11,18 +11,12 @@ interface ImageCarouselProps {
 }
 
 interface ViewportMetrics {
-  isMobileViewport: boolean;
-  isLandscape: boolean;
-  ratio: number;
   isTabletViewport: boolean;
 }
 
 const getViewportMetrics = (): ViewportMetrics => {
   if (typeof window === 'undefined') {
     return {
-      isMobileViewport: false,
-      isLandscape: false,
-      ratio: 1,
       isTabletViewport: false,
     };
   }
@@ -31,29 +25,20 @@ const getViewportMetrics = (): ViewportMetrics => {
   const height = window.innerHeight;
   const shortestSide = Math.min(width, height);
   return {
-    isMobileViewport: coarse || width < 640 || height < 520,
-    isLandscape: width > height,
-    ratio: width / height,
     isTabletViewport: coarse && shortestSide >= 700,
   };
 };
 
-export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, hasLittleContent = false, currentIndex, onIndexChange }: ImageCarouselProps) {
+export default function ImageCarousel({ images, fullscreen = false, inExpandedCard = false, currentIndex, onIndexChange }: ImageCarouselProps) {
   const [internalCurrent, setInternalCurrent] = useState(0);
   const current = currentIndex !== undefined ? currentIndex : internalCurrent;
-  const [isMobile, setIsMobile] = useState<boolean>(() => getViewportMetrics().isMobileViewport);
-  const [isLandscapeViewport, setIsLandscapeViewport] = useState<boolean>(() => getViewportMetrics().isLandscape);
-  const [viewportRatio, setViewportRatio] = useState<number>(() => getViewportMetrics().ratio);
   const [isTabletViewport, setIsTabletViewport] = useState<boolean>(() => getViewportMetrics().isTabletViewport);
 
-  // Detecta tamanho de tela para ajustar o fit apenas no fullscreen mobile
+  // Detecta tamanho de tela para ajustes de fullscreen em tablet
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handleResize = () => {
       const viewport = getViewportMetrics();
-      setIsMobile(viewport.isMobileViewport);
-      setIsLandscapeViewport(viewport.isLandscape);
-      setViewportRatio(viewport.ratio);
       setIsTabletViewport(viewport.isTabletViewport);
     };
     handleResize();
@@ -82,10 +67,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const [translateX, setTranslateX] = useState(0);
   const transitionTimeout = useRef<NodeJS.Timeout | null>(null);
   const touchStartY = useRef<number | null>(null);
-  const [imgRatios, setImgRatios] = useState<Record<string, number>>({});
-  const [imgHasBars, setImgHasBars] = useState<Record<string, boolean | null>>({});
   const [imgSrcOverrides, setImgSrcOverrides] = useState<Record<string, string>>({});
-  const preloadedRef = useRef<Record<string, boolean>>({});
 
   // Ajuste de cor das bolinhas conforme o tema (pedido do layout)
   const { theme, systemTheme } = useTheme();
@@ -93,9 +75,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
   const isDark = resolvedTheme === 'dark';
   // Mesma cor de cinza escuro usada no ícone de fechar (IconX) para seguir o layout no modo escuro
   const inactiveDotBg = isDark ? '#626262' : '#e5e7eb';
-  const inactiveDotBorder = isDark ? '#626262' : '#9ca3af';
   const activeDotBg = '#ef4444';
-  const activeDotBorder = '#ef4444';
 
   // Próxima imagem
   const getNextIndex = () => (current === images.length - 1 ? 0 : current + 1);
@@ -204,112 +184,8 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
 
   const borderRadius = fullscreen ? undefined : 20;
   const containerHeight = fullscreen ? '100%' : 'auto';
-  const baseAspectRatio = '16 / 9';
-  const detectBlackBars = (imgEl: HTMLImageElement): boolean | null => {
-    try {
-      const { naturalWidth, naturalHeight } = imgEl;
-      if (!naturalWidth || !naturalHeight) return false;
-      const canvas = document.createElement('canvas');
-      const sampleHeight = Math.max(4, Math.round(naturalHeight * 0.06));
-      canvas.width = Math.min(naturalWidth, 320);
-      canvas.height = sampleHeight * 3;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
-      const midY = Math.max(0, Math.floor(naturalHeight / 2 - sampleHeight / 2));
-      ctx.drawImage(imgEl, 0, 0, naturalWidth, sampleHeight, 0, 0, canvas.width, sampleHeight);
-      ctx.drawImage(imgEl, 0, midY, naturalWidth, sampleHeight, 0, sampleHeight, canvas.width, sampleHeight);
-      ctx.drawImage(imgEl, 0, naturalHeight - sampleHeight, naturalWidth, sampleHeight, 0, sampleHeight * 2, canvas.width, sampleHeight);
-      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-      const segmentPixels = canvas.width * sampleHeight;
-      const avgSegment = (segmentIndex: number) => {
-        const start = segmentIndex * segmentPixels * 4;
-        const end = start + segmentPixels * 4;
-        let sum = 0;
-        for (let i = start; i < end; i += 4) {
-          sum += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-        }
-        return sum / segmentPixels;
-      };
-      const avgTop = avgSegment(0);
-      const avgMid = avgSegment(1);
-      const avgBottom = avgSegment(2);
-      const avgTopBottom = (avgTop + avgBottom) / 2;
-      return avgTopBottom < 42 && avgTopBottom < avgMid * 0.7;
-    } catch {
-      return null;
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!images.length) return;
-    const shouldDetectBars = inExpandedCard && !fullscreen;
-    const prevIndex = current === 0 ? images.length - 1 : current - 1;
-    const nextIndex = current === images.length - 1 ? 0 : current + 1;
-    const priorityTargets = [images[prevIndex], images[current], images[nextIndex]];
-    const uniqueTargets = priorityTargets.filter((img, index, arr) => {
-      if (!img?.src) return false;
-      return arr.findIndex((item) => item?.src === img.src) === index;
-    });
-    const probeImage = (img: { src: string; alt?: string }) => {
-      if (preloadedRef.current[img.src]) return;
-      preloadedRef.current[img.src] = true;
-      const probe = new Image();
-      probe.crossOrigin = 'anonymous';
-      probe.onload = () => {
-        const { naturalWidth, naturalHeight } = probe;
-        if (naturalWidth && naturalHeight) {
-          const ratio = naturalWidth / naturalHeight;
-          setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: ratio }));
-          if (ratio > 1.05 && shouldDetectBars) {
-            const has = detectBlackBars(probe);
-            setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: has }));
-          } else {
-            setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: false }));
-          }
-        }
-      };
-      probe.onerror = () => {
-        setImgHasBars((prev) => (prev[img.src] !== undefined ? prev : { ...prev, [img.src]: null }));
-      };
-      probe.src = img.src;
-    };
-
-    uniqueTargets.forEach(probeImage);
-
-    // Em card expandido, processa o restante em lotes leves para evitar travar a UI.
-    const timeoutIds: number[] = [];
-    if (inExpandedCard && !fullscreen) {
-      const remaining = images.filter((img) => !uniqueTargets.some((p) => p.src === img.src));
-      let delay = 120;
-      remaining.forEach((img) => {
-        const timeoutId = window.setTimeout(() => probeImage(img), delay);
-        timeoutIds.push(timeoutId);
-        delay += 120;
-      });
-    }
-    return () => {
-      timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
-    };
-  }, [images, inExpandedCard, fullscreen, current]);
-
-  const shouldZoomFullscreen = fullscreen && isMobile && isLandscapeViewport && !isTabletViewport;
-  const getFullscreenZoom = (ratio?: number, hasBars?: boolean | null) => {
-    if (!shouldZoomFullscreen) return 1;
-    if (hasBars === true) return 1.12;
-    if (!ratio || !viewportRatio) return 1.08;
-    const diff = ratio / viewportRatio;
-    if (diff > 1) {
-      return Math.min(1.18, diff);
-    }
-    const widen = 1 / diff;
-    return Math.min(1.12, 1 + (widen - 1) * 0.25);
-  };
 
   if (images.length === 0) return null;
-  const useBlackBg = fullscreen;
-  const currentRatio = images[current]?.src ? imgRatios[images[current].src] : undefined;
-  const lockViewportToCurrent = Boolean(inExpandedCard && !fullscreen && currentRatio);
 
   return (
     <div 
@@ -319,26 +195,20 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
       <div
         className={
           fullscreen 
-            ? "w-full h-full flex justify-center items-center overflow-hidden bg-black"
+            ? "w-full h-full flex justify-center items-center overflow-hidden"
             : inExpandedCard
-              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl bg-black"
-              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl bg-black"
+              ? "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl"
+              : "w-full flex justify-center items-center max-w-full mx-auto overflow-hidden rounded-2xl"
         }
         style={{
-          background: useBlackBg ? 'black' : 'transparent',
           position: 'relative',
           isolation: fullscreen ? 'auto' : 'isolate',
+          border: 'none',
+          boxShadow: 'none',
           borderRadius,
           overflow: 'hidden',
           width: fullscreen ? '100%' : undefined,
           height: fullscreen ? '100%' : undefined,
-          aspectRatio: lockViewportToCurrent ? currentRatio : undefined,
-          transform: fullscreen ? undefined : 'translateZ(0)',
-          backfaceVisibility: fullscreen ? undefined : 'hidden',
-          WebkitBackfaceVisibility: fullscreen ? undefined : 'hidden',
-          WebkitMaskImage: fullscreen ? undefined : 'linear-gradient(#fff 0 0)',
-          WebkitMaskRepeat: fullscreen ? undefined : 'no-repeat',
-          WebkitMaskSize: fullscreen ? undefined : '100% 100%',
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -349,31 +219,19 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
           style={{
             display: 'flex',
             width: '300%',
-            height: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : 'auto'),
+            height: fullscreen ? '100%' : 'auto',
             transform: `translateX(${offset}%)`,
             transition: transition ? 'transform 0.3s' : 'none',
             position: 'relative',
-            willChange: 'transform'
+            willChange: 'transform',
           }}
         >
           {imagesToShow.map((img, idx) => {
             const resolvedSrc = imgSrcOverrides[img.src] || img.src;
-            const ratio = imgRatios[img.src];
-            const isPortrait = ratio ? ratio < 1 : false;
-            const isLandscape = ratio ? ratio > 1.05 : false;
             const isActiveSlide = idx === 1;
-            const barsKnown = imgHasBars[img.src] !== undefined;
-            const hasBars = imgHasBars[img.src] === true;
-            const forceCrop = false;
-            const innerAspectRatio = undefined;
             const objectFit = 'contain';
             const imgHeight = fullscreen ? '100%' : 'auto';
             const imgMaxHeight = fullscreen ? '100%' : '100%';
-            const zoomScale = getFullscreenZoom(ratio, imgHasBars[img.src]);
-            const baseScale = forceCrop ? 1.08 : 1;
-            const finalScale = Math.max(baseScale, zoomScale);
-            const imgScale = finalScale > 1 ? `scale(${finalScale})` : 'none';
-            const ready = isLandscape && inExpandedCard ? barsKnown : true;
             const fullscreenInset = fullscreen && isTabletViewport ? 32 : 0;
             return (
             <div
@@ -389,8 +247,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 padding: '0',
                 overflow: fullscreen ? 'visible' : 'hidden',
                 borderRadius,
-                background: fullscreen ? 'transparent' : 'transparent',
-                height: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : undefined),
+                height: fullscreen ? '100%' : undefined,
               }}
             >
             <div
@@ -398,15 +255,13 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                 width: fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%',
                 height: fullscreen
                   ? (fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%')
-                  : (lockViewportToCurrent ? '100%' : containerHeight),
+                  : containerHeight,
                 maxWidth: fullscreen ? '100%' : 'min(900px, 100%)',
                 maxHeight: fullscreen
                   ? (fullscreenInset ? `calc(100% - ${fullscreenInset}px)` : '100%')
-                  : (lockViewportToCurrent ? '100%' : undefined),
-                aspectRatio: innerAspectRatio,
+                  : undefined,
                 borderRadius,
                 overflow: 'hidden',
-                background: fullscreen ? 'transparent' : '#000',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -416,7 +271,7 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
               <img
                  src={resolvedSrc}
                  alt={img.alt || ''}
-                 className={fullscreen ? '' : 'shadow-lg'}
+                 className=""
                  loading={fullscreen && !isActiveSlide ? 'lazy' : 'eager'}
                  decoding="async"
                  fetchPriority={fullscreen ? (isActiveSlide ? 'high' : 'low') : 'auto'}
@@ -425,23 +280,10 @@ export default function ImageCarousel({ images, fullscreen = false, inExpandedCa
                    objectPosition: 'center',
                    display: 'block',
                    width: '100%',
-                   height: lockViewportToCurrent ? '100%' : imgHeight,
+                   height: imgHeight,
                    maxWidth: '100%',
-                   maxHeight: fullscreen ? '100%' : (lockViewportToCurrent ? '100%' : imgMaxHeight),
-                   transform: imgScale,
-                   opacity: ready ? 1 : 0,
-                   transition: 'opacity 140ms ease-out',
-                   background: 'transparent',
+                   maxHeight: imgMaxHeight,
                    margin: '0',
-                   borderRadius,
-                   clipPath: fullscreen ? undefined : `inset(0 round ${borderRadius}px)`,
-                   willChange: fullscreen ? 'transform' : undefined,
-                 }}
-                 onLoad={(e) => {
-                   const { naturalWidth, naturalHeight } = e.currentTarget;
-                   if (!naturalWidth || !naturalHeight) return;
-                   const nextRatio = naturalWidth / naturalHeight;
-                   setImgRatios((prev) => (prev[img.src] ? prev : { ...prev, [img.src]: nextRatio }));
                  }}
                  onError={() => {
                    setImgSrcOverrides((prev) => {
