@@ -1,39 +1,71 @@
 .exhibition-content {
   margin-top: 0;
+  font-size: 0.9rem !important;
+  line-height: 1.45 !important;
 }
 
 .exhibition-content h1 {
-  font-size: 1.5rem;
+  font-size: 1.05rem !important;
   font-weight: 700;
-  margin-top: 0.25rem;
-  margin-bottom: 0;
+  margin-top: 0.35rem;
+  margin-bottom: 0.15rem;
   color: #f3f4f6;
-  line-height: 1.2;
+  line-height: 1.25 !important;
 }
 
 .exhibition-content h2 {
-  font-size: 1.25rem;
+  font-size: 0.98rem !important;
   font-weight: 700;
-  margin-top: 0.25rem;
-  margin-bottom: 0;
+  margin-top: 0.35rem;
+  margin-bottom: 0.12rem;
   color: #f3f4f6;
-  line-height: 1.2;
+  line-height: 1.25 !important;
 }
 
 .exhibition-content h3 {
-  font-size: 1.125rem;
+  font-size: 0.93rem !important;
   font-weight: 600;
-  margin-top: 0.125rem;
-  margin-bottom: 0;
+  margin-top: 0.25rem;
+  margin-bottom: 0.1rem;
   color: #f3f4f6;
-  line-height: 1.2;
+  line-height: 1.25 !important;
+}
+
+.exhibition-content h4,
+.exhibition-content h5,
+.exhibition-content h6 {
+  font-size: 0.88rem !important;
+  line-height: 1.25 !important;
+  margin-top: 0.2rem !important;
+  margin-bottom: 0.08rem !important;
+}
+
+.exhibition-content h6 {
+  color: #ef4444 !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.dark .exhibition-content h6 {
+  color: #f87171 !important;
 }
 
 .exhibition-content p {
-  margin-bottom: 0;
-  margin-top: 0;
-  line-height: 1.2;
-  padding-bottom: 0.125rem;
+  margin-bottom: 0.28rem !important;
+  margin-top: 0 !important;
+  line-height: 1.45 !important;
+  padding-bottom: 0 !important;
+}
+
+.exhibition-content p + p {
+  margin-top: 0.28rem !important;
+}
+
+.exhibition-content strong {
+  font-size: 0.94rem;
+  font-weight: 600;
 }
 
 .exhibition-content p:last-of-type {
@@ -66,9 +98,76 @@
 .exhibition-date {
   color: #ef4444;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 0.82rem !important;
+  line-height: 1.25 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.2rem !important;
+  display: block;
+}
+
+.exhibition-entry {
+  margin: 0 0 1rem 0;
+}
+
+.exhibition-line {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.exhibition-title {
+  font-weight: 700;
+  font-size: 1.02rem;
+  margin-bottom: 0.14rem;
+}
+
+.exhibition-subtitle {
+  font-style: italic;
+  font-size: 0.98rem;
+  margin-bottom: 0.14rem;
+}
+
+.exhibition-location {
+  font-size: 0.98rem;
+  margin-bottom: 0.22rem;
 }
 
 .dark .exhibition-date {
   color: #f87171;
+}
+
+@media (min-width: 640px) {
+  .exhibition-content {
+    font-size: 0.96rem !important;
+  }
+
+  .exhibition-content h1 {
+    font-size: 1.06rem !important;
+  }
+
+  .exhibition-content h2 {
+    font-size: 1rem !important;
+  }
+
+  .exhibition-content h3 {
+    font-size: 0.94rem !important;
+  }
+
+  .exhibition-content h4,
+  .exhibition-content h5,
+  .exhibition-content h6 {
+    font-size: 0.9rem !important;
+  }
+
+  .exhibition-entry {
+    margin-bottom: 1.2rem;
+  }
+
+  .exhibition-title {
+    font-size: 1.06rem;
+  }
+
+  .exhibition-subtitle,
+  .exhibition-location {
+    font-size: 1rem;
+  }
 }

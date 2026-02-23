@@ -25,6 +25,7 @@ function normalizeMarkdownFormatting(markdown: string): string {
     return markdown
         .replace(/\r\n/g, '\n')
         .replace(/＊/g, '*')
+        .replace(/\\<\s*br\s*\/?>/gi, '<br>')
         .split('\n')
         .map((line) =>
             line

@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { Metadata } from 'next/types';
 import '../tailwind.css';
 import '../styles/markdown-contact.css';
+import '../src/styles/exhibitions.css';
 import JsonLd from './components/JsonLd';
 
 export const metadata: Metadata = {

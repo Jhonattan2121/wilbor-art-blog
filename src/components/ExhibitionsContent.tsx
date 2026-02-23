@@ -26,6 +26,43 @@ interface HivePost {
   url: string;
 }
 
+function normalizeExhibitionSpacing(body: string): string {
+  const normalized = body
+    .replace(/\r\n/g, '\n')
+    .replace(/\\<br\s*\/?>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n');
+
+  const lines = normalized.split('\n').map((line) => line.trim());
+  const dateLike = /^(?:#{1,6}\s*)?(\d{2}\/\d{2}\/\d{4}|\d{1,2}\/\d{4}|\d{4}(?:\s*[–-]\s*\d{4})?)\s*$/;
+  const blocks: string[] = [];
+  let currentBlock: string[] = [];
+
+  const flushBlock = () => {
+    if (currentBlock.length === 0) return;
+    blocks.push(currentBlock.join('  \n').trim());
+    currentBlock = [];
+  };
+
+  for (const line of lines) {
+    if (!line) {
+      flushBlock();
+      continue;
+    }
+
+    const dateMatch = line.match(dateLike);
+    if (dateMatch) {
+      flushBlock();
+      currentBlock.push(`###### ${dateMatch[1]}`);
+      continue;
+    }
+
+    currentBlock.push(line);
+  }
+  flushBlock();
+
+  return blocks.join('\n\n').trim();
+}
+
 function extractMediaFromPost(post: any) {
   const images: string[] = [];
   const videos: string[] = [];
@@ -186,8 +223,8 @@ export default function ExhibitionsContent() {
                       ))}
                     </div>
                   )}
-                  <Markdown>
-                    {post.body.replace(/!\[.*?\]\(.*?\)/g, '')}
+                  <Markdown className="exhibition-content" removeMedia>
+                    {normalizeExhibitionSpacing(post.body)}
                   </Markdown>
                   {index < hivePosts.length - 1 && (
                     <hr className="border-t border-gray-200 dark:border-gray-700 my-4" />
@@ -201,4 +238,3 @@ export default function ExhibitionsContent() {
     </div>
   );
 }
-
