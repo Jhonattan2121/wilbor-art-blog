@@ -52,7 +52,7 @@ function normalizeExhibitionSpacing(body: string): string {
     const dateMatch = line.match(dateLike);
     if (dateMatch) {
       flushBlock();
-      currentBlock.push(`###### ${dateMatch[1]}`);
+      currentBlock.push(`<span class="exhibition-date">${dateMatch[1]}</span>`);
       continue;
     }
 
