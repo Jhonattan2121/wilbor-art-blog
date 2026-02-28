@@ -1,4 +1,16 @@
 /* Estilo para links do markdown na página de contato */
+.markdown-contact {
+  text-align: center;
+}
+
+.markdown-contact p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
 .markdown-contact a {
   display: inline-flex;
   align-items: center;
@@ -15,12 +27,18 @@
 .markdown-contact ul {
   list-style: none;
   padding-left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.9rem 1rem;
 }
 
 .markdown-contact li {
   display: flex;
   align-items: center;
-  margin-bottom: 18px;
+  justify-content: center;
+  margin-bottom: 0;
 }
 
 .markdown-contact img {

@@ -60,25 +60,32 @@ function useDynamicContactPost(username: string) {
 // Função para inserir <br> entre links, se estiverem juntos
 function formatContactBody(body: string) {
   // Regex para links Markdown: [texto](url)
-  return body.replace(/\]\([^)]*\)\s+/g, "]($1)<br>").replace(/<br>\s*/g, '<br>');
+  return body
+    .replace(/(\]\([^)]*\))\s+/g, '$1<br>')
+    .replace(/<br>\s*/g, '<br>');
 }
 
 // Componente de conteúdo de contato (sem ViewSwitcher)
 export default function ContactContent() {
-  const { post, loading, error } = useDynamicContactPost(process.env.NEXT_PUBLIC_HIVE_USERNAME || '');
+  const {
+    post,
+    loading,
+    error,
+  } = useDynamicContactPost(process.env.NEXT_PUBLIC_HIVE_USERNAME || '');
 
   return (
-    <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200 text-left">
-      <div className="max-w-4xl w-full text-left space-y-2 sm:space-y-3 mx-0">
+    <div className="w-full px-4 sm:px-8 pt-2 md:px-12 py-8 dark:text-gray-200">
+      <div className="max-w-4xl w-full space-y-2 sm:space-y-3 mx-auto">
         {!loading && !error && post && (
-          <article className="mb-6 p-3">
-            <Markdown className="markdown-contact" columns>{formatContactBody(post.body)}</Markdown>
+          <article className="mb-6 p-3 text-center">
+            <Markdown className="markdown-contact text-center" columns>
+              {formatContactBody(post.body)}
+            </Markdown>
           </article>
         )}
-        {loading && <div>Carregando...</div>}
-        {error && <div className="text-red-500">{error}</div>}
+        {loading && <div className="text-center">Carregando...</div>}
+        {error && <div className="text-red-500 text-center">{error}</div>}
       </div>
     </div>
   );
 }
-
