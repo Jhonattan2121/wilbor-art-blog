@@ -5,6 +5,7 @@ import {
   SITE_TITLE
 } from '@/app/config';
 import Footer from '@/app/Footer';
+import ContactContent from '@/components/ContactContent';
 import ToasterWithThemes from '@/toast/ToasterWithThemes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -96,6 +97,9 @@ export default function RootLayout({
                 <div >
                   {children}
                 </div>
+                <section id="contact">
+                  <ContactContent />
+                </section>
                 <Footer />
               </main>
               {/* <CommandK /> */}
