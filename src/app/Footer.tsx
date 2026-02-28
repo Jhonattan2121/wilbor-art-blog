@@ -1,6 +1,6 @@
 'use client';
 
-import ContactContent from '@/components/ContactContent';
+import ImageCarousel from '@/components/ImageCarousel';
 import Markdown from '@/components/Markdown';
 import { getPostsByBlog, getUserAccount } from '@/../lib/hive/hive-client';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,48 @@ interface HivePost {
   created: string;
   json_metadata: string;
   url: string;
+}
+
+function extractImagesFromPost(
+  post: HivePost,
+): { src: string; alt?: string }[] {
+  const images: string[] = [];
+
+  if (post.json_metadata) {
+    try {
+      const metadata = typeof post.json_metadata === 'string'
+        ? JSON.parse(post.json_metadata)
+        : post.json_metadata;
+      if (metadata && Array.isArray(metadata.image)) {
+        images.push(...metadata.image);
+      }
+    } catch {
+      // Ignore invalid JSON metadata
+    }
+  }
+
+  if (post.body) {
+    const markdownImgRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
+    const htmlImgRegex = /<img[^>]*src=["']([^"'>\s]+)["'][^>]*>/g;
+    let match: RegExpExecArray | null = null;
+
+    while ((match = markdownImgRegex.exec(post.body))) {
+      images.push(match[1]);
+    }
+    while ((match = htmlImgRegex.exec(post.body))) {
+      images.push(match[1]);
+    }
+  }
+
+  const normalized = images
+    .map((src) => String(src || '').trim())
+    .filter(Boolean)
+    .map((src) => (src.startsWith('//') ? `https:${src}` : src));
+
+  return Array.from(new Set(normalized)).map((src) => ({
+    src,
+    alt: 'Imagem do rodapé',
+  }));
 }
 
 function useDynamicFooterPost(username: string) {
@@ -74,20 +116,35 @@ export default function Footer() {
   const { posts, loading, error } = useDynamicFooterPost(username);
 
   return (
-    <footer className="w-full pb-8">
+    <footer className="w-full pb-4">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-center items-center"> 
+        <div className="flex justify-center items-center">
           <div className="flex flex-col items-center justify-center">
-          <section id="contact">
-            <ContactContent/> 
-          </section>
             {!loading && !error && posts.length > 0 && (
-              <div className="mt-8 text-neutral-500 dark:text-neutral-400 text-center px-4">
-                {posts.map((post) => (
-                  <article key={post.permlink}>
-                    <Markdown>{post.body}</Markdown>
-                  </article>
-                ))}
+              <div
+                className={[
+                  'mt-2 w-full max-w-[340px] text-center px-2',
+                  'text-neutral-500 dark:text-neutral-400',
+                ].join(' ')}
+              >
+                {posts.map((post) => {
+                  const images = extractImagesFromPost(post);
+                  return (
+                    <article key={post.permlink} className="mb-2">
+                      {images.length > 0 && (
+                        <div
+                          className={[
+                            'w-full max-w-[120px] sm:max-w-[140px]',
+                            'mx-auto mb-2',
+                          ].join(' ')}
+                        >
+                          <ImageCarousel images={images} inExpandedCard />
+                        </div>
+                      )}
+                      <Markdown removeMedia>{post.body}</Markdown>
+                    </article>
+                  );
+                })}
               </div>
             )}
           </div>
