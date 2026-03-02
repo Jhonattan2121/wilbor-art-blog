@@ -96,13 +96,18 @@
 }
 
 .exhibition-date {
-  color: #ef4444;
+  color: #ef4444 !important;
   font-weight: 600;
   font-size: 0.72rem !important;
   line-height: 1.15 !important;
   margin-top: 0.75rem !important;
   margin-bottom: 0.28rem !important;
   display: block;
+}
+
+.exhibition-content .exhibition-date,
+.exhibition-content .exhibition-date * {
+  color: #ef4444 !important;
 }
 
 .exhibition-entry {
@@ -132,7 +137,12 @@
 }
 
 .dark .exhibition-date {
-  color: #f87171;
+  color: #f87171 !important;
+}
+
+.dark .exhibition-content .exhibition-date,
+.dark .exhibition-content .exhibition-date * {
+  color: #f87171 !important;
 }
 
 @media (min-width: 640px) {

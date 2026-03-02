@@ -14,6 +14,8 @@ interface MarkdownProps {
     hasLittleContent?: boolean;
 }
 
+const EXHIBITION_DATE_PATTERN = /^(\d{2}\/\d{2}\/\d{4}|\d{1,2}\/\d{4}|\d{4}(?:\s*[–-]\s*\d{4})?)$/;
+
 function removeImagesAndVideosFromMarkdown(markdown: string): string {
     let result = markdown.replace(/!\[[^\]]*\]\([^\)]+\)/g, '');
     result = result.replace(/<video[\s\S]*?<\/video>/gi, '');
@@ -114,6 +116,23 @@ export default function Markdown({ children, className = '', removeMedia = false
 
     // Cores baseadas no tema - mesma cor em ambos os modos
     const textColor = '#888888';
+    const shouldDetectExhibitionDate = className.split(/\s+/).includes('exhibition-content');
+
+    const mergeClassName = (...names: Array<string | undefined | false>) =>
+        names.filter(Boolean).join(' ');
+
+    const getNodeText = (node: any): string => {
+        if (!node) return '';
+        if (typeof node.value === 'string') return node.value;
+        if (!Array.isArray(node.children)) return '';
+        return node.children.map((child: any) => getNodeText(child)).join('');
+    };
+
+    const isExhibitionDateNode = (node: any): boolean => {
+        if (!shouldDetectExhibitionDate) return false;
+        const text = getNodeText(node).trim();
+        return EXHIBITION_DATE_PATTERN.test(text);
+    };
 
     // Mover components para cima!
     const hasBlockChildren = (node: any): boolean => {
@@ -139,31 +158,61 @@ export default function Markdown({ children, className = '', removeMedia = false
     };
 
     const components: Components = {
-        h1: (props) => (
-            <h1 className="text-3xl font-bold mt-8 mb-4" style={{  color: textColor }} {...props} />
+        h1: (props: any) => (
+            <h1
+                {...props}
+                className={mergeClassName('text-3xl font-bold mt-8 mb-4', props.className, isExhibitionDateNode(props.node) && 'exhibition-date')}
+                style={{ color: textColor }}
+            />
         ),
-        h2: (props) => (
-            <h2 className="text-2xl font-semibold mt-6 mb-3" style={{  color: textColor }} {...props} />
+        h2: (props: any) => (
+            <h2
+                {...props}
+                className={mergeClassName('text-2xl font-semibold mt-6 mb-3', props.className, isExhibitionDateNode(props.node) && 'exhibition-date')}
+                style={{ color: textColor }}
+            />
         ),
-        h3: (props) => (
-            <h3 className="text-xl font-semibold mt-4 mb-2" style={{  color: textColor }} {...props} />
+        h3: (props: any) => (
+            <h3
+                {...props}
+                className={mergeClassName('text-xl font-semibold mt-4 mb-2', props.className, isExhibitionDateNode(props.node) && 'exhibition-date')}
+                style={{ color: textColor }}
+            />
         ),
-        h4: (props) => (
-            <h4 className="text-lg font-semibold mt-3 mb-2" style={{  color: textColor }} {...props} />
+        h4: (props: any) => (
+            <h4
+                {...props}
+                className={mergeClassName('text-lg font-semibold mt-3 mb-2', props.className, isExhibitionDateNode(props.node) && 'exhibition-date')}
+                style={{ color: textColor }}
+            />
         ),
-        h5: (props) => (
-            <h5 className="text-base font-semibold mt-2 mb-1" style={{  color: textColor }} {...props} />
+        h5: (props: any) => (
+            <h5
+                {...props}
+                className={mergeClassName('text-base font-semibold mt-2 mb-1', props.className, isExhibitionDateNode(props.node) && 'exhibition-date')}
+                style={{ color: textColor }}
+            />
         ),
-        h6: (props) => (
-            <h6 className="text-sm font-semibold mt-2 mb-1" style={{  color: textColor }} {...props} />
+        h6: (props: any) => (
+            <h6
+                {...props}
+                className={mergeClassName('text-sm font-semibold mt-2 mb-1', props.className, isExhibitionDateNode(props.node) && 'exhibition-date')}
+                style={{ color: textColor }}
+            />
         ),
         p: (props: any) => {
-            const { node, ...rest } = props ?? {};
+            const { node, className: paragraphClassName, ...rest } = props ?? {};
             // Evita HTML inválido: <div>/<video>/<iframe> dentro de <p> causa hydration mismatch.
             if (hasBlockChildren(node)) {
                 return <div style={{ color: textColor }} {...rest} />;
             }
-            return <p style={{ color: textColor }} {...rest} />;
+            return (
+                <p
+                    {...rest}
+                    className={mergeClassName(paragraphClassName, isExhibitionDateNode(node) && 'exhibition-date')}
+                    style={{ color: textColor }}
+                />
+            );
         },
         li: (props) => (
             <li style={{  color: textColor }} {...props} />
