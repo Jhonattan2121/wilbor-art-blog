@@ -52,7 +52,7 @@ export function middleware(request: NextRequest) {
     ));
   }
 
-  
+  return NextResponse.next();
 }
 
 export async function GET(request: Request) {
