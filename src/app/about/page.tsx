@@ -10,17 +10,24 @@ import 'swiper/css/pagination';
 
 const TITLE_KEYWORDS = [
   'sobre mim',
-  'about',
-  'me',
-  'sobre',
   'about me',
   'sobre wilbor',
-  'wilbor',
   'biografia',
-  'perfil',
-  'artist',
-  'artista'
+  'perfil'
 ];
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function isAboutPost(post: any) {
+  const normalizedTitle = normalizeText(post.title || '');
+  return TITLE_KEYWORDS.some(keyword => normalizedTitle.includes(normalizeText(keyword)));
+}
 
 interface HivePost {
   title: string;
@@ -93,11 +100,7 @@ function useDynamicAboutPost(username: string) {
         console.log(`Total de posts encontrados: ${allPosts.length}`);
         console.log('Títulos dos posts:', allPosts.map((p: any) => p.title));
         
-        const matchingPosts = allPosts.filter((post: any) =>
-          post.title && TITLE_KEYWORDS.some(keyword =>
-            post.title.toLowerCase().includes(keyword.toLowerCase())
-          )
-        );
+        const matchingPosts = allPosts.filter((post: any) => isAboutPost(post));
         
         console.log(`Posts filtrados: ${matchingPosts.length}`);
         console.log('Títulos filtrados:', matchingPosts.map((p: any) => p.title));
