@@ -1,4 +1,5 @@
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
+import { isBlockedPermlink } from '@/lib/hive/blocked-posts';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { Photo } from '@/photo/components/types';
 import { Discussion } from '@hiveio/dhive';
@@ -48,8 +49,10 @@ export async function getHivePosts(username: string) {
     const posts = await retryOperation(async () => {
       return await getPostsByAuthor(username);
     });
+
+    const visiblePosts = posts.filter(post => !isBlockedPermlink(post.permlink));
     
-    const formattedPosts = posts.flatMap(post => {
+    const formattedPosts = visiblePosts.flatMap(post => {
       // Check if the post has the "hidden" tag
       try {
         const metadata = JSON.parse(post.json_metadata || '{}');
@@ -155,7 +158,7 @@ export async function getHivePosts(username: string) {
 
     return {
       formattedPosts: uniquePosts,
-      originalPosts: posts
+      originalPosts: visiblePosts
     };
   } catch (error) {
     console.error('Erro ao processar posts:', error);

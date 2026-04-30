@@ -1,4 +1,5 @@
 import { getPostsByAuthor } from '@/lib/hive/hive-client';
+import { isBlockedPermlink } from '@/lib/hive/blocked-posts';
 import { MarkdownRenderer } from '@/lib/markdown/MarkdownRenderer';
 import { Photo } from '@/photo/components/types';
 import { cache } from 'react';
@@ -67,6 +68,10 @@ export default async function TagPage({
 
   // Filter posts containing the specific tag
   const postsWithTag = posts.filter(post => {
+    if (isBlockedPermlink(post.permlink)) {
+      return false;
+    }
+
     try {
       const metadata = JSON.parse(post.json_metadata || '{}');
       const postTags = metadata.tags || [];

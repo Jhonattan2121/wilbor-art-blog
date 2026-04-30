@@ -2,6 +2,7 @@
 'use client';
 
 import { getPostsByBlog, getUserAccount } from "@/../lib/hive/hive-client";
+import { isBlockedPermlink } from '@/lib/hive/blocked-posts';
 import Markdown from '@/components/Markdown';
 import { useEffect, useState } from 'react';
 
@@ -16,10 +17,6 @@ const TITLE_KEYWORDS = [
   'perfil'
 ];
 
-const EXCLUDED_PERMLINKS = new Set([
-  'teste-sobre-mim-20250628t033616300z'
-]);
-
 function normalizeText(value: string) {
   return value
     .normalize('NFD')
@@ -29,7 +26,7 @@ function normalizeText(value: string) {
 }
 
 function isAboutPost(post: any) {
-  if (EXCLUDED_PERMLINKS.has(post.permlink || '')) {
+  if (isBlockedPermlink(post.permlink || '')) {
     return false;
   }
 
