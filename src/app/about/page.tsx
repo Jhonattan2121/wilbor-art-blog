@@ -16,6 +16,10 @@ const TITLE_KEYWORDS = [
   'perfil'
 ];
 
+const EXCLUDED_PERMLINKS = new Set([
+  'teste-sobre-mim-20250628t033616300z'
+]);
+
 function normalizeText(value: string) {
   return value
     .normalize('NFD')
@@ -25,6 +29,10 @@ function normalizeText(value: string) {
 }
 
 function isAboutPost(post: any) {
+  if (EXCLUDED_PERMLINKS.has(post.permlink || '')) {
+    return false;
+  }
+
   const normalizedTitle = normalizeText(post.title || '');
   return TITLE_KEYWORDS.some(keyword => normalizedTitle.includes(normalizeText(keyword)));
 }
@@ -108,8 +116,8 @@ function useDynamicAboutPost(username: string) {
         if (matchingPosts.length > 0) {
           setPosts(matchingPosts);
         } else {
-          console.log('Nenhum post específico encontrado, mostrando posts recentes');
-          setPosts(allPosts.slice(0, 5));
+          console.log('Nenhum post específico encontrado para a área Sobre');
+          setPosts([]);
         }
       } catch (err) {
         console.error('Erro ao buscar posts:', err);
