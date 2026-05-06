@@ -1,5 +1,5 @@
 const BLOCKED_PERMLINKS = new Set([
-  'emergncia-riddim-20260429',
+  'emergencia-riddim-20260429',
 ]);
 
 export function isBlockedPermlink(permlink?: string | null) {

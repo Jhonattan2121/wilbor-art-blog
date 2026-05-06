@@ -26,6 +26,16 @@ const formatPinataUrl = (url: string): string => {
     return url;
 };
 
+function normalizeImageSrc(src?: string | null) {
+    return (src || '').trim();
+}
+
+function getPostImages(item: Media): string[] {
+    const thumbnail = normalizeImageSrc(item.thumbnailSrc);
+    const bodyImages = extractImagesFromMarkdown(item.hiveMetadata?.body || '').map(normalizeImageSrc);
+    return Array.from(new Set([thumbnail, ...bodyImages].filter(Boolean)));
+}
+
 function enhanceMediaWithMetadata(media: Media[]): Media[] {
     return media.map(item => {
         if (!item.hiveMetadata) return item;
@@ -148,7 +158,7 @@ const MediaItem = ({
     const [mounted, setMounted] = useState(false);
     const [linkCopied, setLinkCopied] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const images = extractImagesFromMarkdown(mainItem.hiveMetadata?.body || '');
+    const images = getPostImages(mainItem);
 
     const handleCopyLink = useCallback(async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -325,7 +335,7 @@ const MediaItem = ({
                     }
                 }
             }
-            const images = extractImagesFromMarkdown(item.hiveMetadata?.body || '');
+            const images = getPostImages(item);
             if (images.length > 0) {
                 return images[0];
             }
@@ -380,7 +390,7 @@ const MediaItem = ({
     }, [mainItem.hiveMetadata]);
     useEffect(() => {
         if (isExpanded && mainItem.hiveMetadata?.body) {
-            const imageCount = extractImagesFromMarkdown(mainItem.hiveMetadata.body).length;
+            const imageCount = getPostImages(mainItem).length;
             const textLength = mainItem.hiveMetadata.body.length;
             const hasComplexContent = imageCount > 1 || textLength > 300 || (imageCount > 0 && textLength > 200);
             onContentSizeChange(hasComplexContent);
