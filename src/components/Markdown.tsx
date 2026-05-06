@@ -48,6 +48,10 @@ function normalizeMarkdownFormatting(markdown: string): string {
 }
 
 
+function normalizeImageSrc(src: string) {
+    return src.trim();
+}
+
 function splitMarkdownWithImageBlocks(markdown: string) {
     // Preserva quebras de linha para manter parsing completo de markdown.
     const lines = markdown.split('\n');
@@ -66,7 +70,7 @@ function splitMarkdownWithImageBlocks(markdown: string) {
         if (src.startsWith('<') && src.endsWith('>')) {
             src = src.slice(1, -1);
         }
-        return { src, alt: match[1] };
+        return { src: normalizeImageSrc(src), alt: match[1] };
     }
 
     function pushMarkdownBlock() {
@@ -98,7 +102,7 @@ function splitMarkdownWithImageBlocks(markdown: string) {
         } else if (htmlMatch) {
             pushMarkdownBlock();
             const altMatch = trimmed.match(/\balt=["']([^"']*)["']/i);
-            currentImages.push({ src: htmlMatch[1], alt: altMatch?.[1] || '' });
+            currentImages.push({ src: normalizeImageSrc(htmlMatch[1]), alt: altMatch?.[1] || '' });
         } else {
             pushCarouselBlock();
             currentBlock.push(line);
@@ -448,6 +452,27 @@ export default function Markdown({ children, className = '', removeMedia = false
 
     // Divide o markdown em blocos de markdown e blocos de imagens consecutivas
     const blocks = splitMarkdownWithImageBlocks(content);
+    const inlineImageSrcs = new Set(
+        blocks
+            .filter((block) => block.type === 'carousel' && block.images)
+            .flatMap((block) => block.images ?? [])
+            .map((image) => normalizeImageSrc(image.src))
+    );
+
+    const supplementalImages = (images ?? []).filter((image) => !inlineImageSrcs.has(normalizeImageSrc(image.src)));
+
+    if (supplementalImages.length > 0) {
+        const firstCarouselIndex = blocks.findIndex((block) => block.type === 'carousel');
+        if (firstCarouselIndex >= 0) {
+            const firstCarousel = blocks[firstCarouselIndex];
+            blocks[firstCarouselIndex] = {
+                ...firstCarousel,
+                images: [...supplementalImages, ...(firstCarousel.images ?? [])],
+            };
+        } else {
+            blocks.unshift({ type: 'carousel', content: [], images: supplementalImages });
+        }
+    }
 
     const containerClassName = [
         'w-full max-w-none text-left leading-relaxed text-base sm:text-lg markdown-content-custom',
